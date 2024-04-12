@@ -62,7 +62,7 @@ int WINAPI WinMain(
             // ゲームの処理
         }
     }
-
+    //a
     return 0;
 }
 
