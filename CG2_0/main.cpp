@@ -426,6 +426,11 @@ int WINAPI WinMain(
         }
     }
 
+
+   /*===========================================================================================*/
+   /*                                          後処理                                            */
+   /*===========================================================================================*/
+
     // オブジェクト類の解放
     CloseHandle(fenceEvent);
     fence->Release();
@@ -440,7 +445,7 @@ int WINAPI WinMain(
     useAdapter->Release();
     dxgiFactory->Release();
 #ifdef _DEBUG
-    //debugController->Release();
+    debugController->Release();
 #endif
     CloseWindow(hwnd);
 
