@@ -62,6 +62,18 @@ int WINAPI WinMain(
     /*                                   DirextXの初期化                                          */
     /*===========================================================================================*/
 
+         /*----------------------------- デバッグレイヤーの有効化 -----------------------------*/
+
+#ifdef _DEBUG
+    ID3D12Debug1* debugController = nullptr;
+    if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
+        // デバッグレイヤーを有効化する
+        debugController->EnableDebugLayer();
+        // さらにGPU側でもチェックを行うようにする
+        debugController->SetEnableGPUBasedValidation(TRUE);
+    }
+#endif
+
     /*------------------------------- DXGIFactoryの生成 --------------------------------*/
 
     IDXGIFactory7* dxgiFactory = nullptr;
