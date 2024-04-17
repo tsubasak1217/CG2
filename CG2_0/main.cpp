@@ -62,6 +62,18 @@ int WINAPI WinMain(
     /*                                   DirextXの初期化                                          */
     /*===========================================================================================*/
 
+     /*----------------------------- デバッグレイヤーの有効化 -----------------------------*/
+
+#ifdef _DEBUG
+    ID3D12Debug1* debugController = nullptr;
+    if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
+        // デバッグレイヤーを有効化する
+        debugController->EnableDebugLayer();
+        // さらにGPU側でもチェックを行うようにする
+        debugController->SetEnableGPUBasedValidation(TRUE);
+    }
+#endif
+
     /*------------------------------- DXGIFactoryの生成 --------------------------------*/
 
     IDXGIFactory7* dxgiFactory = nullptr;
@@ -138,6 +150,47 @@ int WINAPI WinMain(
     // 初期化成功をログに表示
     Log("Complete create D3D12Device!!!\n");
 
+
+    /*--------------------- デバッグレイヤーでエラーが出た場合止める --------------------------*/
+
+#ifdef _DEBUG
+    ID3D12InfoQueue* infoQueue = nullptr;
+    if (SUCCEEDED(device->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
+     // ヤバエラー時に止まる
+    infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
+    //エラー時に止まる
+    infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
+    // 警告時に止まる
+    infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
+
+    // 抑制するメッセージのID
+    D3D12_MESSAGE_ID denyIds[] = {
+        // Windows11でのDXGIデバッグレイヤーとDX12デバッグレイヤーの相互作用バグによるエラーメッセージ
+        // https://stackoverflow.com/questions/69805245/directx-12-application-is-crashing-in-windows-11
+        D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE
+    };
+
+    // 抑制するレベル
+    D3D12_MESSAGE_SEVERITY severities[] = { D3D12_MESSAGE_SEVERITY_INFO };
+    D3D12_INFO_QUEUE_FILTER filter{};
+    filter.DenyList.NumIDs = _countof(denyIds);
+    filter.DenyList.pIDList = denyIds;
+    filter.DenyList.NumSeverities = _countof(severities);
+        filter.DenyList.pSeverityList = severities;
+
+        // 指定したメッセージの表示を抑制する
+    infoQueue->PushStorageFilter(&filter);
+
+    // 解放
+    infoQueue->Release();
+    }
+#endif
+
+
+    /*===========================================================================================*/
+    /*                                 GPUに送る命令の作成とか                                      */
+    /*===========================================================================================*/
+
     /*------------------------------- コマンドキューの生成 --------------------------------*/
 
     // 格納する変数
@@ -152,7 +205,7 @@ int WINAPI WinMain(
 
 
     /*------------------------------- コマンドリストの生成 --------------------------------*/
-    
+
     // コマンドアロケータを格納する変数
     ID3D12CommandAllocator* commandAllocator = nullptr;
     // コマンドアロケータを生成する
@@ -165,13 +218,13 @@ int WINAPI WinMain(
     ID3D12GraphicsCommandList* commandList = nullptr;
     // コマンドリストを生成する
     hr = device->CreateCommandList(
-        0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator, nullptr,IID_PPV_ARGS(&commandList)
+        0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator, nullptr, IID_PPV_ARGS(&commandList)
     );
     // コマンドリストの生成がうまくいかなかったので起動できない
     assert(SUCCEEDED(hr));
 
     /*------------------------------ スワップチェーンの作成 -------------------------------*/
-    
+
     // スワップチェーンを生成する
     IDXGISwapChain4* swapChain = nullptr;
     DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
@@ -188,9 +241,9 @@ int WINAPI WinMain(
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; // モニタに写したら中身を破棄
     // コマンドキュー、ウィンドウハンドル、設定を渡して生成する
     hr = dxgiFactory->CreateSwapChainForHwnd(
-        commandQueue, 
-        hwnd, 
-        &swapChainDesc, 
+        commandQueue,
+        hwnd,
+        &swapChainDesc,
         nullptr, nullptr,
         reinterpret_cast<IDXGISwapChain1**>(&swapChain)
     );
@@ -210,7 +263,7 @@ int WINAPI WinMain(
 
     // ディスクリプタヒープを作成
     hr = device->CreateDescriptorHeap(&rtvDescriptorHeapDesc, IID_PPV_ARGS(&rtvDescriptorHeap));
-    
+
     // ディスクリプタヒープが作れなかったので起動できない
     assert(SUCCEEDED(hr));
 
@@ -219,33 +272,33 @@ int WINAPI WinMain(
 
     // リソースを格納する変数
     ID3D12Resource* swapChainResources[2] = { nullptr };
-    
+
     // SwapChain から Resourceを引っ張ってくる
     hr = swapChain->GetBuffer(0, IID_PPV_ARGS(&swapChainResources[0]));
     hr = swapChain->GetBuffer(1, IID_PPV_ARGS(&swapChainResources[1]));
-    
+
     // うまく取得できなければ起動できない
     assert(SUCCEEDED(hr));
     assert(SUCCEEDED(hr));
 
     /*--------------------------------------- RTVの作成 ----------------------------------------*/
-    
+
     // RTVの設定
     D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
     rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB; // 出力結果をSRGBに変換して書き込むように設定
     rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D; // 2dテクスチャとして書き込むように設定
-    
+
     // ディスクリプタの先頭アドレスを取得する
     D3D12_CPU_DESCRIPTOR_HANDLE rtvStartHandle = rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
-    
+
     // RTVを2つ作るのでディスクリプタを2つ用意
     D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
-    
+
     // まず1つ目を作る。 1つ目は最初のところに作る。 作る場所をこちらで指定してあげる必要がある
     rtvHandles[0] = rtvStartHandle;
     // 2つ目のディスクリプタハンドルを得る (自力で)
     rtvHandles[1].ptr = rtvHandles[0].ptr + device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-    
+
     // RTVを2つ作る
     device->CreateRenderTargetView(swapChainResources[0], &rtvDesc, rtvHandles[0]);
     device->CreateRenderTargetView(swapChainResources[1], &rtvDesc, rtvHandles[1]);
@@ -284,7 +337,7 @@ int WINAPI WinMain(
 
             // 描画先のRTVを設定する
             commandList->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, nullptr);
-            
+
             // 指定した色で画面全体をクリアする
             float clearColor[]{ 0.1f, 0.25f, 0.5f, 1.0f }; // 青っぽい色。 RGBAの順
             commandList->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
@@ -296,7 +349,7 @@ int WINAPI WinMain(
             // GPUにコマンドリストの実行を行わせる
             ID3D12CommandList* commandLists[] = { commandList };
             commandQueue->ExecuteCommandLists(1, commandLists);
-            
+
             // GPUとOSに画面の交換を行うよう通知する
             swapChain->Present(1, 0);
 
