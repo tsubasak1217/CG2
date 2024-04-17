@@ -64,6 +64,18 @@ int WINAPI WinMain(
     /*                                   DirextXの初期化                                          */
     /*===========================================================================================*/
 
+         /*----------------------------- デバッグレイヤーの有効化 -----------------------------*/
+
+#ifdef _DEBUG
+    ID3D12Debug1* debugController = nullptr;
+    if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
+        // デバッグレイヤーを有効化する
+        debugController->EnableDebugLayer();
+        // さらにGPU側でもチェックを行うようにする
+        debugController->SetEnableGPUBasedValidation(TRUE);
+    }
+#endif
+
     /*------------------------------- DXGIFactoryの生成 --------------------------------*/
 
     IDXGIFactory7* dxgiFactory = nullptr;
@@ -139,6 +151,46 @@ int WINAPI WinMain(
 
     // 初期化成功をログに表示
     Log("Complete create D3D12Device!!!\n");
+
+    /*--------------------- デバッグレイヤーでエラーが出た場合止める --------------------------*/
+
+#ifdef _DEBUG
+    ID3D12InfoQueue* infoQueue = nullptr;
+    if (SUCCEEDED(device->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
+        // ヤバエラー時に止まる
+        infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
+        //エラー時に止まる
+        infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
+        // 警告時に止まる
+        infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
+
+        // 抑制するメッセージのID
+        D3D12_MESSAGE_ID denyIds[] = {
+            // Windows11でのDXGIデバッグレイヤーとDX12デバッグレイヤーの相互作用バグによるエラーメッセージ
+            // https://stackoverflow.com/questions/69805245/directx-12-application-is-crashing-in-windows-11
+            D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE
+        };
+
+        // 抑制するレベル
+        D3D12_MESSAGE_SEVERITY severities[] = { D3D12_MESSAGE_SEVERITY_INFO };
+        D3D12_INFO_QUEUE_FILTER filter{};
+        filter.DenyList.NumIDs = _countof(denyIds);
+        filter.DenyList.pIDList = denyIds;
+        filter.DenyList.NumSeverities = _countof(severities);
+        filter.DenyList.pSeverityList = severities;
+
+        // 指定したメッセージの表示を抑制する
+        infoQueue->PushStorageFilter(&filter);
+
+        // 解放
+        infoQueue->Release();
+    }
+#endif
+
+
+    /*===========================================================================================*/
+    /*                                 GPUに送る命令の作成とか                                      */
+    /*===========================================================================================*/
 
     /*------------------------------- コマンドキューの生成 --------------------------------*/
 
