@@ -30,4 +30,7 @@
       <Filter>myFunc</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Object3d.VS.hlsl" />
+  </ItemGroup>
 </Project>
