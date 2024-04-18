@@ -411,7 +411,6 @@ int WINAPI WinMain(
     );
     assert(pixelShaderBlob != nullptr);
 
-
     /*--------------------------------- PSOの作成 -----------------------------------*/
 
     // RootSignature
