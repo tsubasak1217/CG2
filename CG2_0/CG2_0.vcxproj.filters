@@ -13,8 +13,14 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="myFunc">
+    <Filter Include="math">
+      <UniqueIdentifier>{7b477ce5-b604-4e96-b38d-24e2d379bcf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math\myFunc">
       <UniqueIdentifier>{96a31085-481c-4209-99c1-44c680f16de7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math\tensor">
+      <UniqueIdentifier>{6a0a6c9f-120a-4aff-a000-81856815ed71}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -22,15 +28,36 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="myFunc.cpp">
-      <Filter>myFunc</Filter>
+      <Filter>math\myFunc</Filter>
+    </ClCompile>
+    <ClCompile Include="matrixFunc.cpp">
+      <Filter>math\myFunc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="myFunc.h">
-      <Filter>myFunc</Filter>
+      <Filter>math\myFunc</Filter>
     </ClInclude>
     <ClInclude Include="Vector4.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>math\tensor</Filter>
+    </ClInclude>
+    <ClInclude Include="math\tensor\Matrix4x4.h">
+      <Filter>math\tensor</Filter>
+    </ClInclude>
+    <ClInclude Include="math\tensor\Matrix2x2.h">
+      <Filter>math\tensor</Filter>
+    </ClInclude>
+    <ClInclude Include="math\tensor\Matrix3x3.h">
+      <Filter>math\tensor</Filter>
+    </ClInclude>
+    <ClInclude Include="math\tensor\Vector2.h">
+      <Filter>math\tensor</Filter>
+    </ClInclude>
+    <ClInclude Include="math\tensor\Vector3.h">
+      <Filter>math\tensor</Filter>
+    </ClInclude>
+    <ClInclude Include="matrixFunc.h">
+      <Filter>math\myFunc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

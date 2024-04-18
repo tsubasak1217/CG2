@@ -1,7 +1,7 @@
 #include <windows.h>
 #include <cstdint>
 #include "myFunc.h"
-
+#include "matrixFunc.h"
 
 LRESULT CALLBACK WndProc(
     HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
@@ -339,10 +339,16 @@ int WINAPI WinMain(
     
     // RootSignatureに関する設定を記述していく
     descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-    D3D12_ROOT_PARAMETER rootParameters[1] = {};
+    D3D12_ROOT_PARAMETER rootParameters[2] = {};
+
     rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;// CommandBufferViewを使用
     rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
     rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号0とバインド
+
+    rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;// CommandBufferViewを使用
+    rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
+    rootParameters[1].Descriptor.ShaderRegister = 0; // レジスタ番号0とバインド
+
     descriptionRootSignature.pParameters = rootParameters; // ルートパラメーターへのポインタ
     descriptionRootSignature.NumParameters = _countof(rootParameters); // パラメーターの配列数
 
@@ -439,6 +445,15 @@ int WINAPI WinMain(
     /*------------------------------ VertexResourceの作成 -------------------------------*/
 
     ID3D12Resource* vertexResource = CreateBufferResources(device, sizeof(Vector4) * 3);
+
+    /*---------------------- TransformationMatrix用Resourceの作成 -----------------------*/
+
+    ID3D12Resource* wvpResource = CreateBufferResources(device, sizeof(Matrix4x4));
+    Matrix4x4* wvpData = nullptr;
+    // wvpDataを読むように設定
+    wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+    // 単位行列を書き込む
+    *wvpData = IdentityMat4();
 
     /*------------------------------ MaterialResourceの作成 -------------------------------*/
 
