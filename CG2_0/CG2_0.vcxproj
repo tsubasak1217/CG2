@@ -94,11 +94,26 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="external\imgui.cpp" />
+    <ClCompile Include="external\imgui_demo.cpp" />
+    <ClCompile Include="external\imgui_draw.cpp" />
+    <ClCompile Include="external\imgui_impl_dx12.cpp" />
+    <ClCompile Include="external\imgui_impl_win32.cpp" />
+    <ClCompile Include="external\imgui_tables.cpp" />
+    <ClCompile Include="external\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="matrixFunc.cpp" />
     <ClCompile Include="myFunc.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="external\imconfig.h" />
+    <ClInclude Include="external\imgui.h" />
+    <ClInclude Include="external\imgui_impl_dx12.h" />
+    <ClInclude Include="external\imgui_impl_win32.h" />
+    <ClInclude Include="external\imgui_internal.h" />
+    <ClInclude Include="external\imstb_rectpack.h" />
+    <ClInclude Include="external\imstb_textedit.h" />
+    <ClInclude Include="external\imstb_truetype.h" />
     <ClInclude Include="math\tensor\Matrix2x2.h" />
     <ClInclude Include="math\tensor\Matrix3x3.h" />
     <ClInclude Include="math\tensor\Matrix4x4.h" />
@@ -119,6 +134,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="external\LICENSE.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
