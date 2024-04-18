@@ -7,10 +7,18 @@ LRESULT CALLBACK WndProc(
     HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 );
 
+
 int WINAPI WinMain(
     HINSTANCE hInstance, HINSTANCE,
     LPSTR, int nCmdShow
 ) {
+
+    struct Transform {
+        Vector3 scale_;
+        Vector3 rotate_;
+        Vector3 translate_;
+    };
+
     /*===========================================================================================*/
     /*                                   ウインドウの初期化                                         */
     /*===========================================================================================*/
@@ -336,7 +344,7 @@ int WINAPI WinMain(
     /*--------------------------------- RootSignatureの作成 ----------------------------------*/
 
     D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
-    
+
     // RootSignatureに関する設定を記述していく
     descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
     D3D12_ROOT_PARAMETER rootParameters[2] = {};
@@ -346,7 +354,7 @@ int WINAPI WinMain(
     rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号0とバインド
 
     rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;// CommandBufferViewを使用
-    rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
+    rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // PixelShaderで使う
     rootParameters[1].Descriptor.ShaderRegister = 0; // レジスタ番号0とバインド
 
     descriptionRootSignature.pParameters = rootParameters; // ルートパラメーターへのポインタ
@@ -439,7 +447,7 @@ int WINAPI WinMain(
     graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
     // 実際に生成
     ID3D12PipelineState* graphicsPipelineState = nullptr;
-    hr = device->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,IID_PPV_ARGS(&graphicsPipelineState));
+    hr = device->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
     assert(SUCCEEDED(hr));
 
     /*------------------------------ VertexResourceの作成 -------------------------------*/
@@ -521,6 +529,37 @@ int WINAPI WinMain(
     // ウインドウの更新
     UpdateWindow(hwnd);
 
+    // 三角形を回す用の変数
+    Transform transform(
+        { 1.0f,1.0f,1.0f }, // scale
+        { 0.0f,0.0f,0.0f }, // rotate
+        { 0.0f,0.0f,0.0f }  // translate
+    );
+
+    // カメラの情報
+    Transform cameraTransform(
+        { 1.0f,1.0f,1.0f }, // scale
+        { 0.0f,0.0f,0.0f }, // rotate
+        { 0.0f,0.0f,-5.0f }  // translate
+    );
+
+    // 三角形のワールド行列の作成
+    Matrix4x4 worldMatrix =
+        AffineMatrix(transform.scale_, transform.rotate_, transform.translate_);
+    // カメラのワールド行列の作成
+    Matrix4x4 cameraMatrix =
+        AffineMatrix(cameraTransform.scale_, cameraTransform.rotate_, cameraTransform.translate_);
+    // ビュー行列の作成
+    Matrix4x4 viewMatrix = InverseMatrix(cameraMatrix);
+    // 透視投影行列の作成
+    Matrix4x4 projectionMatrix =
+        PerspectiveMatrix(
+            0.45f,
+            AspectRatio(kClientWidth, kClientHeight),
+            0.1f, 100.0f
+        );
+    // 掛け合わせてWVP行列の完成
+    Matrix4x4 wvpMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 
     /*---------------------------------- メインループ ------------------------------------*/
 
@@ -536,7 +575,37 @@ int WINAPI WinMain(
         } else {
             // ゲームの処理
 
-            // これから書き込むバックバッファのインデックスを取得
+            /*---------------------- 三角形の回転 -----------------------*/
+
+            // 変数の更新
+            transform.rotate_.y += 0.03f;
+
+            /*---------------------- 行列の再計算 -----------------------*/
+
+            // 三角形のワールド行列の作成
+            worldMatrix =
+                AffineMatrix(transform.scale_, transform.rotate_, transform.translate_);
+            // カメラのワールド行列の作成
+            cameraMatrix =
+                AffineMatrix(cameraTransform.scale_, cameraTransform.rotate_, cameraTransform.translate_);
+            // ビュー行列の作成
+            viewMatrix = InverseMatrix(cameraMatrix);
+            // 透視投影行列の作成
+            projectionMatrix =
+                PerspectiveMatrix(
+                    0.45f,
+                    AspectRatio(kClientWidth, kClientHeight),
+                    0.1f, 100.0f
+                );
+            // 掛け合わせてWVP行列の完成
+            wvpMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+
+
+            /*---------------------- 行列を書き込む -----------------------*/
+            *wvpData = wvpMatrix;
+
+            /*------- これから書き込むバックバッファのインデックスを取得--------*/
+
             UINT backBufferIndex = swapChain->GetCurrentBackBufferIndex();
 
             /*--------------- TransitionBarrierを張る処理----------------*/
@@ -576,6 +645,8 @@ int WINAPI WinMain(
             commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
             // マテリアルCBufferの設定
             commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+            // wvp用のCBufferの場所を設定
+            commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
             // 描画! (DrawCall/ ドローコール)。 3頂点で1つのインスタンス。 インスタンスについては今後
             commandList->DrawInstanced(3, 1, 0, 0);
 
@@ -640,6 +711,7 @@ int WINAPI WinMain(
      // オブジェクト類の解放
     CloseHandle(fenceEvent);
     materialResource->Release();
+    wvpResource->Release();
     vertexResource->Release();
     graphicsPipelineState->Release();
     signatureBlob->Release();
