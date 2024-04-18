@@ -535,7 +535,6 @@ int WINAPI WinMain(
         { 0.0f,0.0f,0.0f }, // rotate
         { 0.0f,0.0f,0.0f }  // translate
     );
-
     // カメラの情報
     Transform cameraTransform(
         { 1.0f,1.0f,1.0f }, // scale
