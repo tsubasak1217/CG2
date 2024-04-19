@@ -20,6 +20,9 @@ int WINAPI WinMain(
     LPSTR, int nCmdShow
 ) {
 
+    // COMの初期化
+    CoInitializeEx(0, COINIT_MULTITHREADED);
+
     struct Transform {
         Vector3 scale_;
         Vector3 rotate_;
@@ -462,11 +465,11 @@ int WINAPI WinMain(
 
     /*------------------------------ VertexResourceの作成 -------------------------------*/
 
-    ID3D12Resource* vertexResource = CreateBufferResources(device, sizeof(Vector4) * 3);
+    ID3D12Resource* vertexResource = CreateBufferResource(device, sizeof(Vector4) * 3);
 
     /*---------------------- TransformationMatrix用Resourceの作成 -----------------------*/
 
-    ID3D12Resource* wvpResource = CreateBufferResources(device, sizeof(Matrix4x4));
+    ID3D12Resource* wvpResource = CreateBufferResource(device, sizeof(Matrix4x4));
     Matrix4x4* wvpData = nullptr;
     // wvpDataを読むように設定
     wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
@@ -475,7 +478,7 @@ int WINAPI WinMain(
 
     /*------------------------------ MaterialResourceの作成 -------------------------------*/
 
-    ID3D12Resource* materialResource = CreateBufferResources(device, sizeof(Vector4));
+    ID3D12Resource* materialResource = CreateBufferResource(device, sizeof(Vector4));
     Vector4* materialData = nullptr;
     // materialDataを読むように設定
     materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
@@ -802,6 +805,9 @@ int WINAPI WinMain(
         debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
         debug->Release();
     }
+
+    // COMの終了
+    CoUninitialize();
 
     return 0;
 }
