@@ -31,6 +31,12 @@
     <Filter Include="external\DirectXTex">
       <UniqueIdentifier>{e0c3b7d0-227d-4b76-ac99-59b41b1e2347}</UniqueIdentifier>
     </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{f0d5f36b-c9e2-4434-bca4-8189c4f6846d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\textures">
+      <UniqueIdentifier>{717565f8-a467-4997-a4b9-021c9fec4476}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -122,5 +128,8 @@
     <Text Include="external\imgui\LICENSE.txt">
       <Filter>external\imgui</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Object3D.hlsli" />
   </ItemGroup>
 </Project>
