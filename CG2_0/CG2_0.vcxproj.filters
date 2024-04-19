@@ -123,7 +123,4 @@
       <Filter>external\imgui</Filter>
     </Text>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="external\DirectXTex\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj" />
-  </ItemGroup>
 </Project>
