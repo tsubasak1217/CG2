@@ -22,8 +22,14 @@
     <Filter Include="math\tensor">
       <UniqueIdentifier>{6a0a6c9f-120a-4aff-a000-81856815ed71}</UniqueIdentifier>
     </Filter>
-    <Filter Include="imgui">
+    <Filter Include="external">
       <UniqueIdentifier>{4cdf9d26-762a-4d9c-837c-121e7769fc55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="external\imgui">
+      <UniqueIdentifier>{00117a55-8320-4748-92f5-3ae1acc6a3ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="external\DirectXTex">
+      <UniqueIdentifier>{e0c3b7d0-227d-4b76-ac99-59b41b1e2347}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -36,26 +42,26 @@
     <ClCompile Include="matrixFunc.cpp">
       <Filter>math\myFunc</Filter>
     </ClCompile>
-    <ClCompile Include="external\imgui.cpp">
-      <Filter>imgui</Filter>
+    <ClCompile Include="external\imgui\imgui.cpp">
+      <Filter>external\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="external\imgui_demo.cpp">
-      <Filter>imgui</Filter>
+    <ClCompile Include="external\imgui\imgui_demo.cpp">
+      <Filter>external\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="external\imgui_draw.cpp">
-      <Filter>imgui</Filter>
+    <ClCompile Include="external\imgui\imgui_draw.cpp">
+      <Filter>external\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="external\imgui_impl_dx12.cpp">
-      <Filter>imgui</Filter>
+    <ClCompile Include="external\imgui\imgui_impl_dx12.cpp">
+      <Filter>external\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="external\imgui_impl_win32.cpp">
-      <Filter>imgui</Filter>
+    <ClCompile Include="external\imgui\imgui_impl_win32.cpp">
+      <Filter>external\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="external\imgui_tables.cpp">
-      <Filter>imgui</Filter>
+    <ClCompile Include="external\imgui\imgui_tables.cpp">
+      <Filter>external\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="external\imgui_widgets.cpp">
-      <Filter>imgui</Filter>
+    <ClCompile Include="external\imgui\imgui_widgets.cpp">
+      <Filter>external\imgui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -83,29 +89,29 @@
     <ClInclude Include="matrixFunc.h">
       <Filter>math\myFunc</Filter>
     </ClInclude>
-    <ClInclude Include="external\imconfig.h">
-      <Filter>imgui</Filter>
+    <ClInclude Include="external\imgui\imconfig.h">
+      <Filter>external\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="external\imgui.h">
-      <Filter>imgui</Filter>
+    <ClInclude Include="external\imgui\imgui.h">
+      <Filter>external\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="external\imgui_impl_dx12.h">
-      <Filter>imgui</Filter>
+    <ClInclude Include="external\imgui\imgui_impl_dx12.h">
+      <Filter>external\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="external\imgui_impl_win32.h">
-      <Filter>imgui</Filter>
+    <ClInclude Include="external\imgui\imgui_impl_win32.h">
+      <Filter>external\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="external\imgui_internal.h">
-      <Filter>imgui</Filter>
+    <ClInclude Include="external\imgui\imgui_internal.h">
+      <Filter>external\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="external\imstb_rectpack.h">
-      <Filter>imgui</Filter>
+    <ClInclude Include="external\imgui\imstb_rectpack.h">
+      <Filter>external\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="external\imstb_textedit.h">
-      <Filter>imgui</Filter>
+    <ClInclude Include="external\imgui\imstb_textedit.h">
+      <Filter>external\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="external\imstb_truetype.h">
-      <Filter>imgui</Filter>
+    <ClInclude Include="external\imgui\imstb_truetype.h">
+      <Filter>external\imgui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -113,8 +119,11 @@
     <FxCompile Include="Object3d.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="external\LICENSE.txt">
-      <Filter>imgui</Filter>
+    <Text Include="external\imgui\LICENSE.txt">
+      <Filter>external\imgui</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="external\DirectXTex\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj" />
   </ItemGroup>
 </Project>

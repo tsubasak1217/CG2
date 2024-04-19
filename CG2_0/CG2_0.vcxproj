@@ -53,7 +53,7 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)math\tensor\;$(ProjectDir)math\myFunc\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)math\tensor\;$(ProjectDir)math\myFunc\;$(ProjectDir)external\;$(ProjectDir)external\imgui\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -78,7 +78,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)math\tensor\;$(ProjectDir)math\myFunc\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)math\tensor\;$(ProjectDir)math\myFunc\;$(ProjectDir)external\;$(ProjectDir)external\imgui\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -94,26 +94,26 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="external\imgui.cpp" />
-    <ClCompile Include="external\imgui_demo.cpp" />
-    <ClCompile Include="external\imgui_draw.cpp" />
-    <ClCompile Include="external\imgui_impl_dx12.cpp" />
-    <ClCompile Include="external\imgui_impl_win32.cpp" />
-    <ClCompile Include="external\imgui_tables.cpp" />
-    <ClCompile Include="external\imgui_widgets.cpp" />
+    <ClCompile Include="external\imgui\imgui.cpp" />
+    <ClCompile Include="external\imgui\imgui_demo.cpp" />
+    <ClCompile Include="external\imgui\imgui_draw.cpp" />
+    <ClCompile Include="external\imgui\imgui_impl_dx12.cpp" />
+    <ClCompile Include="external\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="external\imgui\imgui_tables.cpp" />
+    <ClCompile Include="external\imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="matrixFunc.cpp" />
     <ClCompile Include="myFunc.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="external\imconfig.h" />
-    <ClInclude Include="external\imgui.h" />
-    <ClInclude Include="external\imgui_impl_dx12.h" />
-    <ClInclude Include="external\imgui_impl_win32.h" />
-    <ClInclude Include="external\imgui_internal.h" />
-    <ClInclude Include="external\imstb_rectpack.h" />
-    <ClInclude Include="external\imstb_textedit.h" />
-    <ClInclude Include="external\imstb_truetype.h" />
+    <ClInclude Include="external\imgui\imconfig.h" />
+    <ClInclude Include="external\imgui\imgui.h" />
+    <ClInclude Include="external\imgui\imgui_impl_dx12.h" />
+    <ClInclude Include="external\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="external\imgui\imgui_internal.h" />
+    <ClInclude Include="external\imgui\imstb_rectpack.h" />
+    <ClInclude Include="external\imgui\imstb_textedit.h" />
+    <ClInclude Include="external\imgui\imstb_truetype.h" />
     <ClInclude Include="math\tensor\Matrix2x2.h" />
     <ClInclude Include="math\tensor\Matrix3x3.h" />
     <ClInclude Include="math\tensor\Matrix4x4.h" />
@@ -136,7 +136,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="external\LICENSE.txt" />
+    <Text Include="external\imgui\LICENSE.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="external\DirectXTex\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -3,10 +3,17 @@
 #include "myFunc.h"
 #include "matrixFunc.h"
 
-LRESULT CALLBACK WndProc(
+#include "imgui.h"
+#include "imgui_impl_dx12.h"
+#include "imgui_impl_win32.h"
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
     HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 );
 
+LRESULT CALLBACK WindowProc(
+    HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam
+);
 
 int WINAPI WinMain(
     HINSTANCE hInstance, HINSTANCE,
@@ -36,7 +43,7 @@ int WINAPI WinMain(
     TCHAR szAppName[] = L"test";// ウィンドウクラスの名前
 
     // ウインドウクラスの中身を記述
-    wc.lpfnWndProc = WndProc;
+    wc.lpfnWndProc = WindowProc;
     wc.hInstance = hInstance;
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.lpszClassName = szAppName;
@@ -257,19 +264,21 @@ int WINAPI WinMain(
 
     /*------------------------------ ディスクリプタヒープの作成 -------------------------------*/
 
-    // ディスクリプタヒープとディスクリプターを格納する変数
-    ID3D12DescriptorHeap* rtvDescriptorHeap = nullptr;
-    D3D12_DESCRIPTOR_HEAP_DESC rtvDescriptorHeapDesc{};
+    // RTVのディスクリプタヒープを作成
+    ID3D12DescriptorHeap* rtvDescriptorHeap = CreateDescriptorHeap(
+        device,
+        D3D12_DESCRIPTOR_HEAP_TYPE_RTV,//レンダーターゲットビュー用に設定
+        2,// ダブルバッファ用に2つ。 多くても別に構わない
+        false
+    );
 
-    rtvDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV; //レンダーターゲットビュー用に設定
-    rtvDescriptorHeapDesc.NumDescriptors = 2; // ダブルバッファ用に2つ。 多くても別に構わない
-
-    // ディスクリプタヒープを作成
-    hr = device->CreateDescriptorHeap(&rtvDescriptorHeapDesc, IID_PPV_ARGS(&rtvDescriptorHeap));
-
-    // ディスクリプタヒープが作れなかったので起動できない
-    assert(SUCCEEDED(hr));
-
+    // SRVのディスクリプタヒープを作成
+    ID3D12DescriptorHeap* srvDescriptorHeap = CreateDescriptorHeap(
+        device,
+        D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,// SRV用に設定
+        128,// ディスクリプタ数
+        true
+    );
 
     /*------------------------- SwapChain から Resourceを引っ張ってくる --------------------------*/
 
@@ -305,6 +314,7 @@ int WINAPI WinMain(
     // RTVを2つ作る
     device->CreateRenderTargetView(swapChainResources[0], &rtvDesc, rtvHandles[0]);
     device->CreateRenderTargetView(swapChainResources[1], &rtvDesc, rtvHandles[1]);
+
 
 
     /*------------------------------ CPUとGPUの同期のための変数作成 --------------------------------*/
@@ -560,146 +570,187 @@ int WINAPI WinMain(
     // 掛け合わせてWVP行列の完成
     Matrix4x4 wvpMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 
+    /*===========================================================================================*/
+    /*                                        ImGuiの初期化                                       */
+    /*===========================================================================================*/
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+    ImGui_ImplWin32_Init(hwnd);
+    ImGui_ImplDX12_Init(
+        device,
+        swapChainDesc.BufferCount,
+        rtvDesc.Format,
+        srvDescriptorHeap,
+        srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
+        srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart()
+    );
+
     /*---------------------------------- メインループ ------------------------------------*/
 
     MSG msg{};// メッセージを格納する変数
 
     while (msg.message != WM_QUIT) {
 
+        ImGui_ImplDX12_NewFrame();
+        ImGui_ImplWin32_NewFrame();
+        ImGui::NewFrame();
+
         // ウインドウにメッセージがある場合、優先して処理する
         if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
 
-        } else {
-            // ゲームの処理
-
-            /*---------------------- 三角形の回転 -----------------------*/
-
-            // 変数の更新
-            transform.rotate_.y += 0.03f;
-
-            /*---------------------- 行列の再計算 -----------------------*/
-
-            // 三角形のワールド行列の作成
-            worldMatrix =
-                AffineMatrix(transform.scale_, transform.rotate_, transform.translate_);
-            // カメラのワールド行列の作成
-            cameraMatrix =
-                AffineMatrix(cameraTransform.scale_, cameraTransform.rotate_, cameraTransform.translate_);
-            // ビュー行列の作成
-            viewMatrix = InverseMatrix(cameraMatrix);
-            // 透視投影行列の作成
-            projectionMatrix =
-                PerspectiveMatrix(
-                    0.45f,
-                    AspectRatio(kClientWidth, kClientHeight),
-                    0.1f, 100.0f
-                );
-            // 掛け合わせてWVP行列の完成
-            wvpMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
+        }
 
 
-            /*---------------------- 行列を書き込む -----------------------*/
-            *wvpData = wvpMatrix;
+        // ゲームの処理
 
-            /*------- これから書き込むバックバッファのインデックスを取得--------*/
+        /*---------------------- 三角形の回転 -----------------------*/
 
-            UINT backBufferIndex = swapChain->GetCurrentBackBufferIndex();
+        // 変数の更新
+        transform.rotate_.y += 0.03f;
 
-            /*--------------- TransitionBarrierを張る処理----------------*/
+        /*---------------------- 行列の再計算 -----------------------*/
 
-            D3D12_RESOURCE_BARRIER barrier{};
-            // 今回のバリアはTransition
-            barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-            // None LTB
-            barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-            // バリアを張る対象のリソース。 現在のバックバッファに対して行う
-            barrier.Transition.pResource = swapChainResources[backBufferIndex];
-            // 遷移前 (現在) のResourceState
-            barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-            // 遷移後のResourceState
-            barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-            // TransitionBarrier
-            commandList->ResourceBarrier(1, &barrier);
+        // 三角形のワールド行列の作成
+        worldMatrix =
+            AffineMatrix(transform.scale_, transform.rotate_, transform.translate_);
+        // カメラのワールド行列の作成
+        cameraMatrix =
+            AffineMatrix(cameraTransform.scale_, cameraTransform.rotate_, cameraTransform.translate_);
+        // ビュー行列の作成
+        viewMatrix = InverseMatrix(cameraMatrix);
+        // 透視投影行列の作成
+        projectionMatrix =
+            PerspectiveMatrix(
+                0.45f,
+                AspectRatio(kClientWidth, kClientHeight),
+                0.1f, 100.0f
+            );
+        // 掛け合わせてWVP行列の完成
+        wvpMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 
-            /*----------------------------------------------------------*/
 
-            // 描画先のRTVを設定する
-            commandList->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, nullptr);
+        /*---------------------- 行列を書き込む -----------------------*/
+        *wvpData = wvpMatrix;
 
-            // 指定した色で画面全体をクリアする
-            float clearColor[]{ 0.1f, 0.25f, 0.5f, 1.0f }; // 青っぽい色。 RGBAの順
-            commandList->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
+        /*------- これから書き込むバックバッファのインデックスを取得--------*/
 
-            /*-------------------三角形描画コマンド積む---------------------*/
+        UINT backBufferIndex = swapChain->GetCurrentBackBufferIndex();
 
-            commandList->RSSetViewports(1, &viewport); // Viewport
-            commandList->RSSetScissorRects(1, &scissorRect); // Scissor
-            // RootSignatureを設定。 PSOに設定しているけど別途設定が必要
-            commandList->SetGraphicsRootSignature(rootSignature);
-            commandList->SetPipelineState(graphicsPipelineState); // PSO
-            commandList->IASetVertexBuffers(0, 1, &vertexBufferView); // VBVE
-            // 形状を設定。 PSOに設定しているものとはまた別。 同じものを設定すると考えておけば良い
-            commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-            // マテリアルCBufferの設定
-            commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
-            // wvp用のCBufferの場所を設定
-            commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
-            // 描画! (DrawCall/ ドローコール)。 3頂点で1つのインスタンス。 インスタンスについては今後
-            commandList->DrawInstanced(3, 1, 0, 0);
+        /*--------------- TransitionBarrierを張る処理----------------*/
 
-            /*----------------------------------------------------------*/
+        D3D12_RESOURCE_BARRIER barrier{};
+        // 今回のバリアはTransition
+        barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+        // None LTB
+        barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+        // バリアを張る対象のリソース。 現在のバックバッファに対して行う
+        barrier.Transition.pResource = swapChainResources[backBufferIndex];
+        // 遷移前 (現在) のResourceState
+        barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+        // 遷移後のResourceState
+        barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+        // TransitionBarrier
+        commandList->ResourceBarrier(1, &barrier);
 
-            // 画面に描く処理はすべて終わり、 画面に映すので、状態を遷移
-            // 今回はRenderTargetからPresent にする
-            barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-            barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
+        /*----------------------------------------------------------*/
 
-            // TransitionBarrierを張る
-            commandList->ResourceBarrier(1, &barrier);
+        // 描画先のRTVを設定する
+        commandList->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, nullptr);
 
-            /*----------------------------------------------------------*/
+        // 指定した色で画面全体をクリアする
+        float clearColor[]{ 0.1f, 0.25f, 0.5f, 1.0f }; // 青っぽい色。 RGBAの順
+        commandList->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
 
-            // コマンドリストの内容を確定させる。 すべてのコマンドを積んでからCloseすること
-            hr = commandList->Close();// コマンドリストの実行前に閉じる
-            assert(SUCCEEDED(hr));
+        //------------------------------------------------------------
+        ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap };
+        commandList->SetDescriptorHeaps(1, descriptorHeaps);
 
-            // GPUにコマンドリストの実行を行わせる
-            ID3D12CommandList* commandLists[] = { commandList };
-            commandQueue->ExecuteCommandLists(1, commandLists);
+        /*-------------------三角形描画コマンド積む---------------------*/
 
-            // GPUとOSに画面の交換を行うよう通知する
-            swapChain->Present(1, 0);
+        commandList->RSSetViewports(1, &viewport); // Viewport
+        commandList->RSSetScissorRects(1, &scissorRect); // Scissor
+        // RootSignatureを設定。 PSOに設定しているけど別途設定が必要
+        commandList->SetGraphicsRootSignature(rootSignature);
+        commandList->SetPipelineState(graphicsPipelineState); // PSO
 
-            /*---------------------- CPUとGPUの同期 ----------------------*/
+        ImGui::ShowDemoWindow();
 
-            // Fenceの値を更新
-            fenceValue++;
-            // GPUがここまでたどり着いたときに、 Fenceの値を指定した値に代入するようにSignalを送る
-            commandQueue->Signal(fence, fenceValue);
+        commandList->IASetVertexBuffers(0, 1, &vertexBufferView); // VBVE
+        // 形状を設定。 PSOに設定しているものとはまた別。 同じものを設定すると考えておけば良い
+        commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        // マテリアルCBufferの設定
+        commandList->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+        // wvp用のCBufferの場所を設定
+        commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 
-            // Fenceの値が指定したSignal値にたどり着いているか確認する
-            // GetCompletedValueの初期値はFence作成時に渡した初期値
-            if (fence->GetCompletedValue() < fenceValue) {
 
-                // 指定したSignalにたどりついていないので、GPUがたどり着くまで待つようにイベントを設定する
-                fence->SetEventOnCompletion(fenceValue, fenceEvent);
-                // CPUはイベント待つ
-                WaitForSingleObject(fenceEvent, INFINITE);
+        ImGui::Render();
 
-            }
 
-            /*-----------------------------------------------------------*/
+        // 描画! (DrawCall/ ドローコール)。 3頂点で1つのインスタンス。 インスタンスについては今後
+        commandList->DrawInstanced(3, 1, 0, 0);
 
-            // リセットして次のフレーム用のコマンドリストを準備
-            hr = commandAllocator->Reset();
-            assert(SUCCEEDED(hr));
-            hr = commandList->Reset(commandAllocator, nullptr);
-            assert(SUCCEEDED(hr));
+        // ImGuiの描画
+        ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
 
+
+        /*----------------------------------------------------------*/
+
+        // 画面に描く処理はすべて終わり、 画面に映すので、状態を遷移
+        // 今回はRenderTargetからPresent にする
+        barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+        barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
+
+        // TransitionBarrierを張る
+        commandList->ResourceBarrier(1, &barrier);
+
+        /*----------------------------------------------------------*/
+
+        // コマンドリストの内容を確定させる。 すべてのコマンドを積んでからCloseすること
+        hr = commandList->Close();// コマンドリストの実行前に閉じる
+        assert(SUCCEEDED(hr));
+
+        // GPUにコマンドリストの実行を行わせる
+        ID3D12CommandList* commandLists[] = { commandList };
+        commandQueue->ExecuteCommandLists(1, commandLists);
+
+        // GPUとOSに画面の交換を行うよう通知する
+        swapChain->Present(1, 0);
+
+        /*---------------------- CPUとGPUの同期 ----------------------*/
+
+        // Fenceの値を更新
+        fenceValue++;
+        // GPUがここまでたどり着いたときに、 Fenceの値を指定した値に代入するようにSignalを送る
+        commandQueue->Signal(fence, fenceValue);
+
+        // Fenceの値が指定したSignal値にたどり着いているか確認する
+        // GetCompletedValueの初期値はFence作成時に渡した初期値
+        if (fence->GetCompletedValue() < fenceValue) {
+
+            // 指定したSignalにたどりついていないので、GPUがたどり着くまで待つようにイベントを設定する
+            fence->SetEventOnCompletion(fenceValue, fenceEvent);
+            // CPUはイベント待つ
+            WaitForSingleObject(fenceEvent, INFINITE);
 
         }
+
+        /*-----------------------------------------------------------*/
+
+        // リセットして次のフレーム用のコマンドリストを準備
+        hr = commandAllocator->Reset();
+        assert(SUCCEEDED(hr));
+        hr = commandList->Reset(commandAllocator, nullptr);
+        assert(SUCCEEDED(hr));
+
+        //descriptorHeaps[0]->Release();
+
+
+        ImGui::EndFrame();
     }
 
 
@@ -707,7 +758,12 @@ int WINAPI WinMain(
     /*                                          後処理                                            */
     /*===========================================================================================*/
 
-     // オブジェクト類の解放
+    // ImGuiの終了処理
+    ImGui_ImplDX12_Shutdown();
+    ImGui_ImplWin32_Shutdown();
+    ImGui::DestroyContext();
+
+    // オブジェクト類の解放
     CloseHandle(fenceEvent);
     materialResource->Release();
     wvpResource->Release();
@@ -721,6 +777,7 @@ int WINAPI WinMain(
     pixelShaderBlob->Release();
     vertexShaderBlob->Release();
     fence->Release();
+    srvDescriptorHeap->Release();
     rtvDescriptorHeap->Release();
     swapChainResources[0]->Release();
     swapChainResources[1]->Release();
@@ -749,8 +806,12 @@ int WINAPI WinMain(
     return 0;
 }
 
-LRESULT CALLBACK WndProc(
+LRESULT CALLBACK WindowProc(
     HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+
+    if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam)) {
+        return true;
+    }
 
     switch (uMsg) {
     case WM_DESTROY:
