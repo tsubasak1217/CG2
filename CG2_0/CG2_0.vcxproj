@@ -53,7 +53,7 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)math\tensor\;$(ProjectDir)math\myFunc\;$(ProjectDir)external\;$(ProjectDir)external\imgui\;$(ProjectDir)external\DirectXTex-mar2023\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)math\tensor\;$(ProjectDir)math\myFunc\;$(ProjectDir)external\;$(ProjectDir)external\imgui\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -78,7 +78,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)math\tensor\;$(ProjectDir)math\myFunc\;$(ProjectDir)external\;$(ProjectDir)external\imgui\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)math\tensor\;$(ProjectDir)math\myFunc\;$(ProjectDir)external\;$(ProjectDir)external\imgui\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
