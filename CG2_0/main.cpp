@@ -781,7 +781,6 @@ int WINAPI WinMain(
 
         }
 
-
         ImGui::Begin("sprite");
         ImGui::DragFloat3("scale", &transformSprite.scale_.x, 0.025f);
         ImGui::DragFloat3("rotate", &transformSprite.rotate_.x, 3.14f * 0.01f);
