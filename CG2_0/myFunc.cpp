@@ -228,9 +228,9 @@ ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMe
 
     // 利用するHeapの設定
     D3D12_HEAP_PROPERTIES heapProperties{};
-    heapProperties.Type = D3D12_HEAP_TYPE_CUSTOM; // 細かい設定を行う
-    heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK; // WriteBackポリシーでCPUアクセス可能
-    heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0; // プロセッサの近くに配置
+    heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT; // デフォルト
+    //heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK; // WriteBackポリシーでCPUアクセス可能
+    //heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0; // プロセッサの近くに配置
 
     // リソースの作成
     ID3D12Resource* resource = nullptr;
@@ -239,7 +239,7 @@ ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMe
         &heapProperties,
         D3D12_HEAP_FLAG_NONE,
         &resourceDesc,
-        D3D12_RESOURCE_STATE_GENERIC_READ,
+        D3D12_RESOURCE_STATE_COPY_DEST,
         nullptr,
         IID_PPV_ARGS(&resource)
     );
@@ -289,24 +289,49 @@ ID3D12Resource* CreateDepthStencilTextureResource(ID3D12Device* device, int32_t 
 
 
 //データを転送するUploadTextureData関数
-void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages) {
+[[nodiscard]]
+ID3D12Resource* UploadTextureData(
+    ID3D12Resource* texture, const DirectX::ScratchImage& mipImages, ID3D12Device* device,
+    ID3D12GraphicsCommandList* commandList)
+{
+    std::vector<D3D12_SUBRESOURCE_DATA> subresources;
+    DirectX::PrepareUpload(device, mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresources);
+    uint64_t intermediateSize = GetRequiredIntermediateSize(texture, 0, UINT(subresources.size()));
+    ID3D12Resource* intermediateResource = CreateBufferResource(device, intermediateSize);
+    UpdateSubresources(commandList, texture, intermediateResource, 0, 0, UINT(subresources.size()), subresources.data());
     
-    // Meta情報を取得
-    const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-    // 全MipMapについて
-    for (size_t mipLevel = 0; mipLevel < metadata.mipLevels; ++mipLevel) {
-        // MipMapLevelを指定して各Imageを取得
-        const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
-        // Textureに転送
-        HRESULT hr;
-        hr = texture->WriteToSubresource(
-            UINT(mipLevel),
-            nullptr,// 全領域へコピー
-            img->pixels,// 元データアドレス
-            UINT(img->rowPitch), // 1ラインサイズ
-            UINT(img->slicePitch) // 1枚サイズ
-        );
-
-        assert(SUCCEEDED(hr));
-    }
+    //
+    D3D12_RESOURCE_BARRIER barrier{};
+    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+    barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+    barrier.Transition.pResource = texture;
+    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
+    commandList->ResourceBarrier(1, &barrier);
+    return intermediateResource;
 }
+
+
+
+//void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages) {
+//    
+//    // Meta情報を取得
+//    const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
+//    // 全MipMapについて
+//    for (size_t mipLevel = 0; mipLevel < metadata.mipLevels; ++mipLevel) {
+//        // MipMapLevelを指定して各Imageを取得
+//        const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
+//        // Textureに転送
+//        HRESULT hr;
+//        hr = texture->WriteToSubresource(
+//            UINT(mipLevel),
+//            nullptr,// 全領域へコピー
+//            img->pixels,// 元データアドレス
+//            UINT(img->rowPitch), // 1ラインサイズ
+//            UINT(img->slicePitch) // 1枚サイズ
+//        );
+//
+//        assert(SUCCEEDED(hr));
+//    }
+//}

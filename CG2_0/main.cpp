@@ -511,6 +511,7 @@ int WINAPI WinMain(
     /*------------------------------ VertexResourceの作成 -------------------------------*/
 
     ID3D12Resource* vertexResource = CreateBufferResource(device, sizeof(VertexData) * 6);
+    ID3D12Resource* vertexResourceSprite = CreateBufferResource(device, sizeof(VertexData) * 6);
 
     /*---------------------- TransformationMatrix用Resourceの作成 -----------------------*/
 
@@ -520,6 +521,18 @@ int WINAPI WinMain(
     wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
     // 単位行列を書き込む
     *wvpData = IdentityMat4();
+
+    /*-----スプライト用-----*/
+    ID3D12Resource* wvpResourceSprite = CreateBufferResource(device, sizeof(Matrix4x4));
+    Matrix4x4* wvpDataSprite = nullptr;
+    // wvpDataを読むように設定
+    wvpResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&wvpDataSprite));
+    // 単位行列を書き込む
+    *wvpDataSprite = IdentityMat4();
+
+    Transform transformSprite = {
+        {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f}
+    };
 
     /*------------------------------ MaterialResourceの作成 -------------------------------*/
 
@@ -538,7 +551,7 @@ int WINAPI WinMain(
     const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
     ID3D12Resource* textureResource = CreateTextureResource(device, metadata);
     // 転送
-    UploadTextureData(textureResource, mipImages);
+    ID3D12Resource* intermediateResource = UploadTextureData(textureResource, mipImages,device,commandList);
 
     /*------------------------- DepthStencilTextureResourceの作成 -------------------------*/
 
@@ -569,13 +582,16 @@ int WINAPI WinMain(
 
     // 頂点バッファビューを作成する
     D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-    vertexResource->GetGPUVirtualAddress();
+    D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite{};
     // リソースの先頭のアドレスから使う
     vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
+    vertexBufferViewSprite.BufferLocation = vertexResourceSprite->GetGPUVirtualAddress();
     // 使用するリソースのサイズは頂点3つ分のサイズ
     vertexBufferView.SizeInBytes = sizeof(VertexData) * 6;
+    vertexBufferViewSprite.SizeInBytes = sizeof(VertexData) * 6;
     // 1頂点あたりのサイズ
     vertexBufferView.StrideInBytes = sizeof(VertexData);
+    vertexBufferViewSprite.StrideInBytes = sizeof(VertexData);
 
     /*------------------------------ DepthStencilViewの作成 -------------------------------*/
 
@@ -623,6 +639,32 @@ int WINAPI WinMain(
     vertexData[5].position_ = { 0.5f, -0.5f, -0.5f, 1.0f };
     vertexData[5].texcoord_ = { 1.0f,1.0f };
 
+
+    /*-----------------スプライト用----------------*/
+
+     //頂点リソースにデータを書き込む
+    VertexData* vertexDataSprite = nullptr;
+    // 書き込むためのアドレスを取得
+    vertexResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataSprite));
+    // 左下
+    vertexDataSprite[0].position_ = { 0.0f, 360.0f, 0.0f, 1.0f };
+    vertexDataSprite[0].texcoord_ = { 0.0f,1.0f };
+    // 左上
+    vertexDataSprite[1].position_ = { 0.0f, 0.0f, 0.0f, 1.0f };
+    vertexDataSprite[1].texcoord_ = { 0.0f,0.0f };
+    // 右下
+    vertexDataSprite[2].position_ = { 640.0f, 360.0f, 0.0f, 1.0f };
+    vertexDataSprite[2].texcoord_ = { 1.0f,1.0f };
+
+    // 左上
+    vertexDataSprite[3].position_ = { 0.0f, 0.0f, 0.0f, 1.0f };
+    vertexDataSprite[3].texcoord_ = { 0.0f,0.0f };
+    // 右上
+    vertexDataSprite[4].position_ = { 640.0f, 0.0f, 0.0f, 1.0f };
+    vertexDataSprite[4].texcoord_ = { 1.0f,0.0f };
+    // 右下
+    vertexDataSprite[5].position_ = { 640.0f, 360.0f, 0.0f, 1.0f };
+    vertexDataSprite[5].texcoord_ = { 1.0f,1.0f };
 
     /*--------------------------------- VewportとScissor ---------------------------------*/
 
@@ -687,6 +729,24 @@ int WINAPI WinMain(
     // 掛け合わせてWVP行列の完成
     Matrix4x4 wvpMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 
+    /*--------スプライト用---------*/
+    // 三角形のワールド行列の作成
+    Matrix4x4 worldMatrixSprite =
+        AffineMatrix(transformSprite.scale_, transformSprite.rotate_, transformSprite.translate_);
+    // ビュー行列の作成
+    Matrix4x4 viewMatrixSprite = InverseMatrix(cameraMatrix);
+    // 透視投影行列の作成
+    Matrix4x4 projectionMatrixSprite =
+        OrthoMatrix(
+            0.0f,
+            kClientWidth,
+            0.0f,
+            kClientHeight,
+            0.1f, 1000.0f
+        );
+    // 掛け合わせてWVP行列の完成
+    Matrix4x4 wvpMatrixSprite = Multiply(worldMatrixSprite, Multiply(viewMatrixSprite, projectionMatrixSprite));
+
     /*===========================================================================================*/
     /*                                        ImGuiの初期化                                       */
     /*===========================================================================================*/
@@ -722,6 +782,12 @@ int WINAPI WinMain(
         }
 
 
+        ImGui::Begin("sprite");
+        ImGui::DragFloat3("scale", &transformSprite.scale_.x, 0.025f);
+        ImGui::DragFloat3("rotate", &transformSprite.rotate_.x, 3.14f * 0.01f);
+        ImGui::DragFloat3("translate", &transformSprite.translate_.x, 1.0f);
+        ImGui::End();
+
         // ゲームの処理
 
         /*---------------------- 三角形の回転 -----------------------*/
@@ -750,8 +816,29 @@ int WINAPI WinMain(
         wvpMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 
 
+        /*--------Sprite-------*/
+
+        // 三角形のワールド行列の作成
+        worldMatrixSprite =
+            AffineMatrix(transformSprite.scale_, transformSprite.rotate_, transformSprite.translate_);
+        // ビュー行列の作成
+        viewMatrixSprite = InverseMatrix(cameraMatrix);
+        // 透視投影行列の作成
+        projectionMatrixSprite =
+            OrthoMatrix(
+                0.0f,
+                kClientWidth,
+                0.0f,
+                kClientHeight,
+                0.1f, 1000.0f
+            );
+        // 掛け合わせてWVP行列の完成
+        wvpMatrixSprite = Multiply(worldMatrixSprite, Multiply(viewMatrixSprite, projectionMatrixSprite));
+
+
         /*---------------------- 行列を書き込む -----------------------*/
         *wvpData = wvpMatrix;
+        *wvpDataSprite = wvpMatrixSprite;
 
         /*------- これから書き込むバックバッファのインデックスを取得--------*/
 
@@ -799,7 +886,7 @@ int WINAPI WinMain(
 
         ImGui::ShowDemoWindow();
 
-        commandList->IASetVertexBuffers(0, 1, &vertexBufferView); // VBVE
+        commandList->IASetVertexBuffers(0, 1, &vertexBufferView); // VBV
         // 形状を設定。 PSOに設定しているものとはまた別。 同じものを設定すると考えておけば良い
         commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         // マテリアルCBufferの設定
@@ -814,6 +901,11 @@ int WINAPI WinMain(
 
 
         // 描画! (DrawCall/ ドローコール)。 3頂点で1つのインスタンス。 インスタンスについては今後
+        commandList->DrawInstanced(6, 1, 0, 0);
+
+        commandList->IASetVertexBuffers(0, 1, &vertexBufferViewSprite); // VBV
+        // wvp用のCBufferの場所を設定
+        commandList->SetGraphicsRootConstantBufferView(1, wvpResourceSprite->GetGPUVirtualAddress());
         commandList->DrawInstanced(6, 1, 0, 0);
 
         // ImGuiの描画
@@ -890,10 +982,13 @@ int WINAPI WinMain(
     //delete vertexData;
     depthStencilResource->Release();
     textureResource->Release();
+    intermediateResource->Release();
     dsvDescriptorHeap->Release();
     materialResource->Release();
     wvpResource->Release();
+    wvpResourceSprite->Release();
     vertexResource->Release();
+    vertexResourceSprite->Release();
     graphicsPipelineState->Release();
     signatureBlob->Release();
     if (errorBlob) {

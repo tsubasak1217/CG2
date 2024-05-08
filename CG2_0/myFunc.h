@@ -7,6 +7,7 @@
 #include <dxgidebug.h>
 #include <dxcapi.h>
 #include <DirectXTex.h>
+#include "d3dx12.h"
 #pragma comment(lib,"d3d12.lib")
 #pragma comment(lib,"dxgi.lib")
 #pragma comment(lib,"dxguid.lib")
@@ -46,4 +47,7 @@ ID3D12Resource* CreateTextureResource(ID3D12Device* device,const DirectX::TexMet
 ID3D12Resource* CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height);
 
 // TextureResourceにデータを転送する関数
-void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
+[[nodiscard]]
+ID3D12Resource* UploadTextureData(
+    ID3D12Resource* texture, const DirectX::ScratchImage& mipImages, ID3D12Device* device,
+    ID3D12GraphicsCommandList* commandList);
