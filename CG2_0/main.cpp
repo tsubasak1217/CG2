@@ -2,6 +2,7 @@
 #include <cstdint>
 #include "myFunc.h"
 #include "matrixFunc.h"
+#include "sphere.h"
 
 #include "imgui.h"
 #include "imgui_impl_dx12.h"
@@ -56,7 +57,7 @@ int WINAPI WinMain(
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.lpszClassName = szAppName;
 
-    if (!RegisterClass(&wc)) { return 0; }
+    if(!RegisterClass(&wc)) { return 0; }
 
     /*-------------------------------- ウィンドウの生成 ---------------------------------*/
 
@@ -75,7 +76,7 @@ int WINAPI WinMain(
         nullptr
     );
 
-    if (!hwnd) { return 0; }
+    if(!hwnd) { return 0; }
 
     /*===========================================================================================*/
     /*                                   DirextXの初期化                                          */
@@ -85,7 +86,7 @@ int WINAPI WinMain(
 
 #ifdef _DEBUG
     ID3D12Debug1* debugController = nullptr;
-    if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
+    if(SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
         // デバッグレイヤーを有効化する
         debugController->EnableDebugLayer();
         // さらにGPU側でもチェックを行うようにする
@@ -106,7 +107,7 @@ int WINAPI WinMain(
     IDXGIAdapter4* useAdapter = nullptr;
 
     // 性能のいいGPUからループが先に来るようfor文を回す
-    for (
+    for(
         int i = 0;
         dxgiFactory->EnumAdapterByGpuPreference(
             UINT(i),
@@ -124,7 +125,7 @@ int WINAPI WinMain(
         assert(SUCCEEDED(hr));
 
         // ソフトウェアアダプタでなければ採用
-        if (adapterDesc.Flags != DXGI_ADAPTER_FLAG3_SOFTWARE) {
+        if(adapterDesc.Flags != DXGI_ADAPTER_FLAG3_SOFTWARE) {
 
             // 使用アダプタを出力してループ終了
             Log(std::format(L"useAdapter:{}\n", adapterDesc.Description));
@@ -151,13 +152,13 @@ int WINAPI WinMain(
 
     const char* featureLevelString[] = { "12.2","12.1","12.0" };
 
-    for (size_t i = 0; i < _countof(featureLevels); ++i) {
+    for(size_t i = 0; i < _countof(featureLevels); ++i) {
 
         // 先ほど決定したアダプタを使用してデバイスを生成
         hr = D3D12CreateDevice(useAdapter, featureLevels[i], IID_PPV_ARGS(&device));
 
         // 生成に成功したらログを出力してループを終了
-        if (SUCCEEDED(hr)) {
+        if(SUCCEEDED(hr)) {
             Log(std::format("FeatureLevel : {}\n", featureLevelString[i]));
             break;
         }
@@ -173,7 +174,7 @@ int WINAPI WinMain(
 
 #ifdef _DEBUG
     ID3D12InfoQueue* infoQueue = nullptr;
-    if (SUCCEEDED(device->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
+    if(SUCCEEDED(device->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
         // ヤバエラー時に止まる
         infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
         //エラー時に止まる
@@ -378,7 +379,7 @@ int WINAPI WinMain(
     descriptorRange[0].BaseShaderRegister = 0;// 0から始まる
     descriptorRange[0].NumDescriptors = 1;// 数は1つ
     descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;// SRVを使う
-    descriptorRange[0].OffsetInDescriptorsFromTableStart = 
+    descriptorRange[0].OffsetInDescriptorsFromTableStart =
         D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;// offsetを自動計算
 
     rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;// DescriptorTableを使う
@@ -411,7 +412,7 @@ int WINAPI WinMain(
     // バイナリを生成
     hr = D3D12SerializeRootSignature(&descriptionRootSignature, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
     // 失敗した場合
-    if (FAILED(hr)) {
+    if(FAILED(hr)) {
         Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
         assert(false);
     }
@@ -510,7 +511,7 @@ int WINAPI WinMain(
 
     /*------------------------------ VertexResourceの作成 -------------------------------*/
 
-    ID3D12Resource* vertexResource = CreateBufferResource(device, sizeof(VertexData) * 6);
+    ID3D12Resource* vertexResource = CreateBufferResource(device, sizeof(VertexData) * 6 * 16 * 16);
     ID3D12Resource* vertexResourceSprite = CreateBufferResource(device, sizeof(VertexData) * 6);
 
     /*---------------------- TransformationMatrix用Resourceの作成 -----------------------*/
@@ -551,7 +552,7 @@ int WINAPI WinMain(
     const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
     ID3D12Resource* textureResource = CreateTextureResource(device, metadata);
     // 転送
-    ID3D12Resource* intermediateResource = UploadTextureData(textureResource, mipImages,device,commandList);
+    ID3D12Resource* intermediateResource = UploadTextureData(textureResource, mipImages, device, commandList);
 
     /*------------------------- DepthStencilTextureResourceの作成 -------------------------*/
 
@@ -587,7 +588,7 @@ int WINAPI WinMain(
     vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
     vertexBufferViewSprite.BufferLocation = vertexResourceSprite->GetGPUVirtualAddress();
     // 使用するリソースのサイズは頂点3つ分のサイズ
-    vertexBufferView.SizeInBytes = sizeof(VertexData) * 6;
+    vertexBufferView.SizeInBytes = sizeof(VertexData) * 6 * 16 * 16;
     vertexBufferViewSprite.SizeInBytes = sizeof(VertexData) * 6;
     // 1頂点あたりのサイズ
     vertexBufferView.StrideInBytes = sizeof(VertexData);
@@ -619,26 +620,28 @@ int WINAPI WinMain(
     VertexData* vertexData = nullptr;
     // 書き込むためのアドレスを取得
     vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
-    // 左下
-    vertexData[0].position_ = { -0.5f, -0.5f, 0.0f, 1.0f };
-    vertexData[0].texcoord_ = { 0.0f,1.0f };
-    // 上
-    vertexData[1].position_ = { 0.0f, 0.5f, 0.0f, 1.0f };
-    vertexData[1].texcoord_ = { 0.5f,0.0f };
-    //右下
-    vertexData[2].position_ = { 0.5f, -0.5f, 0.0f, 1.0f };
-    vertexData[2].texcoord_ = { 1.0f,1.0f };
 
-    // 左下
-    vertexData[3].position_ = { -0.5f, -0.5f, 0.5f, 1.0f };
-    vertexData[3].texcoord_ = { 0.0f,1.0f };
-    // 上
-    vertexData[4].position_ = { 0.0f, 0.0f, 0.0f, 1.0f };
-    vertexData[4].texcoord_ = { 0.5f,0.0f };
-    //右下
-    vertexData[5].position_ = { 0.5f, -0.5f, -0.5f, 1.0f };
-    vertexData[5].texcoord_ = { 1.0f,1.0f };
+    Sphere sphere(16);
+    float kSubdivisionEvery = 1.0f / 16.0f;
 
+    for(int latIdx = 0; latIdx < 16; ++latIdx){
+        for(int lonIdx = 0; lonIdx < 16; ++lonIdx){
+
+            vertexData[(latIdx * 16 * 6) + (lonIdx * 6)].position_ = sphere.vertexes_[latIdx][lonIdx];
+            vertexData[(latIdx * 16 * 6) + (lonIdx * 6) + 1].position_ = sphere.vertexes_[latIdx][lonIdx + 1];
+            vertexData[(latIdx * 16 * 6) + (lonIdx * 6) + 2].position_ = sphere.vertexes_[latIdx + 1][lonIdx + 1];
+            vertexData[(latIdx * 16 * 6) + (lonIdx * 6) + 3].position_ = sphere.vertexes_[latIdx][lonIdx];
+            vertexData[(latIdx * 16 * 6) + (lonIdx * 6) + 4].position_ = sphere.vertexes_[latIdx + 1][lonIdx + 1];
+            vertexData[(latIdx * 16 * 6) + (lonIdx * 6) + 5].position_ = sphere.vertexes_[latIdx + 1][lonIdx];
+
+            vertexData[(latIdx * 16 * 6) + (lonIdx * 6)].texcoord_ = { kSubdivisionEvery * lonIdx,kSubdivisionEvery * latIdx };
+            vertexData[(latIdx * 16 * 6) + (lonIdx * 6) + 1].texcoord_ = { kSubdivisionEvery * (lonIdx + 1),kSubdivisionEvery * latIdx };
+            vertexData[(latIdx * 16 * 6) + (lonIdx * 6) + 2].texcoord_ = { kSubdivisionEvery * (lonIdx + 1),kSubdivisionEvery * (latIdx + 1) };
+            vertexData[(latIdx * 16 * 6) + (lonIdx * 6) + 3].texcoord_ = { kSubdivisionEvery * lonIdx,kSubdivisionEvery * latIdx };
+            vertexData[(latIdx * 16 * 6) + (lonIdx * 6) + 4].texcoord_ = { kSubdivisionEvery * (lonIdx + 1),kSubdivisionEvery * (latIdx + 1) };
+            vertexData[(latIdx * 16 * 6) + (lonIdx * 6) + 5].texcoord_ = { kSubdivisionEvery * lonIdx,kSubdivisionEvery * (latIdx + 1) };
+        }
+    }
 
     /*-----------------スプライト用----------------*/
 
@@ -768,14 +771,14 @@ int WINAPI WinMain(
 
     MSG msg{};// メッセージを格納する変数
 
-    while (msg.message != WM_QUIT) {
+    while(msg.message != WM_QUIT) {
 
         ImGui_ImplDX12_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
         // ウインドウにメッセージがある場合、優先して処理する
-        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+        if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
 
@@ -900,7 +903,7 @@ int WINAPI WinMain(
 
 
         // 描画! (DrawCall/ ドローコール)。 3頂点で1つのインスタンス。 インスタンスについては今後
-        commandList->DrawInstanced(6, 1, 0, 0);
+        commandList->DrawInstanced(6 * 16 * 16, 1, 0, 0);
 
         commandList->IASetVertexBuffers(0, 1, &vertexBufferViewSprite); // VBV
         // wvp用のCBufferの場所を設定
@@ -943,7 +946,7 @@ int WINAPI WinMain(
 
         // Fenceの値が指定したSignal値にたどり着いているか確認する
         // GetCompletedValueの初期値はFence作成時に渡した初期値
-        if (fence->GetCompletedValue() < fenceValue) {
+        if(fence->GetCompletedValue() < fenceValue) {
 
             // 指定したSignalにたどりついていないので、GPUがたどり着くまで待つようにイベントを設定する
             fence->SetEventOnCompletion(fenceValue, fenceEvent);
@@ -990,7 +993,7 @@ int WINAPI WinMain(
     vertexResourceSprite->Release();
     graphicsPipelineState->Release();
     signatureBlob->Release();
-    if (errorBlob) {
+    if(errorBlob) {
         errorBlob->Release();
     }
     rootSignature->Release();
@@ -1019,7 +1022,7 @@ int WINAPI WinMain(
 
     // 解放漏れがないかチェック
     IDXGIDebug1* debug;
-    if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
+    if(SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
         debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
         debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
         debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
@@ -1035,11 +1038,11 @@ int WINAPI WinMain(
 LRESULT CALLBACK WindowProc(
     HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
-    if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam)) {
+    if(ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam)) {
         return true;
     }
 
-    switch (uMsg) {
+    switch(uMsg) {
     case WM_DESTROY:
         PostQuitMessage(0);
         return 0;

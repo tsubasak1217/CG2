@@ -37,6 +37,9 @@
     <Filter Include="resources\textures">
       <UniqueIdentifier>{717565f8-a467-4997-a4b9-021c9fec4476}</UniqueIdentifier>
     </Filter>
+    <Filter Include="math\shapes">
+      <UniqueIdentifier>{74ffae1b-3cbd-4e90-9989-65bc54c7551a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -68,6 +71,9 @@
     </ClCompile>
     <ClCompile Include="external\imgui\imgui_widgets.cpp">
       <Filter>external\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="math\shapes\sphere.cpp">
+      <Filter>math\shapes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -118,6 +124,9 @@
     </ClInclude>
     <ClInclude Include="external\imgui\imstb_truetype.h">
       <Filter>external\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="math\shapes\sphere.h">
+      <Filter>math\shapes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
