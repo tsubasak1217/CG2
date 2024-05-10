@@ -312,6 +312,21 @@ ID3D12Resource* UploadTextureData(
     return intermediateResource;
 }
 
+// ディスクリプタのハンドルを取得する関数
+D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index)
+{
+    D3D12_CPU_DESCRIPTOR_HANDLE descriptorHandle = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+    descriptorHandle.ptr += (descriptorSize * index);
+    return descriptorHandle;
+}
+
+D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descriptorHeap, uint32_t descriptorSize, uint32_t index)
+{
+    D3D12_GPU_DESCRIPTOR_HANDLE descriptorHandle = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
+    descriptorHandle.ptr += (descriptorSize * index);
+    return descriptorHandle;
+}
+
 
 
 //void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages) {
