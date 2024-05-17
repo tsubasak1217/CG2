@@ -40,8 +40,9 @@ Matrix4x4 Devide(const Matrix4x4& matrix, float devideNum);
 
 // 同時座標系からデカルト座標系に変換する関数
 Vector2 Transform(const Vector2& vector, const Matrix3x3& matrix);
+namespace temp{
 Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix);
-
+}
 // 単位行列を返す関数
 Matrix2x2 IdentityMat2();
 Matrix3x3 IdentityMat3();

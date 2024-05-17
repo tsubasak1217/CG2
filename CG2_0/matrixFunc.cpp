@@ -254,23 +254,24 @@ Vector2 Transform(const Vector2& vector, const Matrix3x3& matrix) {
 
     return result;
 }
+namespace temp {
+    Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix) {
+        Vector3 result;
+        float w;
 
-Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix) {
-    Vector3 result;
-    float w;
+        result.x = vector.x * matrix.m[0][0] + vector.y * matrix.m[1][0] + vector.z * matrix.m[2][0] + matrix.m[3][0];
+        result.y = vector.x * matrix.m[0][1] + vector.y * matrix.m[1][1] + vector.z * matrix.m[2][1] + matrix.m[3][1];
+        result.z = vector.x * matrix.m[0][2] + vector.y * matrix.m[1][2] + vector.z * matrix.m[2][2] + matrix.m[3][2];
+        w = vector.x * matrix.m[0][3] + vector.y * matrix.m[1][3] + vector.z * matrix.m[2][3] + matrix.m[3][3];
 
-    result.x = vector.x * matrix.m[0][0] + vector.y * matrix.m[1][0] + vector.z * matrix.m[2][0] + matrix.m[3][0];
-    result.y = vector.x * matrix.m[0][1] + vector.y * matrix.m[1][1] + vector.z * matrix.m[2][1] + matrix.m[3][1];
-    result.z = vector.x * matrix.m[0][2] + vector.y * matrix.m[1][2] + vector.z * matrix.m[2][2] + matrix.m[3][2];
-    w = vector.x * matrix.m[0][3] + vector.y * matrix.m[1][3] + vector.z * matrix.m[2][3] + matrix.m[3][3];
+        assert(w != 0);
 
-    assert(w != 0);
+        result.x /= w;
+        result.y /= w;
+        result.z /= w;
 
-    result.x /= w;
-    result.y /= w;
-    result.z /= w;
-
-    return result;
+        return result;
+    }
 }
 
 // 単位行列を返す関数
