@@ -2,6 +2,7 @@
 #include <string>
 #include <format>
 #include <cassert>
+#include <stdint.h>
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <dxgidebug.h>

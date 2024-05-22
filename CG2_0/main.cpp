@@ -310,7 +310,7 @@ int WINAPI WinMain(
     );
 
     // ディスクリプタのサイズ
-    const uint32_t descriptorSizeSRV = 
+    const uint32_t descriptorSizeSRV =
         device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
     const uint32_t descriptorSizeRTV =
         device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
@@ -556,8 +556,10 @@ int WINAPI WinMain(
     /*------------------------------ VertexResourceの作成 -------------------------------*/
 
     const int subdivision = 16;
-    ID3D12Resource* vertexResource = CreateBufferResource(device, sizeof(VertexData) * 6 * subdivision * subdivision);
+    ID3D12Resource* vertexResource = CreateBufferResource(device, sizeof(VertexData) * (subdivision + 1) * (subdivision + 1));
+    ID3D12Resource* indexResource = CreateBufferResource(device, sizeof(uint32_t) * 6 * subdivision * subdivision);
     ID3D12Resource* vertexResourceSprite = CreateBufferResource(device, sizeof(VertexData) * 6);
+    ID3D12Resource* indexResourceSprite = CreateBufferResource(device, sizeof(uint32_t) * 6);
 
     /*---------------------- TransformationMatrix用Resourceの作成 -----------------------*/
 
@@ -635,11 +637,24 @@ int WINAPI WinMain(
     ID3D12Resource* lightingResource = CreateBufferResource(device, sizeof(DirectionalLight));
     DirectionalLight* directionalLight = nullptr;
     lightingResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLight));
-   
+
     directionalLight->color_ = { 1.0f,1.0f,1.0f,1.0f };
     directionalLight->direction_ = { 0.0f,0.0f,1.0f };
     directionalLight->intensity = 1.0f;
 
+    /*-------------------------------- IndexBufferViewの作成 ----------------------------------*/
+
+    // sphere
+    D3D12_INDEX_BUFFER_VIEW indexBufferView{};
+    indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress();
+    indexBufferView.SizeInBytes = sizeof(uint32_t) * 6 * subdivision * subdivision;
+    indexBufferView.Format = DXGI_FORMAT_R32_UINT;
+
+    // sprite用
+    D3D12_INDEX_BUFFER_VIEW indexBufferViewSprite{};
+    indexBufferViewSprite.BufferLocation = indexResourceSprite->GetGPUVirtualAddress();
+    indexBufferViewSprite.SizeInBytes = sizeof(uint32_t) * 6;
+    indexBufferViewSprite.Format = DXGI_FORMAT_R32_UINT;
 
     /*-------------------------------- Texture用SRVの作成 ----------------------------------*/
 
@@ -657,11 +672,11 @@ int WINAPI WinMain(
     srvDesc2.Texture2D.MipLevels = UINT(metadata2.mipLevels);
 
     // SRVを作成するDescriptor Heapの場所を決める
-    D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU = GetCPUDescriptorHandle(srvDescriptorHeap,descriptorSizeSRV,1);
-    D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = GetGPUDescriptorHandle(srvDescriptorHeap,descriptorSizeSRV,1);
+    D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU = GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 1);
+    D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 1);
 
-    D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU2 = GetCPUDescriptorHandle(srvDescriptorHeap,descriptorSizeSRV,2);
-    D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU2 = GetGPUDescriptorHandle(srvDescriptorHeap,descriptorSizeSRV,2);
+    D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU2 = GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 2);
+    D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU2 = GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 2);
 
     // 先頭はImGuiが使っているのでその次を使う
     //textureSrvHandleCPU.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -670,7 +685,7 @@ int WINAPI WinMain(
     device->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU);
     device->CreateShaderResourceView(textureResource2, &srvDesc2, textureSrvHandleCPU2);
 
-    
+
     /*------------------------------ DepthStencilViewの作成 -------------------------------*/
 
     // DSV用のヒ－プはヒープタイプが違うので別途作る
@@ -693,6 +708,11 @@ int WINAPI WinMain(
 
     /*----------------------------- 頂点リソースにデータを書き込む ----------------------------*/
 
+    //indexデータ
+    uint32_t* indexData = nullptr;
+    // 書き込むためのアドレスを取得
+    indexResource->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
+
     //頂点リソースにデータを書き込む
     VertexData* vertexData = nullptr;
     // 書き込むためのアドレスを取得
@@ -700,26 +720,37 @@ int WINAPI WinMain(
 
     Sphere sphere(subdivision);
     float kSubdivisionEvery = 1.0f / subdivision;
+    int num = 0;
+    for(int latIdx = 0; latIdx <= subdivision; ++latIdx){
+        for(int lonIdx = 0; lonIdx <= subdivision; ++lonIdx){
+
+            
+            vertexData[(latIdx * (subdivision + 1)) + lonIdx].position_ = sphere.vertexes_[latIdx][lonIdx];
+            vertexData[(latIdx * (subdivision + 1)) + lonIdx].texcoord_ = { kSubdivisionEvery * lonIdx,kSubdivisionEvery * latIdx };
+        }
+    }
 
     for(int latIdx = 0; latIdx < subdivision; ++latIdx){
         for(int lonIdx = 0; lonIdx < subdivision; ++lonIdx){
 
-            vertexData[(latIdx * subdivision * 6) + (lonIdx * 6)].position_ = sphere.vertexes_[latIdx][lonIdx];
-            vertexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 1].position_ = sphere.vertexes_[latIdx][lonIdx + 1];
-            vertexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 2].position_ = sphere.vertexes_[latIdx + 1][lonIdx + 1];
-            vertexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 3].position_ = sphere.vertexes_[latIdx][lonIdx];
-            vertexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 4].position_ = sphere.vertexes_[latIdx + 1][lonIdx + 1];
-            vertexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 5].position_ = sphere.vertexes_[latIdx + 1][lonIdx];
+            num = (latIdx * subdivision * 6) + (lonIdx * 6);
+            indexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 0] = (latIdx * (subdivision + 1)) + lonIdx;
+            indexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 1] = (latIdx * (subdivision + 1)) + (lonIdx + 1);
+            indexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 2] = ((latIdx + 1) * (subdivision + 1)) + (lonIdx + 1);
+            indexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 3] = (latIdx * (subdivision + 1)) + (lonIdx);
+            indexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 4] = ((latIdx + 1) * (subdivision + 1)) + (lonIdx + 1);
+            indexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 5] = ((latIdx + 1) * (subdivision + 1)) + (lonIdx);
 
-            vertexData[(latIdx * subdivision * 6) + (lonIdx * 6)].texcoord_ = { kSubdivisionEvery * lonIdx,kSubdivisionEvery * latIdx };
-            vertexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 1].texcoord_ = { kSubdivisionEvery * (lonIdx + 1),kSubdivisionEvery * latIdx };
-            vertexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 2].texcoord_ = { kSubdivisionEvery * (lonIdx + 1),kSubdivisionEvery * (latIdx + 1) };
-            vertexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 3].texcoord_ = { kSubdivisionEvery * lonIdx,kSubdivisionEvery * latIdx };
-            vertexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 4].texcoord_ = { kSubdivisionEvery * (lonIdx + 1),kSubdivisionEvery * (latIdx + 1) };
-            vertexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 5].texcoord_ = { kSubdivisionEvery * lonIdx,kSubdivisionEvery * (latIdx + 1) };
-       
+            //vertexData[(latIdx * subdivision * 6) + (lonIdx * 6)].texcoord_ = { kSubdivisionEvery * lonIdx,kSubdivisionEvery * latIdx };
+            //vertexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 1].texcoord_ = { kSubdivisionEvery * (lonIdx + 1),kSubdivisionEvery * latIdx };
+            //vertexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 2].texcoord_ = { kSubdivisionEvery * (lonIdx + 1),kSubdivisionEvery * (latIdx + 1) };
+            //vertexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 3].texcoord_ = { kSubdivisionEvery * lonIdx,kSubdivisionEvery * latIdx };
+            //vertexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 4].texcoord_ = { kSubdivisionEvery * (lonIdx + 1),kSubdivisionEvery * (latIdx + 1) };
+            //vertexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 5].texcoord_ = { kSubdivisionEvery * lonIdx,kSubdivisionEvery * (latIdx + 1) };
+
         }
     }
+
     for(int i = 0; i < subdivision * subdivision * 6; ++i){
 
         // 法線の定義
@@ -728,34 +759,40 @@ int WINAPI WinMain(
         vertexData[i].normal_.z = vertexData[i].position_.z;
     }
 
+
     /*-----------------スプライト用----------------*/
 
      //頂点リソースにデータを書き込む
+    uint32_t* indexDataSprite = nullptr;
+    // 書き込むためのアドレスを取得
+    indexResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&indexDataSprite));
+
+    indexDataSprite[0] = 0;
+    indexDataSprite[1] = 1;
+    indexDataSprite[2] = 3;
+    indexDataSprite[3] = 0;
+    indexDataSprite[4] = 3;
+    indexDataSprite[5] = 2;
+
+    //頂点リソースにデータを書き込む
     VertexData* vertexDataSprite = nullptr;
     // 書き込むためのアドレスを取得
     vertexResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataSprite));
-    // 左下
-    vertexDataSprite[0].position_ = { 0.0f, 360.0f, 0.0f, 1.0f };
-    vertexDataSprite[0].texcoord_ = { 0.0f,1.0f };
     // 左上
-    vertexDataSprite[1].position_ = { 0.0f, 0.0f, 0.0f, 1.0f };
-    vertexDataSprite[1].texcoord_ = { 0.0f,0.0f };
-    // 右下
-    vertexDataSprite[2].position_ = { 640.0f, 360.0f, 0.0f, 1.0f };
-    vertexDataSprite[2].texcoord_ = { 1.0f,1.0f };
-
-    // 左上
-    vertexDataSprite[3].position_ = { 0.0f, 0.0f, 0.0f, 1.0f };
-    vertexDataSprite[3].texcoord_ = { 0.0f,0.0f };
+    vertexDataSprite[0].position_ = { 0.0f, 0.0f, 0.0f, 1.0f };
+    vertexDataSprite[0].texcoord_ = { 0.0f,0.0f };
     // 右上
-    vertexDataSprite[4].position_ = { 640.0f, 0.0f, 0.0f, 1.0f };
-    vertexDataSprite[4].texcoord_ = { 1.0f,0.0f };
+    vertexDataSprite[1].position_ = { 640.0f, 0.0f, 0.0f, 1.0f };
+    vertexDataSprite[1].texcoord_ = { 1.0f,0.0f };
+    // 左下
+    vertexDataSprite[2].position_ = { 0.0f, 360.0f, 0.0f, 1.0f };
+    vertexDataSprite[2].texcoord_ = { 0.0f,1.0f };
     // 右下
-    vertexDataSprite[5].position_ = { 640.0f, 360.0f, 0.0f, 1.0f };
-    vertexDataSprite[5].texcoord_ = { 1.0f,1.0f };
+    vertexDataSprite[3].position_ = { 640.0f, 360.0f, 0.0f, 1.0f };
+    vertexDataSprite[3].texcoord_ = { 1.0f,1.0f };
 
     // 法線の定義
-    for(int i = 0; i < 6; i++){
+    for(int i = 0; i < 4; i++){
         vertexDataSprite[i].normal_ = { 0.0f,0.0f,-1.0f };
     }
 
@@ -768,8 +805,8 @@ int WINAPI WinMain(
     vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
     vertexBufferViewSprite.BufferLocation = vertexResourceSprite->GetGPUVirtualAddress();
     // 使用するリソースのサイズは頂点3つ分のサイズ
-    vertexBufferView.SizeInBytes = sizeof(VertexData) * 6 * subdivision * subdivision;
-    vertexBufferViewSprite.SizeInBytes = sizeof(VertexData) * 6;
+    vertexBufferView.SizeInBytes = sizeof(VertexData) * (subdivision + 1) * (subdivision + 1);
+    vertexBufferViewSprite.SizeInBytes = sizeof(VertexData) * 4;
     // 1頂点あたりのサイズ
     vertexBufferView.StrideInBytes = sizeof(VertexData);
     vertexBufferViewSprite.StrideInBytes = sizeof(VertexData);
@@ -902,7 +939,7 @@ int WINAPI WinMain(
         ImGui::End();
 
         ImGui::Begin("Light");
-        Vector3 rotate = {0,0,0};
+        Vector3 rotate = { 0,0,0 };
         if(ImGui::DragFloat3("direction", &rotate.x)){
             directionalLight->direction_ = temp::Transform(directionalLight->direction_, RotateMatrix(rotate));
         }
@@ -1019,6 +1056,7 @@ int WINAPI WinMain(
         ImGui::ShowDemoWindow();
 
         commandList->IASetVertexBuffers(0, 1, &vertexBufferView); // VBV
+        commandList->IASetIndexBuffer(&indexBufferView);
         // 形状を設定。 PSOに設定しているものとはまた別。 同じものを設定すると考えておけば良い
         commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         // マテリアルCBufferの設定
@@ -1027,7 +1065,7 @@ int WINAPI WinMain(
         ImGui::Begin("monsterBall");
         ImGui::Checkbox("useMonsterBall", &useMonsterBall);
         ImGui::End();
-        commandList->SetGraphicsRootDescriptorTable(2, useMonsterBall? textureSrvHandleGPU2 : textureSrvHandleGPU);
+        commandList->SetGraphicsRootDescriptorTable(2, useMonsterBall ? textureSrvHandleGPU2 : textureSrvHandleGPU);
         // wvp用のCBufferの場所を設定
         commandList->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
         commandList->SetGraphicsRootConstantBufferView(3, lightingResource->GetGPUVirtualAddress());
@@ -1037,16 +1075,17 @@ int WINAPI WinMain(
 
 
         // 描画! (DrawCall/ ドローコール)。 3頂点で1つのインスタンス。 インスタンスについては今後
-        commandList->DrawInstanced(6 * subdivision * subdivision, 1, 0, 0);
+        commandList->DrawIndexedInstanced(6 * subdivision * subdivision, 1, 0, 0, 0);
 
-        
+
         // Sprite用
         commandList->IASetVertexBuffers(0, 1, &vertexBufferViewSprite);
+        commandList->IASetIndexBuffer(&indexBufferViewSprite);
         commandList->SetGraphicsRootConstantBufferView(0, materialResourceSprite->GetGPUVirtualAddress());
         commandList->SetGraphicsRootConstantBufferView(1, wvpResourceSprite->GetGPUVirtualAddress());
         commandList->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
         commandList->SetGraphicsRootConstantBufferView(3, lightingResource->GetGPUVirtualAddress());
-        commandList->DrawInstanced(6, 1, 0, 0);
+       // commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
         // ImGuiの描画
         ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
@@ -1133,6 +1172,8 @@ int WINAPI WinMain(
     wvpResourceSprite->Release();
     vertexResource->Release();
     vertexResourceSprite->Release();
+    indexResourceSprite->Release();
+    indexResource->Release();
     graphicsPipelineState->Release();
     signatureBlob->Release();
     if(errorBlob) {
