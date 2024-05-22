@@ -923,7 +923,7 @@ int WINAPI WinMain(
         /*---------------------- 三角形の回転 -----------------------*/
 
         // 変数の更新
-        //transform.rotate_.y += 0.03f;
+        transform.rotate_.y += 0.03f;
 
         /*---------------------- 行列の再計算 -----------------------*/
 
@@ -1044,7 +1044,7 @@ int WINAPI WinMain(
         commandList->IASetVertexBuffers(0, 1, &vertexBufferViewSprite);
         commandList->SetGraphicsRootConstantBufferView(0, materialResourceSprite->GetGPUVirtualAddress());
         commandList->SetGraphicsRootConstantBufferView(1, wvpResourceSprite->GetGPUVirtualAddress());
-        commandList->SetGraphicsRootDescriptorTable(2, useMonsterBall ? textureSrvHandleGPU2 : textureSrvHandleGPU);
+        commandList->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
         commandList->SetGraphicsRootConstantBufferView(3, lightingResource->GetGPUVirtualAddress());
         commandList->DrawInstanced(6, 1, 0, 0);
 
