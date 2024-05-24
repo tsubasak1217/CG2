@@ -53,7 +53,7 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)math\tensor\;$(ProjectDir)math\myFunc\;$(ProjectDir)external\;$(ProjectDir)external\imgui\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex;$(ProjectDir)math\shapes\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)lib\tensor\;$(ProjectDir)lib\math\myFunc\;$(ProjectDir)external\;$(ProjectDir)external\imgui\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex;$(ProjectDir)lib\shapes\;ProjectDir)resources\models\;ProjectDir)resources\textures\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -78,7 +78,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)math\tensor\;$(ProjectDir)math\myFunc\;$(ProjectDir)external\;$(ProjectDir)external\imgui\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex;$(ProjectDir)math\shapes\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)lib\tensor\;$(ProjectDir)lib\math\myFunc\;$(ProjectDir)external\;$(ProjectDir)external\imgui\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex;$(ProjectDir)lib\shapes\;ProjectDir)resources\models\;ProjectDir)resources\textures\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -101,10 +101,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="external\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="external\imgui\imgui_tables.cpp" />
     <ClCompile Include="external\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="lib\math\myFunc\matrixFunc.cpp" />
+    <ClCompile Include="lib\math\myFunc\myFunc.cpp" />
+    <ClCompile Include="lib\shapes\sphere.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="math\shapes\sphere.cpp" />
-    <ClCompile Include="matrixFunc.cpp" />
-    <ClCompile Include="myFunc.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="external\imgui\imconfig.h" />
@@ -115,15 +115,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="external\imgui\imstb_rectpack.h" />
     <ClInclude Include="external\imgui\imstb_textedit.h" />
     <ClInclude Include="external\imgui\imstb_truetype.h" />
-    <ClInclude Include="math\shapes\sphere.h" />
-    <ClInclude Include="math\tensor\Matrix2x2.h" />
-    <ClInclude Include="math\tensor\Matrix3x3.h" />
-    <ClInclude Include="math\tensor\Matrix4x4.h" />
-    <ClInclude Include="math\tensor\Vector2.h" />
-    <ClInclude Include="math\tensor\Vector3.h" />
-    <ClInclude Include="matrixFunc.h" />
-    <ClInclude Include="myFunc.h" />
-    <ClInclude Include="Vector4.h" />
+    <ClInclude Include="lib\math\myFunc\matrixFunc.h" />
+    <ClInclude Include="lib\math\myFunc\myFunc.h" />
+    <ClInclude Include="lib\shapes\sphere.h" />
+    <ClInclude Include="lib\tensor\Matrix2x2.h" />
+    <ClInclude Include="lib\tensor\Matrix3x3.h" />
+    <ClInclude Include="lib\tensor\Matrix4x4.h" />
+    <ClInclude Include="lib\tensor\Vector2.h" />
+    <ClInclude Include="lib\tensor\Vector3.h" />
+    <ClInclude Include="lib\tensor\Vector4.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.PS.hlsl">

@@ -47,6 +47,8 @@ int WINAPI WinMain(
     struct Material{
         Vector4 color_;
         int enableLighting_;
+        float padding_[3];
+        Matrix4x4 uvTransform_;
     };
 
     struct DirectionalLight{
@@ -705,6 +707,25 @@ int WINAPI WinMain(
         dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart()
     );
 
+    /*----------------------------------UVTransformの設定----------------------------------*/
+
+    materialData->uvTransform_ = IdentityMat4();
+    materialDataSprite->uvTransform_ = IdentityMat4();
+
+    Transform uvTransformSprite;
+    uvTransformSprite.scale_ = { 1.0f,1.0f,1.0f };
+    uvTransformSprite.rotate_ = { 0.0f,0.0f,0.0f };
+    uvTransformSprite.translate_ = { 0.0f,0.0f,0.0f };
+
+    // uvTransformを行う行列
+    uvTransformSprite.world_ = AffineMatrix(
+        uvTransformSprite.scale_, 
+        uvTransformSprite.rotate_, 
+        uvTransformSprite.translate_
+    );
+
+    // 行列を代入
+    materialDataSprite->uvTransform_ = uvTransformSprite.world_;
 
     /*----------------------------- 頂点リソースにデータを書き込む ----------------------------*/
 
@@ -955,6 +976,12 @@ int WINAPI WinMain(
         ImGui::DragFloat3("translate", &transformSprite.translate_.x, 1.0f);
         ImGui::End();
 
+        ImGui::Begin("uvTransform_Sprite");
+        ImGui::DragFloat2("scale", &uvTransformSprite.scale_.x, 0.025f);
+        ImGui::SliderAngle("rotate", &uvTransformSprite.rotate_.z);
+        ImGui::DragFloat2("translate", &uvTransformSprite.translate_.x);
+        ImGui::End();
+
         // ゲームの処理
 
         /*---------------------- 三角形の回転 -----------------------*/
@@ -1003,6 +1030,15 @@ int WINAPI WinMain(
         // 掛け合わせてWVP行列の完成
         wvpMatrixSprite = Multiply(worldMatrixSprite, Multiply(viewMatrixSprite, projectionMatrixSprite));
 
+        // uvTransformを行う行列
+        uvTransformSprite.world_ = AffineMatrix(
+            uvTransformSprite.scale_,
+            uvTransformSprite.rotate_,
+            uvTransformSprite.translate_
+        );
+
+        // 行列を代入
+        materialDataSprite->uvTransform_ = uvTransformSprite.world_;
 
         /*---------------------- 行列を書き込む -----------------------*/
         wvpData->WVP_ = wvpMatrix;
@@ -1085,7 +1121,7 @@ int WINAPI WinMain(
         commandList->SetGraphicsRootConstantBufferView(1, wvpResourceSprite->GetGPUVirtualAddress());
         commandList->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
         commandList->SetGraphicsRootConstantBufferView(3, lightingResource->GetGPUVirtualAddress());
-       // commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+        commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
         // ImGuiの描画
         ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);

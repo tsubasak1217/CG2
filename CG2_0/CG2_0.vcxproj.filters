@@ -13,15 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="math">
-      <UniqueIdentifier>{7b477ce5-b604-4e96-b38d-24e2d379bcf0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="math\myFunc">
-      <UniqueIdentifier>{96a31085-481c-4209-99c1-44c680f16de7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="math\tensor">
-      <UniqueIdentifier>{6a0a6c9f-120a-4aff-a000-81856815ed71}</UniqueIdentifier>
-    </Filter>
     <Filter Include="external">
       <UniqueIdentifier>{4cdf9d26-762a-4d9c-837c-121e7769fc55}</UniqueIdentifier>
     </Filter>
@@ -37,19 +28,28 @@
     <Filter Include="resources\textures">
       <UniqueIdentifier>{717565f8-a467-4997-a4b9-021c9fec4476}</UniqueIdentifier>
     </Filter>
-    <Filter Include="math\shapes">
+    <Filter Include="resources\models">
+      <UniqueIdentifier>{10066a33-9237-4aec-b54e-aeec016a8de5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lib">
+      <UniqueIdentifier>{7b477ce5-b604-4e96-b38d-24e2d379bcf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lib\tensor">
+      <UniqueIdentifier>{6a0a6c9f-120a-4aff-a000-81856815ed71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lib\shapes">
       <UniqueIdentifier>{74ffae1b-3cbd-4e90-9989-65bc54c7551a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lib\math">
+      <UniqueIdentifier>{e009fd37-28ae-4765-845e-24387f0e520e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lib\math\myFunc">
+      <UniqueIdentifier>{96a31085-481c-4209-99c1-44c680f16de7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="myFunc.cpp">
-      <Filter>math\myFunc</Filter>
-    </ClCompile>
-    <ClCompile Include="matrixFunc.cpp">
-      <Filter>math\myFunc</Filter>
     </ClCompile>
     <ClCompile Include="external\imgui\imgui.cpp">
       <Filter>external\imgui</Filter>
@@ -72,35 +72,17 @@
     <ClCompile Include="external\imgui\imgui_widgets.cpp">
       <Filter>external\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="math\shapes\sphere.cpp">
-      <Filter>math\shapes</Filter>
+    <ClCompile Include="lib\math\myFunc\matrixFunc.cpp">
+      <Filter>lib\math\myFunc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\math\myFunc\myFunc.cpp">
+      <Filter>lib\math\myFunc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\shapes\sphere.cpp">
+      <Filter>lib\shapes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="myFunc.h">
-      <Filter>math\myFunc</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector4.h">
-      <Filter>math\tensor</Filter>
-    </ClInclude>
-    <ClInclude Include="math\tensor\Matrix4x4.h">
-      <Filter>math\tensor</Filter>
-    </ClInclude>
-    <ClInclude Include="math\tensor\Matrix2x2.h">
-      <Filter>math\tensor</Filter>
-    </ClInclude>
-    <ClInclude Include="math\tensor\Matrix3x3.h">
-      <Filter>math\tensor</Filter>
-    </ClInclude>
-    <ClInclude Include="math\tensor\Vector2.h">
-      <Filter>math\tensor</Filter>
-    </ClInclude>
-    <ClInclude Include="math\tensor\Vector3.h">
-      <Filter>math\tensor</Filter>
-    </ClInclude>
-    <ClInclude Include="matrixFunc.h">
-      <Filter>math\myFunc</Filter>
-    </ClInclude>
     <ClInclude Include="external\imgui\imconfig.h">
       <Filter>external\imgui</Filter>
     </ClInclude>
@@ -125,8 +107,32 @@
     <ClInclude Include="external\imgui\imstb_truetype.h">
       <Filter>external\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="math\shapes\sphere.h">
-      <Filter>math\shapes</Filter>
+    <ClInclude Include="lib\math\myFunc\matrixFunc.h">
+      <Filter>lib\math\myFunc</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\math\myFunc\myFunc.h">
+      <Filter>lib\math\myFunc</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\tensor\Matrix2x2.h">
+      <Filter>lib\tensor</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\tensor\Matrix3x3.h">
+      <Filter>lib\tensor</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\tensor\Matrix4x4.h">
+      <Filter>lib\tensor</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\tensor\Vector2.h">
+      <Filter>lib\tensor</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\tensor\Vector3.h">
+      <Filter>lib\tensor</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\tensor\Vector4.h">
+      <Filter>lib\tensor</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\shapes\sphere.h">
+      <Filter>lib\shapes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
