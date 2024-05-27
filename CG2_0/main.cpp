@@ -3,6 +3,7 @@
 #include "myFunc.h"
 #include "matrixFunc.h"
 #include "sphere.h"
+#include "includes.h"
 
 #include "imgui.h"
 #include "imgui_impl_dx12.h"
@@ -23,39 +24,6 @@ int WINAPI WinMain(
 
     // COMの初期化
     CoInitializeEx(0, COINIT_MULTITHREADED);
-
-    struct Transform {
-        Vector3 scale_;
-        Vector3 rotate_;
-        Vector3 translate_;
-
-        Matrix4x4 WVP_;
-        Matrix4x4 world_;
-    };
-
-    struct TransformMatrix {
-        Matrix4x4 WVP_;
-        Matrix4x4 world_;
-    };
-
-    struct VertexData {
-        Vector4 position_;
-        Vector2 texcoord_;
-        Vector3 normal_;
-    };
-
-    struct Material{
-        Vector4 color_;
-        int enableLighting_;
-        float padding_[3];
-        Matrix4x4 uvTransform_;
-    };
-
-    struct DirectionalLight{
-        Vector4 color_;
-        Vector3 direction_;
-        float intensity;
-    };
 
     /*===========================================================================================*/
     /*                                   ウインドウの初期化                                         */
@@ -761,14 +729,6 @@ int WINAPI WinMain(
             indexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 3] = (latIdx * (subdivision + 1)) + (lonIdx);
             indexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 4] = ((latIdx + 1) * (subdivision + 1)) + (lonIdx + 1);
             indexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 5] = ((latIdx + 1) * (subdivision + 1)) + (lonIdx);
-
-            //vertexData[(latIdx * subdivision * 6) + (lonIdx * 6)].texcoord_ = { kSubdivisionEvery * lonIdx,kSubdivisionEvery * latIdx };
-            //vertexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 1].texcoord_ = { kSubdivisionEvery * (lonIdx + 1),kSubdivisionEvery * latIdx };
-            //vertexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 2].texcoord_ = { kSubdivisionEvery * (lonIdx + 1),kSubdivisionEvery * (latIdx + 1) };
-            //vertexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 3].texcoord_ = { kSubdivisionEvery * lonIdx,kSubdivisionEvery * latIdx };
-            //vertexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 4].texcoord_ = { kSubdivisionEvery * (lonIdx + 1),kSubdivisionEvery * (latIdx + 1) };
-            //vertexData[(latIdx * subdivision * 6) + (lonIdx * 6) + 5].texcoord_ = { kSubdivisionEvery * lonIdx,kSubdivisionEvery * (latIdx + 1) };
-
         }
     }
 
@@ -962,7 +922,7 @@ int WINAPI WinMain(
         ImGui::Begin("Light");
         Vector3 rotate = { 0,0,0 };
         if(ImGui::DragFloat3("direction", &rotate.x)){
-            directionalLight->direction_ = temp::Transform(directionalLight->direction_, RotateMatrix(rotate));
+            directionalLight->direction_ = TransformDescartes(directionalLight->direction_, RotateMatrix(rotate));
         }
         ImGui::Text("%0.3f,%0.3f,%0.3f", directionalLight->direction_.x, directionalLight->direction_.y, directionalLight->direction_.z);
         if(ImGui::Button("Reset")){

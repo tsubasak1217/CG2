@@ -53,7 +53,7 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)lib\tensor\;$(ProjectDir)lib\math\myFunc\;$(ProjectDir)external\;$(ProjectDir)external\imgui\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex;$(ProjectDir)lib\shapes\;ProjectDir)resources\models\;ProjectDir)resources\textures\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)lib\tensor\;$(ProjectDir)lib\math\myFunc\;$(ProjectDir)external\;$(ProjectDir)external\imgui\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex;$(ProjectDir)lib\shapes\;ProjectDir)resources\models\;ProjectDir)resources\textures\;$(ProjectDir)lib\structs\;$(ProjectDir)lib\includes\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -78,7 +78,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)lib\tensor\;$(ProjectDir)lib\math\myFunc\;$(ProjectDir)external\;$(ProjectDir)external\imgui\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex;$(ProjectDir)lib\shapes\;ProjectDir)resources\models\;ProjectDir)resources\textures\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)lib\tensor\;$(ProjectDir)lib\math\myFunc\;$(ProjectDir)external\;$(ProjectDir)external\imgui\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex;$(ProjectDir)lib\shapes\;ProjectDir)resources\models\;ProjectDir)resources\textures\;$(ProjectDir)lib\structs\;$(ProjectDir)lib\includes\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -115,9 +115,19 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="external\imgui\imstb_rectpack.h" />
     <ClInclude Include="external\imgui\imstb_textedit.h" />
     <ClInclude Include="external\imgui\imstb_truetype.h" />
+    <ClInclude Include="lib\includes\includes.h" />
+    <ClInclude Include="lib\includes\include_matrixes.h" />
+    <ClInclude Include="lib\includes\include_shapes.h" />
+    <ClInclude Include="lib\includes\include_tensors.h" />
+    <ClInclude Include="lib\includes\include_vectors.h" />
     <ClInclude Include="lib\math\myFunc\matrixFunc.h" />
     <ClInclude Include="lib\math\myFunc\myFunc.h" />
     <ClInclude Include="lib\shapes\sphere.h" />
+    <ClInclude Include="lib\structs\DirectionalLight.h" />
+    <ClInclude Include="lib\structs\Material.h" />
+    <ClInclude Include="lib\structs\modelData.h" />
+    <ClInclude Include="lib\structs\Transform.h" />
+    <ClInclude Include="lib\structs\VertexData.h" />
     <ClInclude Include="lib\tensor\Matrix2x2.h" />
     <ClInclude Include="lib\tensor\Matrix3x3.h" />
     <ClInclude Include="lib\tensor\Matrix4x4.h" />

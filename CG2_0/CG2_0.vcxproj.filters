@@ -46,6 +46,12 @@
     <Filter Include="lib\math\myFunc">
       <UniqueIdentifier>{96a31085-481c-4209-99c1-44c680f16de7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lib\structs">
+      <UniqueIdentifier>{dfb0181f-50e4-40ce-89a8-2dc99677b813}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lib\includes">
+      <UniqueIdentifier>{d6a1d27f-323b-4a84-80a7-1ce73f7769a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -133,6 +139,36 @@
     </ClInclude>
     <ClInclude Include="lib\shapes\sphere.h">
       <Filter>lib\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\structs\modelData.h">
+      <Filter>lib\structs</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\structs\DirectionalLight.h">
+      <Filter>lib\structs</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\structs\Material.h">
+      <Filter>lib\structs</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\structs\Transform.h">
+      <Filter>lib\structs</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\structs\VertexData.h">
+      <Filter>lib\structs</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\includes\includes.h">
+      <Filter>lib\includes</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\includes\include_vectors.h">
+      <Filter>lib\includes</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\includes\include_tensors.h">
+      <Filter>lib\includes</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\includes\include_shapes.h">
+      <Filter>lib\includes</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\includes\include_matrixes.h">
+      <Filter>lib\includes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
