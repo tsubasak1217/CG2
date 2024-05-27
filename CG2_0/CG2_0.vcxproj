@@ -94,46 +94,46 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="external\imgui\imgui.cpp" />
-    <ClCompile Include="external\imgui\imgui_demo.cpp" />
-    <ClCompile Include="external\imgui\imgui_draw.cpp" />
-    <ClCompile Include="external\imgui\imgui_impl_dx12.cpp" />
-    <ClCompile Include="external\imgui\imgui_impl_win32.cpp" />
-    <ClCompile Include="external\imgui\imgui_tables.cpp" />
-    <ClCompile Include="external\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="lib\math\myFunc\matrixFunc.cpp" />
-    <ClCompile Include="lib\math\myFunc\myFunc.cpp" />
-    <ClCompile Include="lib\shapes\sphere.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="SEED\external\imgui\imgui.cpp" />
+    <ClCompile Include="SEED\external\imgui\imgui_demo.cpp" />
+    <ClCompile Include="SEED\external\imgui\imgui_draw.cpp" />
+    <ClCompile Include="SEED\external\imgui\imgui_impl_dx12.cpp" />
+    <ClCompile Include="SEED\external\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="SEED\external\imgui\imgui_tables.cpp" />
+    <ClCompile Include="SEED\external\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="SEED\lib\math\myFunc\matrixFunc.cpp" />
+    <ClCompile Include="SEED\lib\math\myFunc\myFunc.cpp" />
+    <ClCompile Include="SEED\lib\shapes\sphere.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="external\imgui\imconfig.h" />
-    <ClInclude Include="external\imgui\imgui.h" />
-    <ClInclude Include="external\imgui\imgui_impl_dx12.h" />
-    <ClInclude Include="external\imgui\imgui_impl_win32.h" />
-    <ClInclude Include="external\imgui\imgui_internal.h" />
-    <ClInclude Include="external\imgui\imstb_rectpack.h" />
-    <ClInclude Include="external\imgui\imstb_textedit.h" />
-    <ClInclude Include="external\imgui\imstb_truetype.h" />
-    <ClInclude Include="lib\includes\includes.h" />
-    <ClInclude Include="lib\includes\include_matrixes.h" />
-    <ClInclude Include="lib\includes\include_shapes.h" />
-    <ClInclude Include="lib\includes\include_tensors.h" />
-    <ClInclude Include="lib\includes\include_vectors.h" />
-    <ClInclude Include="lib\math\myFunc\matrixFunc.h" />
-    <ClInclude Include="lib\math\myFunc\myFunc.h" />
-    <ClInclude Include="lib\shapes\sphere.h" />
-    <ClInclude Include="lib\structs\DirectionalLight.h" />
-    <ClInclude Include="lib\structs\Material.h" />
-    <ClInclude Include="lib\structs\modelData.h" />
-    <ClInclude Include="lib\structs\Transform.h" />
-    <ClInclude Include="lib\structs\VertexData.h" />
-    <ClInclude Include="lib\tensor\Matrix2x2.h" />
-    <ClInclude Include="lib\tensor\Matrix3x3.h" />
-    <ClInclude Include="lib\tensor\Matrix4x4.h" />
-    <ClInclude Include="lib\tensor\Vector2.h" />
-    <ClInclude Include="lib\tensor\Vector3.h" />
-    <ClInclude Include="lib\tensor\Vector4.h" />
+    <ClInclude Include="SEED\external\imgui\imconfig.h" />
+    <ClInclude Include="SEED\external\imgui\imgui.h" />
+    <ClInclude Include="SEED\external\imgui\imgui_impl_dx12.h" />
+    <ClInclude Include="SEED\external\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="SEED\external\imgui\imgui_internal.h" />
+    <ClInclude Include="SEED\external\imgui\imstb_rectpack.h" />
+    <ClInclude Include="SEED\external\imgui\imstb_textedit.h" />
+    <ClInclude Include="SEED\external\imgui\imstb_truetype.h" />
+    <ClInclude Include="SEED\lib\includes\includes.h" />
+    <ClInclude Include="SEED\lib\includes\include_matrixes.h" />
+    <ClInclude Include="SEED\lib\includes\include_shapes.h" />
+    <ClInclude Include="SEED\lib\includes\include_tensors.h" />
+    <ClInclude Include="SEED\lib\includes\include_vectors.h" />
+    <ClInclude Include="SEED\lib\math\myFunc\matrixFunc.h" />
+    <ClInclude Include="SEED\lib\math\myFunc\myFunc.h" />
+    <ClInclude Include="SEED\lib\shapes\sphere.h" />
+    <ClInclude Include="SEED\lib\structs\DirectionalLight.h" />
+    <ClInclude Include="SEED\lib\structs\Material.h" />
+    <ClInclude Include="SEED\lib\structs\modelData.h" />
+    <ClInclude Include="SEED\lib\structs\Transform.h" />
+    <ClInclude Include="SEED\lib\structs\VertexData.h" />
+    <ClInclude Include="SEED\lib\tensor\Matrix2x2.h" />
+    <ClInclude Include="SEED\lib\tensor\Matrix3x3.h" />
+    <ClInclude Include="SEED\lib\tensor\Matrix4x4.h" />
+    <ClInclude Include="SEED\lib\tensor\Vector2.h" />
+    <ClInclude Include="SEED\lib\tensor\Vector3.h" />
+    <ClInclude Include="SEED\lib\tensor\Vector4.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.PS.hlsl">
@@ -148,15 +148,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="external\imgui\LICENSE.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
       <Project>{371b9fa9-4c90-4ac6-a123-aced756d6c77}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Object3D.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="SEED\external\imgui\LICENSE.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

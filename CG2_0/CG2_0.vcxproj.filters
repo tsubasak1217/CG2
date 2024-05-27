@@ -13,15 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="external">
-      <UniqueIdentifier>{4cdf9d26-762a-4d9c-837c-121e7769fc55}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="external\imgui">
-      <UniqueIdentifier>{00117a55-8320-4748-92f5-3ae1acc6a3ad}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="external\DirectXTex">
-      <UniqueIdentifier>{e0c3b7d0-227d-4b76-ac99-59b41b1e2347}</UniqueIdentifier>
-    </Filter>
     <Filter Include="resources">
       <UniqueIdentifier>{f0d5f36b-c9e2-4434-bca4-8189c4f6846d}</UniqueIdentifier>
     </Filter>
@@ -31,144 +22,156 @@
     <Filter Include="resources\models">
       <UniqueIdentifier>{10066a33-9237-4aec-b54e-aeec016a8de5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="lib">
+    <Filter Include="SEED">
+      <UniqueIdentifier>{ead20b62-9310-4c4b-9676-0bf0aeaf9e90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SEED\lib">
       <UniqueIdentifier>{7b477ce5-b604-4e96-b38d-24e2d379bcf0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="lib\tensor">
+    <Filter Include="SEED\lib\tensor">
       <UniqueIdentifier>{6a0a6c9f-120a-4aff-a000-81856815ed71}</UniqueIdentifier>
     </Filter>
-    <Filter Include="lib\shapes">
+    <Filter Include="SEED\lib\shapes">
       <UniqueIdentifier>{74ffae1b-3cbd-4e90-9989-65bc54c7551a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="lib\math">
+    <Filter Include="SEED\lib\math">
       <UniqueIdentifier>{e009fd37-28ae-4765-845e-24387f0e520e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="lib\math\myFunc">
+    <Filter Include="SEED\lib\math\myFunc">
       <UniqueIdentifier>{96a31085-481c-4209-99c1-44c680f16de7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="lib\structs">
+    <Filter Include="SEED\lib\structs">
       <UniqueIdentifier>{dfb0181f-50e4-40ce-89a8-2dc99677b813}</UniqueIdentifier>
     </Filter>
-    <Filter Include="lib\includes">
+    <Filter Include="SEED\lib\includes">
       <UniqueIdentifier>{d6a1d27f-323b-4a84-80a7-1ce73f7769a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SEED\external">
+      <UniqueIdentifier>{4cdf9d26-762a-4d9c-837c-121e7769fc55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SEED\external\imgui">
+      <UniqueIdentifier>{00117a55-8320-4748-92f5-3ae1acc6a3ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SEED\external\DirectXTex">
+      <UniqueIdentifier>{e0c3b7d0-227d-4b76-ac99-59b41b1e2347}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="external\imgui\imgui.cpp">
-      <Filter>external\imgui</Filter>
+    <ClCompile Include="SEED\lib\math\myFunc\matrixFunc.cpp">
+      <Filter>SEED\lib\math\myFunc</Filter>
     </ClCompile>
-    <ClCompile Include="external\imgui\imgui_demo.cpp">
-      <Filter>external\imgui</Filter>
+    <ClCompile Include="SEED\lib\math\myFunc\myFunc.cpp">
+      <Filter>SEED\lib\math\myFunc</Filter>
     </ClCompile>
-    <ClCompile Include="external\imgui\imgui_draw.cpp">
-      <Filter>external\imgui</Filter>
+    <ClCompile Include="SEED\lib\shapes\sphere.cpp">
+      <Filter>SEED\lib\shapes</Filter>
     </ClCompile>
-    <ClCompile Include="external\imgui\imgui_impl_dx12.cpp">
-      <Filter>external\imgui</Filter>
+    <ClCompile Include="SEED\external\imgui\imgui.cpp">
+      <Filter>SEED\external\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="external\imgui\imgui_impl_win32.cpp">
-      <Filter>external\imgui</Filter>
+    <ClCompile Include="SEED\external\imgui\imgui_demo.cpp">
+      <Filter>SEED\external\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="external\imgui\imgui_tables.cpp">
-      <Filter>external\imgui</Filter>
+    <ClCompile Include="SEED\external\imgui\imgui_draw.cpp">
+      <Filter>SEED\external\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="external\imgui\imgui_widgets.cpp">
-      <Filter>external\imgui</Filter>
+    <ClCompile Include="SEED\external\imgui\imgui_impl_dx12.cpp">
+      <Filter>SEED\external\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="lib\math\myFunc\matrixFunc.cpp">
-      <Filter>lib\math\myFunc</Filter>
+    <ClCompile Include="SEED\external\imgui\imgui_impl_win32.cpp">
+      <Filter>SEED\external\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="lib\math\myFunc\myFunc.cpp">
-      <Filter>lib\math\myFunc</Filter>
+    <ClCompile Include="SEED\external\imgui\imgui_tables.cpp">
+      <Filter>SEED\external\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="lib\shapes\sphere.cpp">
-      <Filter>lib\shapes</Filter>
+    <ClCompile Include="SEED\external\imgui\imgui_widgets.cpp">
+      <Filter>SEED\external\imgui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="external\imgui\imconfig.h">
-      <Filter>external\imgui</Filter>
+    <ClInclude Include="SEED\lib\includes\include_matrixes.h">
+      <Filter>SEED\lib\includes</Filter>
     </ClInclude>
-    <ClInclude Include="external\imgui\imgui.h">
-      <Filter>external\imgui</Filter>
+    <ClInclude Include="SEED\lib\includes\include_shapes.h">
+      <Filter>SEED\lib\includes</Filter>
     </ClInclude>
-    <ClInclude Include="external\imgui\imgui_impl_dx12.h">
-      <Filter>external\imgui</Filter>
+    <ClInclude Include="SEED\lib\includes\include_tensors.h">
+      <Filter>SEED\lib\includes</Filter>
     </ClInclude>
-    <ClInclude Include="external\imgui\imgui_impl_win32.h">
-      <Filter>external\imgui</Filter>
+    <ClInclude Include="SEED\lib\includes\include_vectors.h">
+      <Filter>SEED\lib\includes</Filter>
     </ClInclude>
-    <ClInclude Include="external\imgui\imgui_internal.h">
-      <Filter>external\imgui</Filter>
+    <ClInclude Include="SEED\lib\includes\includes.h">
+      <Filter>SEED\lib\includes</Filter>
     </ClInclude>
-    <ClInclude Include="external\imgui\imstb_rectpack.h">
-      <Filter>external\imgui</Filter>
+    <ClInclude Include="SEED\lib\math\myFunc\matrixFunc.h">
+      <Filter>SEED\lib\math\myFunc</Filter>
     </ClInclude>
-    <ClInclude Include="external\imgui\imstb_textedit.h">
-      <Filter>external\imgui</Filter>
+    <ClInclude Include="SEED\lib\math\myFunc\myFunc.h">
+      <Filter>SEED\lib\math\myFunc</Filter>
     </ClInclude>
-    <ClInclude Include="external\imgui\imstb_truetype.h">
-      <Filter>external\imgui</Filter>
+    <ClInclude Include="SEED\lib\shapes\sphere.h">
+      <Filter>SEED\lib\shapes</Filter>
     </ClInclude>
-    <ClInclude Include="lib\math\myFunc\matrixFunc.h">
-      <Filter>lib\math\myFunc</Filter>
+    <ClInclude Include="SEED\lib\structs\DirectionalLight.h">
+      <Filter>SEED\lib\structs</Filter>
     </ClInclude>
-    <ClInclude Include="lib\math\myFunc\myFunc.h">
-      <Filter>lib\math\myFunc</Filter>
+    <ClInclude Include="SEED\lib\structs\Material.h">
+      <Filter>SEED\lib\structs</Filter>
     </ClInclude>
-    <ClInclude Include="lib\tensor\Matrix2x2.h">
-      <Filter>lib\tensor</Filter>
+    <ClInclude Include="SEED\lib\structs\modelData.h">
+      <Filter>SEED\lib\structs</Filter>
     </ClInclude>
-    <ClInclude Include="lib\tensor\Matrix3x3.h">
-      <Filter>lib\tensor</Filter>
+    <ClInclude Include="SEED\lib\structs\Transform.h">
+      <Filter>SEED\lib\structs</Filter>
     </ClInclude>
-    <ClInclude Include="lib\tensor\Matrix4x4.h">
-      <Filter>lib\tensor</Filter>
+    <ClInclude Include="SEED\lib\structs\VertexData.h">
+      <Filter>SEED\lib\structs</Filter>
     </ClInclude>
-    <ClInclude Include="lib\tensor\Vector2.h">
-      <Filter>lib\tensor</Filter>
+    <ClInclude Include="SEED\lib\tensor\Matrix2x2.h">
+      <Filter>SEED\lib\tensor</Filter>
     </ClInclude>
-    <ClInclude Include="lib\tensor\Vector3.h">
-      <Filter>lib\tensor</Filter>
+    <ClInclude Include="SEED\lib\tensor\Matrix3x3.h">
+      <Filter>SEED\lib\tensor</Filter>
     </ClInclude>
-    <ClInclude Include="lib\tensor\Vector4.h">
-      <Filter>lib\tensor</Filter>
+    <ClInclude Include="SEED\lib\tensor\Matrix4x4.h">
+      <Filter>SEED\lib\tensor</Filter>
     </ClInclude>
-    <ClInclude Include="lib\shapes\sphere.h">
-      <Filter>lib\shapes</Filter>
+    <ClInclude Include="SEED\lib\tensor\Vector2.h">
+      <Filter>SEED\lib\tensor</Filter>
     </ClInclude>
-    <ClInclude Include="lib\structs\modelData.h">
-      <Filter>lib\structs</Filter>
+    <ClInclude Include="SEED\lib\tensor\Vector3.h">
+      <Filter>SEED\lib\tensor</Filter>
     </ClInclude>
-    <ClInclude Include="lib\structs\DirectionalLight.h">
-      <Filter>lib\structs</Filter>
+    <ClInclude Include="SEED\lib\tensor\Vector4.h">
+      <Filter>SEED\lib\tensor</Filter>
     </ClInclude>
-    <ClInclude Include="lib\structs\Material.h">
-      <Filter>lib\structs</Filter>
+    <ClInclude Include="SEED\external\imgui\imconfig.h">
+      <Filter>SEED\external\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="lib\structs\Transform.h">
-      <Filter>lib\structs</Filter>
+    <ClInclude Include="SEED\external\imgui\imgui.h">
+      <Filter>SEED\external\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="lib\structs\VertexData.h">
-      <Filter>lib\structs</Filter>
+    <ClInclude Include="SEED\external\imgui\imgui_impl_dx12.h">
+      <Filter>SEED\external\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="lib\includes\includes.h">
-      <Filter>lib\includes</Filter>
+    <ClInclude Include="SEED\external\imgui\imgui_impl_win32.h">
+      <Filter>SEED\external\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="lib\includes\include_vectors.h">
-      <Filter>lib\includes</Filter>
+    <ClInclude Include="SEED\external\imgui\imgui_internal.h">
+      <Filter>SEED\external\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="lib\includes\include_tensors.h">
-      <Filter>lib\includes</Filter>
+    <ClInclude Include="SEED\external\imgui\imstb_rectpack.h">
+      <Filter>SEED\external\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="lib\includes\include_shapes.h">
-      <Filter>lib\includes</Filter>
+    <ClInclude Include="SEED\external\imgui\imstb_textedit.h">
+      <Filter>SEED\external\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="lib\includes\include_matrixes.h">
-      <Filter>lib\includes</Filter>
+    <ClInclude Include="SEED\external\imgui\imstb_truetype.h">
+      <Filter>SEED\external\imgui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -176,11 +179,11 @@
     <FxCompile Include="Object3d.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="external\imgui\LICENSE.txt">
-      <Filter>external\imgui</Filter>
-    </Text>
+    <None Include="Object3D.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Object3D.hlsli" />
+    <Text Include="SEED\external\imgui\LICENSE.txt">
+      <Filter>SEED\external\imgui</Filter>
+    </Text>
   </ItemGroup>
 </Project>
