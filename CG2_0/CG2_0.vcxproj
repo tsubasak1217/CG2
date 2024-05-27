@@ -53,7 +53,7 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)lib\tensor\;$(ProjectDir)lib\math\myFunc\;$(ProjectDir)external\;$(ProjectDir)external\imgui\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex;$(ProjectDir)lib\shapes\;ProjectDir)resources\models\;ProjectDir)resources\textures\;$(ProjectDir)lib\structs\;$(ProjectDir)lib\includes\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)SEED\lib\tensor\;$(ProjectDir)SEED\lib\math\myFunc\;$(ProjectDir)SEED\external\;$(ProjectDir)SEED\external\imgui\;$(ProjectDir)SEED\external\DirectXTex-mar2023\DirectXTex-mar2023\;$(ProjectDir)SEED\external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex;$(ProjectDir)SEED\lib\shapes\;ProjectDir)resources\models\;ProjectDir)resources\textures\;$(ProjectDir)SEED\lib\structs\;$(ProjectDir)SEED\lib\includes\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -78,7 +78,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)lib\tensor\;$(ProjectDir)lib\math\myFunc\;$(ProjectDir)external\;$(ProjectDir)external\imgui\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\;$(ProjectDir)external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex;$(ProjectDir)lib\shapes\;ProjectDir)resources\models\;ProjectDir)resources\textures\;$(ProjectDir)lib\structs\;$(ProjectDir)lib\includes\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)SEED\lib\tensor\;$(ProjectDir)SEED\lib\math\myFunc\;$(ProjectDir)SEED\external\;$(ProjectDir)SEED\external\imgui\;$(ProjectDir)SEED\external\DirectXTex-mar2023\DirectXTex-mar2023\;$(ProjectDir)SEED\external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex;$(ProjectDir)SEED\lib\shapes\;ProjectDir)resources\models\;ProjectDir)resources\textures\;$(ProjectDir)SEED\lib\structs\;$(ProjectDir)SEED\lib\includes\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
