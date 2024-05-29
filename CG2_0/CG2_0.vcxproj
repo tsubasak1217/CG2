@@ -53,7 +53,7 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)SEED\lib\tensor\;$(ProjectDir)SEED\lib\math\myFunc\;$(ProjectDir)SEED\external\;$(ProjectDir)SEED\external\imgui\;$(ProjectDir)SEED\external\DirectXTex-mar2023\DirectXTex-mar2023\;$(ProjectDir)SEED\external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex;$(ProjectDir)SEED\lib\shapes\;ProjectDir)resources\models\;ProjectDir)resources\textures\;$(ProjectDir)SEED\lib\structs\;$(ProjectDir)SEED\lib\includes\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)SEED\lib\tensor\;$(ProjectDir)SEED\lib\math\myFunc\;$(ProjectDir)SEED\external\;$(ProjectDir)SEED\external\imgui\;$(ProjectDir)SEED\external\DirectXTex-mar2023\DirectXTex-mar2023\;$(ProjectDir)SEED\external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex\;$(ProjectDir)SEED\lib\shapes\;$(ProjectDir)resources\models\;$(ProjectDir)resources\textures\;$(ProjectDir)SEED\lib\structs\;$(ProjectDir)SEED\source\;$(ProjectDir)SEED\lib\includes\;$(ProjectDir)SEED\source\Manager\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -78,7 +78,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)SEED\lib\tensor\;$(ProjectDir)SEED\lib\math\myFunc\;$(ProjectDir)SEED\external\;$(ProjectDir)SEED\external\imgui\;$(ProjectDir)SEED\external\DirectXTex-mar2023\DirectXTex-mar2023\;$(ProjectDir)SEED\external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex;$(ProjectDir)SEED\lib\shapes\;ProjectDir)resources\models\;ProjectDir)resources\textures\;$(ProjectDir)SEED\lib\structs\;$(ProjectDir)SEED\lib\includes\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)SEED\lib\tensor\;$(ProjectDir)SEED\lib\math\myFunc\;$(ProjectDir)SEED\external\;$(ProjectDir)SEED\external\imgui\;$(ProjectDir)SEED\external\DirectXTex-mar2023\DirectXTex-mar2023\;$(ProjectDir)SEED\external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex;$(ProjectDir)SEED\lib\shapes\;$(ProjectDir)resources\models\;$(ProjectDir)resources\textures\;$(ProjectDir)SEED\lib\structs\;$(ProjectDir)SEED\lib\includes\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -105,6 +105,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="SEED\lib\math\myFunc\matrixFunc.cpp" />
     <ClCompile Include="SEED\lib\math\myFunc\myFunc.cpp" />
     <ClCompile Include="SEED\lib\shapes\sphere.cpp" />
+    <ClCompile Include="SEED\source\Manager\DxManager.cpp" />
+    <ClCompile Include="SEED\source\Manager\ImGuiManager.cpp" />
+    <ClCompile Include="SEED\source\Manager\WindowManager.cpp" />
+    <ClCompile Include="SEED\source\SEED.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SEED\external\imgui\imconfig.h" />
@@ -134,6 +138,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="SEED\lib\tensor\Vector2.h" />
     <ClInclude Include="SEED\lib\tensor\Vector3.h" />
     <ClInclude Include="SEED\lib\tensor\Vector4.h" />
+    <ClInclude Include="SEED\source\Manager\DxManager.h" />
+    <ClInclude Include="SEED\source\Manager\ImGuiManager.h" />
+    <ClInclude Include="SEED\source\Manager\WindowManager.h" />
+    <ClInclude Include="SEED\source\SEED.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.PS.hlsl">
@@ -148,15 +156,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
-      <Project>{371b9fa9-4c90-4ac6-a123-aced756d6c77}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Object3D.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="SEED\external\imgui\LICENSE.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="SEED\external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
+      <Project>{371b9fa9-4c90-4ac6-a123-aced756d6c77}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -55,6 +55,12 @@
     <Filter Include="SEED\external\DirectXTex">
       <UniqueIdentifier>{e0c3b7d0-227d-4b76-ac99-59b41b1e2347}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SEED\source">
+      <UniqueIdentifier>{04879772-7791-493a-9177-6c99d3139b74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SEED\source\Manager">
+      <UniqueIdentifier>{81b88d78-d558-4fa4-9e79-3fe70b444879}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -89,6 +95,18 @@
     </ClCompile>
     <ClCompile Include="SEED\external\imgui\imgui_widgets.cpp">
       <Filter>SEED\external\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="SEED\source\SEED.cpp">
+      <Filter>SEED\source</Filter>
+    </ClCompile>
+    <ClCompile Include="SEED\source\Manager\DxManager.cpp">
+      <Filter>SEED\source\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="SEED\source\Manager\ImGuiManager.cpp">
+      <Filter>SEED\source\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="SEED\source\Manager\WindowManager.cpp">
+      <Filter>SEED\source\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -172,6 +190,18 @@
     </ClInclude>
     <ClInclude Include="SEED\external\imgui\imstb_truetype.h">
       <Filter>SEED\external\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="SEED\source\SEED.h">
+      <Filter>SEED\source</Filter>
+    </ClInclude>
+    <ClInclude Include="SEED\source\Manager\DxManager.h">
+      <Filter>SEED\source\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="SEED\source\Manager\ImGuiManager.h">
+      <Filter>SEED\source\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="SEED\source\Manager\WindowManager.h">
+      <Filter>SEED\source\Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
