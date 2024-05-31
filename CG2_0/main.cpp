@@ -16,7 +16,7 @@ int WINAPI WinMain(
     LPSTR, int nCmdShow
 ) {
 
-    SEED::Run(hInstance,nCmdShow,1280,720);
+    SEED::Run(hInstance,nCmdShow,"CG2_Triangle", 1280, 720);
 
 //    // COMの初期化
 //    CoInitializeEx(0, COINIT_MULTITHREADED);

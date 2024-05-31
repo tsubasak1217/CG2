@@ -61,6 +61,15 @@
     <Filter Include="SEED\source\Manager">
       <UniqueIdentifier>{81b88d78-d558-4fa4-9e79-3fe70b444879}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SEED\source\Manager\DxManager">
+      <UniqueIdentifier>{3dc1bc62-8a75-4374-a815-e6432472a1f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SEED\source\Manager\ImGuiManager">
+      <UniqueIdentifier>{25a5a1ab-065f-4550-a2a1-f604f381f857}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SEED\source\Manager\WindowManager">
+      <UniqueIdentifier>{879db3e0-c7fb-4a46-8dfd-209567c0292d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -99,14 +108,20 @@
     <ClCompile Include="SEED\source\SEED.cpp">
       <Filter>SEED\source</Filter>
     </ClCompile>
-    <ClCompile Include="SEED\source\Manager\DxManager.cpp">
-      <Filter>SEED\source\Manager</Filter>
+    <ClCompile Include="SEED\source\Manager\DxManager\DxManager.cpp">
+      <Filter>SEED\source\Manager\DxManager</Filter>
     </ClCompile>
-    <ClCompile Include="SEED\source\Manager\ImGuiManager.cpp">
-      <Filter>SEED\source\Manager</Filter>
+    <ClCompile Include="SEED\source\Manager\ImGuiManager\ImGuiManager.cpp">
+      <Filter>SEED\source\Manager\ImGuiManager</Filter>
     </ClCompile>
-    <ClCompile Include="SEED\source\Manager\WindowManager.cpp">
-      <Filter>SEED\source\Manager</Filter>
+    <ClCompile Include="SEED\source\Manager\WindowManager\WindowManager.cpp">
+      <Filter>SEED\source\Manager\WindowManager</Filter>
+    </ClCompile>
+    <ClCompile Include="SEED\source\Manager\DxManager\PSOManager.cpp">
+      <Filter>SEED\source\Manager\DxManager</Filter>
+    </ClCompile>
+    <ClCompile Include="SEED\source\Manager\DxManager\PolygonManager.cpp">
+      <Filter>SEED\source\Manager\DxManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -194,14 +209,20 @@
     <ClInclude Include="SEED\source\SEED.h">
       <Filter>SEED\source</Filter>
     </ClInclude>
-    <ClInclude Include="SEED\source\Manager\DxManager.h">
-      <Filter>SEED\source\Manager</Filter>
+    <ClInclude Include="SEED\source\Manager\DxManager\DxManager.h">
+      <Filter>SEED\source\Manager\DxManager</Filter>
     </ClInclude>
-    <ClInclude Include="SEED\source\Manager\ImGuiManager.h">
-      <Filter>SEED\source\Manager</Filter>
+    <ClInclude Include="SEED\source\Manager\ImGuiManager\ImGuiManager.h">
+      <Filter>SEED\source\Manager\ImGuiManager</Filter>
     </ClInclude>
-    <ClInclude Include="SEED\source\Manager\WindowManager.h">
-      <Filter>SEED\source\Manager</Filter>
+    <ClInclude Include="SEED\source\Manager\WindowManager\WindowManager.h">
+      <Filter>SEED\source\Manager\WindowManager</Filter>
+    </ClInclude>
+    <ClInclude Include="SEED\source\Manager\DxManager\PSOManager.h">
+      <Filter>SEED\source\Manager\DxManager</Filter>
+    </ClInclude>
+    <ClInclude Include="SEED\source\Manager\DxManager\PolygonManager.h">
+      <Filter>SEED\source\Manager\DxManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
