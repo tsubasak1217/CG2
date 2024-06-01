@@ -70,15 +70,18 @@
     <Filter Include="SEED\source\Manager\WindowManager">
       <UniqueIdentifier>{879db3e0-c7fb-4a46-8dfd-209567c0292d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Environment">
+      <UniqueIdentifier>{c76ac1cf-25e2-4662-ad3e-03e262e41daf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="SEED\lib\math\myFunc\matrixFunc.cpp">
+    <ClCompile Include="SEED\lib\math\myFunc\MatrixFunc.cpp">
       <Filter>SEED\lib\math\myFunc</Filter>
     </ClCompile>
-    <ClCompile Include="SEED\lib\math\myFunc\myFunc.cpp">
+    <ClCompile Include="SEED\lib\math\myFunc\DxFunc.cpp">
       <Filter>SEED\lib\math\myFunc</Filter>
     </ClCompile>
     <ClCompile Include="SEED\lib\shapes\sphere.cpp">
@@ -123,6 +126,12 @@
     <ClCompile Include="SEED\source\Manager\DxManager\PolygonManager.cpp">
       <Filter>SEED\source\Manager\DxManager</Filter>
     </ClCompile>
+    <ClCompile Include="SEED\lib\math\myFunc\MyMath.cpp">
+      <Filter>SEED\lib\math\myFunc</Filter>
+    </ClCompile>
+    <ClCompile Include="SEED\source\Manager\DxManager\Camera.cpp">
+      <Filter>SEED\source\Manager\DxManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SEED\lib\includes\include_matrixes.h">
@@ -140,10 +149,10 @@
     <ClInclude Include="SEED\lib\includes\includes.h">
       <Filter>SEED\lib\includes</Filter>
     </ClInclude>
-    <ClInclude Include="SEED\lib\math\myFunc\matrixFunc.h">
+    <ClInclude Include="SEED\lib\math\myFunc\MatrixFunc.h">
       <Filter>SEED\lib\math\myFunc</Filter>
     </ClInclude>
-    <ClInclude Include="SEED\lib\math\myFunc\myFunc.h">
+    <ClInclude Include="SEED\lib\math\myFunc\DxFunc.h">
       <Filter>SEED\lib\math\myFunc</Filter>
     </ClInclude>
     <ClInclude Include="SEED\lib\shapes\sphere.h">
@@ -223,6 +232,21 @@
     </ClInclude>
     <ClInclude Include="SEED\source\Manager\DxManager\PolygonManager.h">
       <Filter>SEED\source\Manager\DxManager</Filter>
+    </ClInclude>
+    <ClInclude Include="SEED\lib\math\myFunc\MyMath.h">
+      <Filter>SEED\lib\math\myFunc</Filter>
+    </ClInclude>
+    <ClInclude Include="SEED\lib\includes\include_useful.h">
+      <Filter>SEED\lib\includes</Filter>
+    </ClInclude>
+    <ClInclude Include="SEED\source\Manager\DxManager\Camera.h">
+      <Filter>SEED\source\Manager\DxManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Environment\Environment.h">
+      <Filter>Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="SEED\lib\shapes\Triangle.h">
+      <Filter>SEED\lib\shapes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
