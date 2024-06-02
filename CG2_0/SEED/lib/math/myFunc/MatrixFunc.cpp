@@ -294,9 +294,29 @@ Vector3 TransformDescartes(const Vector3& vector, const Matrix4x4& matrix) {
     return result;
 }
 
-Vector4 TransformToVector4(const Vector3& vec)
+Vector3 TransformToVec3(const Vector2& vec)
+{
+    return Vector3(vec.x, vec.y,1.0f);
+}
+
+Vector3 Expand0ToVec3(const Vector2& vec)
+{
+    return Vector3(vec.x,vec.y,0.0f);
+}
+
+Vector3 Expand1ToVec3(const Vector2& vec)
+{
+    return Vector3(vec.x, vec.y, 0.0f);
+}
+
+Vector4 TransformToVec4(const Vector3& vec)
 {
     return Vector4(vec.x,vec.y,vec.z,1.0f);
+}
+
+Vector4 TransformToVec4(const Vector2& vec)
+{
+    return Vector4(vec.x, vec.y, 0.0f, 1.0f);
 }
 
 

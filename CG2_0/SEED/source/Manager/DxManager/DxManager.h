@@ -59,7 +59,11 @@ private:// 内部の細かい関数
 
 public:// PolygonManagerに描画を頼む関数
 
-    void DrawTriangle(const Vector4& v1, const Vector4& v2, const Vector4& v3, const Matrix4x4& worldMat, uint32_t color);
+    void DrawTriangle(
+        const Vector4& v1, const Vector4& v2, const Vector4& v3,
+        const Matrix4x4& worldMat, const Vector4& color,
+        bool useTexture,bool view3D
+    );
 
 private:// 外部参照のためのポインタ
 
@@ -72,7 +76,7 @@ private:// マネージャ変数
 
 private:// オブジェクト
 
-    Camera camera_;
+    Camera* camera_;
 
 public:
     
@@ -170,5 +174,5 @@ public:
 
     public:// アクセッサ
 
-        Camera GetCamera()const{ return camera_; }
+    Camera* GetCamera()const{ return camera_; }
 };

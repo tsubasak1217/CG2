@@ -92,7 +92,7 @@ void PSOManager::Create()
     CPUからVertexShaderに渡すデータがどのようなものなのか指定するもの
            VertexShaderInputにあるメンバ変数の数だけ設定する
     */
-    D3D12_INPUT_ELEMENT_DESC inputElementDescs[12]{};
+    D3D12_INPUT_ELEMENT_DESC inputElementDescs[13]{};
 
     // 頂点座標
     inputElementDescs[0].SemanticName = "POSITION";
@@ -125,7 +125,6 @@ void PSOManager::Create()
     inputElementDescs[6].SemanticIndex = 2;
     inputElementDescs[7] = inputElementDescs[4];
     inputElementDescs[7].SemanticIndex = 3;
-
     // WORLD
     inputElementDescs[8].SemanticName = "WORLD";
     inputElementDescs[8].SemanticIndex = 0;
@@ -137,6 +136,11 @@ void PSOManager::Create()
     inputElementDescs[10].SemanticIndex = 2;
     inputElementDescs[11] = inputElementDescs[8];
     inputElementDescs[11].SemanticIndex = 3;
+    // テクスチャを使うかどうか
+    inputElementDescs[12].SemanticName = "USE_TEXTURE";
+    inputElementDescs[12].SemanticIndex = 0;
+    inputElementDescs[12].Format = DXGI_FORMAT_R32_SINT;
+    inputElementDescs[12].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 
     // 上で作成したデータ群をひとつの変数に入れる
     D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};

@@ -21,6 +21,7 @@ struct VertexShaderInput
     float3 normal : NORMAL0;
     float4x4 wvp : WVP0;
     float4x4 world : WORLD0;
+    int useTexture : USE_TEXTURE0;
 };
 
 VertexShaderOutput main(VertexShaderInput input)
@@ -30,5 +31,6 @@ VertexShaderOutput main(VertexShaderInput input)
     output.color = input.color;
     output.texcoord = input.texcoord;
     output.normal = normalize(mul(input.normal, (float3x3) input.world));
+    output.useTexture = input.useTexture;
     return output;
 }

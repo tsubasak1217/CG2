@@ -73,6 +73,18 @@
     <Filter Include="Environment">
       <UniqueIdentifier>{c76ac1cf-25e2-4662-ad3e-03e262e41daf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{82a39592-a2c8-4b01-86b5-cfc017e711f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Scene">
+      <UniqueIdentifier>{57a68ebc-382d-4baf-9f1c-2f5b96fc46b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Manager">
+      <UniqueIdentifier>{18c62cbb-7584-4504-89bb-9da913c7ca09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Scene\Scene_Game">
+      <UniqueIdentifier>{95bc44e9-1aea-4395-90b7-0f6f20f6d620}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -131,6 +143,21 @@
     </ClCompile>
     <ClCompile Include="SEED\source\Manager\DxManager\Camera.cpp">
       <Filter>SEED\source\Manager\DxManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Scene\Scene_Base.cpp">
+      <Filter>Game\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Scene\Scene_Game\Scene_Game.cpp">
+      <Filter>Game\Scene\Scene_Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Scene\Scene_Game\GameState.cpp">
+      <Filter>Game\Scene\Scene_Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Manager\SceneManager.cpp">
+      <Filter>Game\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="SEED\lib\math\myFunc\ShapeMath.cpp">
+      <Filter>SEED\lib\math\myFunc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -247,6 +274,21 @@
     </ClInclude>
     <ClInclude Include="SEED\lib\shapes\Triangle.h">
       <Filter>SEED\lib\shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Scene\Scene_Base.h">
+      <Filter>Game\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Scene\Scene_Game\Scene_Game.h">
+      <Filter>Game\Scene\Scene_Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Scene\Scene_Game\GameState.h">
+      <Filter>Game\Scene\Scene_Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Manager\SceneManager.h">
+      <Filter>Game\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="SEED\lib\math\myFunc\ShapeMath.h">
+      <Filter>SEED\lib\math\myFunc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

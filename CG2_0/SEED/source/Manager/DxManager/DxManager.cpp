@@ -15,6 +15,8 @@ void DxManager::Initialize(SEED* pSEED)
     psoManager_ = new PSOManager(this);
     // polygonManagerの作成
     polygonManager_ = new PolygonManager(this);
+    //
+    camera_ = new Camera();
 
     /*===========================================================================================*/
     /*                                   DirextXの初期化                                          */
@@ -175,6 +177,7 @@ void DxManager::Initialize(SEED* pSEED)
     srvDesc2.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
     srvDesc2.Texture2D.MipLevels = UINT(metadata2.mipLevels);
 
+
     // SRVを作成するDescriptorHeapの場所を決める
     D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU = GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 1);
     D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 1);
@@ -248,14 +251,14 @@ void DxManager::Initialize(SEED* pSEED)
     // ------------------------------------------------------------------------------------
 
     // カメラの情報
-    camera_.transform_.scale_ = { 1.0f,1.0f,1.0f }; // scale
-    camera_.transform_.rotate_ = { 0.0f,0.0f,0.0f }; // rotate
-    camera_.transform_.translate_ = { 0.0f,0.0f,-10.0f }; // translate
-    camera_.projectionMode_ = PERSPECTIVE;
-    camera_.clipRange_ = kWindowSize;
-    camera_.znear_ = 0.1f;
-    camera_.zfar_ = 100.0f;
-    camera_.Update();
+    camera_->transform_.scale_ = { 1.0f,1.0f,1.0f }; // scale
+    camera_->transform_.rotate_ = { 0.0f,0.0f,0.0f }; // rotate
+    camera_->transform_.translate_ = { 0.0f,0.0f,-10.0f }; // translate
+    camera_->projectionMode_ = ORTHO;
+    camera_->clipRange_ = kWindowSize;
+    camera_->znear_ = 0.1f;
+    camera_->zfar_ = 100.0f;
+    camera_->Update();
 
     // 情報がそろったのでpolygonManagerの初期化
     polygonManager_->InitResources();
@@ -283,6 +286,11 @@ void DxManager::PreDraw()
         SRVのHeapは毎フレームセットし直す
     */
     commandList->SetDescriptorHeaps(1, &srvDescriptorHeap);
+
+    //ImGui::Begin("Camera");
+    //ImGui::DragFloat3("translate", &camera_->transform_.translate_.x, 0.05f);
+    //ImGui::DragFloat3("rotate", &camera_->transform_.rotate_.x, 3.14f * 0.005f);
+    //ImGui::End();
 }
 
 void DxManager::DrawPolygonAll()
@@ -676,9 +684,12 @@ void DxManager::WaitForGPU()
     }
 }
 
-void DxManager::DrawTriangle(const Vector4& v1, const Vector4& v2, const Vector4& v3, const Matrix4x4& worldMat, uint32_t color)
-{
-    polygonManager_->AddTriangle(v1, v2, v3, worldMat,color);
+void DxManager::DrawTriangle(
+    const Vector4& v1, const Vector4& v2, const Vector4& v3, 
+    const Matrix4x4& worldMat, const Vector4& color,
+    bool useTexture, bool view3D
+){
+    polygonManager_->AddTriangle(v1, v2, v3, worldMat,color,useTexture,view3D);
 }
 
 void DxManager::Finalize()
@@ -733,6 +744,8 @@ void DxManager::Finalize()
     psoManager_ = nullptr;
     delete polygonManager_;
     polygonManager_ = nullptr;
+    delete camera_;
+    camera_ = nullptr;
 
 #ifdef _DEBUG
     debugController->Release();

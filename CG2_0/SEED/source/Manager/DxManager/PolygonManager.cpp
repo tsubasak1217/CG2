@@ -75,27 +75,34 @@ Vector4 FloatColor(uint32_t color)
 /*----------------------------------- 三角形の情報を追加する関数 ---------------------------------------*/
 
 // DrawTriangleが呼び出されるごとに 三角形の情報を積み上げていく
-void PolygonManager::AddTriangle(const Vector4& v1, const Vector4& v2, const Vector4& v3, const Matrix4x4& worldMat, uint32_t color)
-{
+void PolygonManager::AddTriangle(
+    const Vector4& v1, const Vector4& v2, const Vector4& v3, 
+    const Matrix4x4& worldMat, const Vector4& color,
+    bool useTexture, bool view3D
+){
 
     assert(triangleIndexCount_ < kMaxTriangleCount_);
 
-    Vector4 colorf = FloatColor(color);
     Vector3 normalVec =
         MyMath::Normalize(MyMath::Cross(
             Vector3(v2.x, v2.y, v2.z) - Vector3(v1.x, v1.y, v1.z),
             Vector3(v3.x, v3.y, v3.z) - Vector3(v2.x, v2.y, v2.z),
-            kWorld
+            view3D ? kWorld : kScreen
         ));
 
-    Matrix4x4 wvp = Multiply(worldMat, pDxManager_->GetCamera().viewProjectionMat_);
+    Matrix4x4 wvp = Multiply(
+        worldMat, 
+        view3D?
+        pDxManager_->GetCamera()->viewProjectionMat_ : 
+        pDxManager_->GetCamera()->viewProjectionMat2D_
+    );
 
-    triangles_.vertices.push_back(VertexData(v1, colorf, { 0.5f,0.0f }, normalVec,wvp,worldMat));
-    triangles_.vertices.push_back(VertexData(v2, colorf, { 1.0f,1.0f }, normalVec,wvp,worldMat));
-    triangles_.vertices.push_back(VertexData(v3, colorf, { 0.0f,1.0f }, normalVec,wvp,worldMat));
+    triangles_.vertices.push_back(VertexData(v1, color, Vector2(0.5f, 0.0f), normalVec, wvp, worldMat,useTexture));
+    triangles_.vertices.push_back(VertexData(v2, color, Vector2(1.0f, 1.0f), normalVec, wvp, worldMat,useTexture));
+    triangles_.vertices.push_back(VertexData(v3, color, Vector2(0.0f, 1.0f), normalVec, wvp, worldMat,useTexture));
 
     triangles_.colorf.push_back(Material());
-    triangles_.colorf.back().color_ = FloatColor(color);
+    triangles_.colorf.back().color_ = color;
     triangles_.colorf.back().enableLighting_ = true;
     triangles_.colorf.back().uvTransform_ = IdentityMat4();
 
@@ -154,7 +161,7 @@ void PolygonManager::DrawPolygonAll()
     // 形状を設定。 PSOに設定しているものとはまた別。 同じものを設定すると考えておけば良い
     pDxManager_->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = GetGPUDescriptorHandle(pDxManager_->srvDescriptorHeap, pDxManager_->descriptorSizeSRV, 2);
+    D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = GetGPUDescriptorHandle(pDxManager_->srvDescriptorHeap, pDxManager_->descriptorSizeSRV, textureNum_);
     pDxManager_->commandList->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
 
     // Resourceを設定
@@ -164,4 +171,10 @@ void PolygonManager::DrawPolygonAll()
 
     // 描画! (DrawCall/ ドローコール)。 3頂点で1つのインスタンス。 インスタンスについては今後
     pDxManager_->commandList->DrawInstanced(3 * triangleIndexCount_, 1, 0, 0);
+
+    // 
+    ImGui::Begin("Texture");
+    ImGui::SliderInt("TextureIndex", &textureNum_, 1, 2);
+    ImGui::End();
+
 }

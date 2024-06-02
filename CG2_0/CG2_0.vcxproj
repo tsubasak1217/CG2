@@ -53,7 +53,7 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>$(ProjectDir)SEED\lib\tensor\;$(ProjectDir)SEED\lib\math\myFunc\;$(ProjectDir)SEED\external\;$(ProjectDir)SEED\external\imgui\;$(ProjectDir)SEED\external\DirectXTex-mar2023\DirectXTex-mar2023\;$(ProjectDir)SEED\external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex\;$(ProjectDir)SEED\lib\shapes\;$(ProjectDir)resources\models\;$(ProjectDir)resources\textures\;$(ProjectDir)SEED\lib\structs\;$(ProjectDir)SEED\source\;$(ProjectDir)SEED\lib\includes\;$(ProjectDir)SEED\source\Manager\;$(ProjectDir)SEED\source\Manager\DxManager\;$(ProjectDir)SEED\source\Manager\WindowManager\;$(ProjectDir)SEED\source\Manager\ImGuiManager\;$(ProjectDir)Environment\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)SEED\lib\tensor\;$(ProjectDir)SEED\lib\math\myFunc\;$(ProjectDir)SEED\external\;$(ProjectDir)SEED\external\imgui\;$(ProjectDir)SEED\external\DirectXTex-mar2023\DirectXTex-mar2023\;$(ProjectDir)SEED\external\DirectXTex-mar2023\DirectXTex-mar2023\DirectXTex\;$(ProjectDir)SEED\lib\shapes\;$(ProjectDir)resources\models\;$(ProjectDir)resources\textures\;$(ProjectDir)SEED\lib\structs\;$(ProjectDir)SEED\source\;$(ProjectDir)SEED\lib\includes\;$(ProjectDir)SEED\source\Manager\;$(ProjectDir)SEED\source\Manager\DxManager\;$(ProjectDir)SEED\source\Manager\WindowManager\;$(ProjectDir)SEED\source\Manager\ImGuiManager\;$(ProjectDir)Environment\;$(ProjectDir)Game\Scene\;$(ProjectDir)Game\Manager\;$(ProjectDir)Game\Scene\Scene_Game\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -94,6 +94,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Game\Manager\SceneManager.cpp" />
+    <ClCompile Include="Game\Scene\Scene_Base.cpp" />
+    <ClCompile Include="Game\Scene\Scene_Game\GameState.cpp" />
+    <ClCompile Include="Game\Scene\Scene_Game\Scene_Game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SEED\external\imgui\imgui.cpp" />
     <ClCompile Include="SEED\external\imgui\imgui_demo.cpp" />
@@ -105,6 +109,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="SEED\lib\math\myFunc\MatrixFunc.cpp" />
     <ClCompile Include="SEED\lib\math\myFunc\DxFunc.cpp" />
     <ClCompile Include="SEED\lib\math\myFunc\MyMath.cpp" />
+    <ClCompile Include="SEED\lib\math\myFunc\ShapeMath.cpp" />
     <ClCompile Include="SEED\lib\shapes\sphere.cpp" />
     <ClCompile Include="SEED\source\Manager\DxManager\Camera.cpp" />
     <ClCompile Include="SEED\source\Manager\DxManager\DxManager.cpp" />
@@ -116,6 +121,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Environment\Environment.h" />
+    <ClInclude Include="Game\Manager\SceneManager.h" />
+    <ClInclude Include="Game\Scene\Scene_Base.h" />
+    <ClInclude Include="Game\Scene\Scene_Game\GameState.h" />
+    <ClInclude Include="Game\Scene\Scene_Game\Scene_Game.h" />
     <ClInclude Include="SEED\external\imgui\imconfig.h" />
     <ClInclude Include="SEED\external\imgui\imgui.h" />
     <ClInclude Include="SEED\external\imgui\imgui_impl_dx12.h" />
@@ -133,6 +142,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="SEED\lib\math\myFunc\MatrixFunc.h" />
     <ClInclude Include="SEED\lib\math\myFunc\DxFunc.h" />
     <ClInclude Include="SEED\lib\math\myFunc\MyMath.h" />
+    <ClInclude Include="SEED\lib\math\myFunc\ShapeMath.h" />
     <ClInclude Include="SEED\lib\shapes\sphere.h" />
     <ClInclude Include="SEED\lib\shapes\Triangle.h" />
     <ClInclude Include="SEED\lib\structs\DirectionalLight.h" />

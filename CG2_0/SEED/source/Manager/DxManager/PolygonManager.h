@@ -30,7 +30,11 @@ public:// 根幹をなす関数
 
 public:// 頂点情報の追加に関わる関数
 
-    void AddTriangle(const Vector4& v1, const Vector4& v2, const Vector4& v3, const Matrix4x4& worldMat, uint32_t color);
+    void AddTriangle(
+        const Vector4& v1, const Vector4& v2, const Vector4& v3,
+        const Matrix4x4& worldMat, const Vector4& color,
+        bool useTexture, bool view3D
+    );
 
 private:// 外部参照のためのポインタ変数
 
@@ -56,4 +60,5 @@ private:// Resourceを格納する変数
 
 private:
 
+    int textureNum_ = 1;
 };

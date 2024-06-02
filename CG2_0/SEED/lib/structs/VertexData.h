@@ -12,4 +12,5 @@ struct VertexData {
     Vector3 normal_;
     Matrix4x4 wvp_;
     Matrix4x4 world_;
+    int useTexture_;
 };

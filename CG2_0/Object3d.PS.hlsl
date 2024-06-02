@@ -26,21 +26,35 @@ struct PixelShaderOutput
 
 PixelShaderOutput main(VertexShaderOutput input)
 {
-    float4 transformedUV = mul(float4(input.texcoord, 0.0f,1.0f), gMaterial.uvTransform);
+    float4 transformedUV = mul(float4(input.texcoord, 0.0f, 1.0f), gMaterial.uvTransform);
     float4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
-
+    
     PixelShaderOutput output;
-    output.color = input.color * textureColor;
     
     if (gMaterial.enebleLighting != 0)
     {
         float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction_);
-        float cos = pow(NdotL * 0.5f + 0.5f,2.0f);
-        output.color = input.color * textureColor * gDirectionalLight.color_ * cos * gDirectionalLight.intensity;
+        float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
+        
+        if (input.useTexture == true)
+        {
+            output.color = input.color * textureColor * gDirectionalLight.color_ * cos * gDirectionalLight.intensity;
+        }
+        else
+        {   
+            output.color = input.color * gDirectionalLight.color_ * cos * gDirectionalLight.intensity;
+        }
     }
     else
     {
-        output.color = input.color * textureColor;
+        if (input.useTexture == true)
+        {
+            output.color = input.color * textureColor;
+        }
+        else
+        {
+            output.color = input.color;
+        }
     }
     
     return output;

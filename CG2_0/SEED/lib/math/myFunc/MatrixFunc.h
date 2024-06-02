@@ -43,8 +43,13 @@ Matrix4x4 Devide(const Matrix4x4& matrix, float devideNum);
 Vector2 TransformDescartes(const Vector2& vector, const Matrix3x3& matrix);
 Vector3 TransformDescartes(const Vector3& vector, const Matrix4x4& matrix);
 
-// Vec3 -> Vec4
-Vector4 TransformToVector4(const Vector3& vec);
+// Vec3に変換する関数
+Vector3 TransformToVec3(const Vector2& vec);
+Vector3 Expand0ToVec3(const Vector2& vec);
+Vector3 Expand1ToVec3(const Vector2& vec);
+// Vec4に変換する関数
+Vector4 TransformToVec4(const Vector3& vec);
+Vector4 TransformToVec4(const Vector2& vec);
 
 // 単位行列を返す関数
 Matrix2x2 IdentityMat2();
