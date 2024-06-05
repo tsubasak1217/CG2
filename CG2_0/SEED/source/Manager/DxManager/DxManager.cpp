@@ -590,7 +590,7 @@ void DxManager::CompileShaders()
 {
     // VertexShader
     vertexShaderBlob = CompileShader(
-        L"Object3d.VS.hlsl",
+        L"resources/shaders/Object3d.VS.hlsl",
         L"vs_6_0",
         dxcUtils,
         dxcCompiler,
@@ -600,7 +600,7 @@ void DxManager::CompileShaders()
 
     // PixelShader
     pixelShaderBlob = CompileShader(
-        L"Object3d.PS.hlsl",
+        L"resources/shaders/Object3d.PS.hlsl",
         L"ps_6_0",
         dxcUtils,
         dxcCompiler,
