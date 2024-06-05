@@ -97,15 +97,18 @@ void PolygonManager::AddTriangle(
         pDxManager_->GetCamera()->viewProjectionMat2D_
     );
 
+    // vertexResource
     triangles_.vertices.push_back(VertexData(v1, color, Vector2(0.5f, 0.0f), normalVec, wvp, worldMat,useTexture));
     triangles_.vertices.push_back(VertexData(v2, color, Vector2(1.0f, 1.0f), normalVec, wvp, worldMat,useTexture));
     triangles_.vertices.push_back(VertexData(v3, color, Vector2(0.0f, 1.0f), normalVec, wvp, worldMat,useTexture));
 
+    // materialResource
     triangles_.colorf.push_back(Material());
     triangles_.colorf.back().color_ = color;
     triangles_.colorf.back().enableLighting_ = true;
     triangles_.colorf.back().uvTransform_ = IdentityMat4();
 
+    // wvpResource
     triangles_.transform.push_back(TransformMatrix());
     triangles_.transform.back().world_ = worldMat;
     triangles_.transform.back().WVP_ = wvp;
@@ -171,10 +174,5 @@ void PolygonManager::DrawPolygonAll()
 
     // 描画! (DrawCall/ ドローコール)。 3頂点で1つのインスタンス。 インスタンスについては今後
     pDxManager_->commandList->DrawInstanced(3 * triangleIndexCount_, 1, 0, 0);
-
-    // 
-    ImGui::Begin("Texture");
-    ImGui::SliderInt("TextureIndex", &textureNum_, 1, 2);
-    ImGui::End();
 
 }

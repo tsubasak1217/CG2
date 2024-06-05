@@ -49,6 +49,9 @@ private:// 内部の細かい関数
     // PSO
     void InitPSO();
 
+    // Textureの初期化関数
+    void InitTextures();
+
     // preDraw,postDrawに関わる関数
     void TransitionResourceState(uint32_t state);
     void ClearViewSettings();
@@ -151,7 +154,8 @@ public:
 
     ID3D12Resource* materialResource = nullptr;
     ID3D12Resource* materialResourceSprite = nullptr;
-        
+    
+
     /*----------------------------- TextureResourceの作成,転送 -----------------------------*/
 
     ID3D12Resource* textureResource = nullptr;

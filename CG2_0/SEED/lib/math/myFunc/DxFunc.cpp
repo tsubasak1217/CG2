@@ -331,26 +331,61 @@ D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(ID3D12DescriptorHeap* descrip
     return descriptorHandle;
 }
 
+ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename)
+{
+    // ファイルを開く
+    std::ifstream file(directoryPath + "/" + filename);
+    assert(file.is_open());// 失敗したらアサート
 
+    // 開けたら必要な変数を用意
+    ModelData modelData;
+    std::vector<Vector4>positions;
+    std::vector<Vector3>normals;
+    std::vector<Vector2>texcoords;
+    std::string line;
 
-//void UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages) {
-//    
-//    // Meta情報を取得
-//    const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-//    // 全MipMapについて
-//    for (size_t mipLevel = 0; mipLevel < metadata.mipLevels; ++mipLevel) {
-//        // MipMapLevelを指定して各Imageを取得
-//        const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
-//        // Textureに転送
-//        HRESULT hr;
-//        hr = texture->WriteToSubresource(
-//            UINT(mipLevel),
-//            nullptr,// 全領域へコピー
-//            img->pixels,// 元データアドレス
-//            UINT(img->rowPitch), // 1ラインサイズ
-//            UINT(img->slicePitch) // 1枚サイズ
-//        );
-//
-//        assert(SUCCEEDED(hr));
-//    }
-//}
+    while(std::getline(file, line)){
+
+        // まずobjファイルの行の先頭の識別子を読む
+        std::string identifer;
+        std::istringstream s(line);
+        s >> identifer;
+
+        // identifer(識別子)に応じた処理を行う
+
+        if(identifer == "v"){// 頂点位置-----------------------------
+
+            Vector4 position;
+            // x,y,zの順に格納
+            s >> position.x >> position.y >> position.z;
+            // zは1.0固定
+            position.w = 1.0f;
+            // 座標配列末尾にを要素を追加
+            positions.push_back(position);
+
+        } else if(identifer == "vt"){// 頂点テクスチャ座標------------
+
+            Vector2 texcoord;
+            // x,y,zの順に格納
+            s >> texcoord.x >> texcoord.y;
+            // テクスチャ座標配列末尾にを要素を追加
+            texcoords.push_back(texcoord);
+
+        } else if(identifer == "vn"){// 頂点法線--------------------
+
+            Vector3 normal;
+            // x,y,zの順に格納
+            s >> normal.x >> normal.y >> normal.z;
+            // 座標配列末尾にを要素を追加
+            normals.push_back(normal);
+
+        } else if(identifer == "f"){// 面
+
+            for(int32_t faceVertex = 0; faceVertex < 3; faceVertex++){
+
+            }
+        }
+    }
+
+    return ModelData();
+}

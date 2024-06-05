@@ -127,23 +127,10 @@ void DxManager::Initialize(SEED* pSEED)
     // PSOManagerクラスに丸投げ
     InitPSO();
 
-    /*----------------------------- TextureResourceの作成,転送 -----------------------------*/
+    /*----------------------------- Textureの初期化に関わる部分 -----------------------------*/
 
-    // 読み込み
-    DirectX::ScratchImage mipImages = LoadTexture("resources/textures/uvChecker.png");
-    // 作成
-    const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-    textureResource = CreateTextureResource(device, metadata);
-    // 転送
-    intermediateResource = UploadTextureData(textureResource, mipImages, device, commandList);
-
-    // 読み込み
-    DirectX::ScratchImage mipImages2 = LoadTexture("resources/textures/monsterBall.png");
-    // 作成
-    const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
-    textureResource2 = CreateTextureResource(device, metadata2);
-    // 転送
-    intermediateResource2 = UploadTextureData(textureResource2, mipImages2, device, commandList);
+    // TextureResourceの作成,転送をしたあと、SRVを作成する
+    InitTextures();
 
     /*------------------------- DepthStencilTextureResourceの作成 -------------------------*/
 
@@ -161,33 +148,6 @@ void DxManager::Initialize(SEED* pSEED)
     directionalLight->color_ = MyMath::FloatColor(0xffffffff);
     directionalLight->direction_ = { 0.0f,0.0f,1.0f };
     directionalLight->intensity = 1.0f;
-
-    /*-------------------------------- Texture用SRVの作成 ----------------------------------*/
-
-    // metaDataをもとにSRVの設定
-    D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-    srvDesc.Format = metadata.format;
-    srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-    srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
-    srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
-
-    D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2{};
-    srvDesc2.Format = metadata2.format;
-    srvDesc2.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-    srvDesc2.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
-    srvDesc2.Texture2D.MipLevels = UINT(metadata2.mipLevels);
-
-
-    // SRVを作成するDescriptorHeapの場所を決める
-    D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU = GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 1);
-    D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 1);
-
-    D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU2 = GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 2);
-    D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU2 = GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 2);
-    
-    // SRVの生成
-    device->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU);
-    device->CreateShaderResourceView(textureResource2, &srvDesc2, textureSrvHandleCPU2);
 
 
     /*------------------------------ DepthStencilViewの作成 -------------------------------*/
@@ -208,26 +168,6 @@ void DxManager::Initialize(SEED* pSEED)
         &dsvDesc,
         dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart()
     );
-
-    /*----------------------------------UVTransformの設定----------------------------------*/
-
-    //materialData->uvTransform_ = IdentityMat4();
-    //materialDataSprite->uvTransform_ = IdentityMat4();
-
-    //Transform uvTransformSprite;
-    //uvTransformSprite.scale_ = { 1.0f,1.0f,1.0f };
-    //uvTransformSprite.rotate_ = { 0.0f,0.0f,0.0f };
-    //uvTransformSprite.translate_ = { 0.0f,0.0f,0.0f };
-
-    //// uvTransformを行う行列
-    //uvTransformSprite.world_ = AffineMatrix(
-    //    uvTransformSprite.scale_,
-    //    uvTransformSprite.rotate_,
-    //    uvTransformSprite.translate_
-    //);
-
-    //// 行列を代入
-    //materialDataSprite->uvTransform_ = uvTransformSprite.world_;
 
     /*--------------------------------- VewportとScissor ---------------------------------*/
 
@@ -612,6 +552,55 @@ void DxManager::CompileShaders()
 void DxManager::InitPSO()
 {
     psoManager_->Create();
+}
+
+void DxManager::InitTextures()
+{
+    /*----------------------------- TextureResourceの作成,転送 -----------------------------*/
+
+    // 読み込み
+    DirectX::ScratchImage mipImages = LoadTexture("resources/textures/uvChecker.png");
+    // 作成
+    const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
+    textureResource = CreateTextureResource(device, metadata);
+    // 転送
+    intermediateResource = UploadTextureData(textureResource, mipImages, device, commandList);
+
+    // 読み込み
+    DirectX::ScratchImage mipImages2 = LoadTexture("resources/textures/monsterBall.png");
+    // 作成
+    const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
+    textureResource2 = CreateTextureResource(device, metadata2);
+    // 転送
+    intermediateResource2 = UploadTextureData(textureResource2, mipImages2, device, commandList);
+
+    /*-------------------------------- Texture用SRVの作成 ----------------------------------*/
+
+// metaDataをもとにSRVの設定
+    D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+    srvDesc.Format = metadata.format;
+    srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
+    srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
+
+    D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2{};
+    srvDesc2.Format = metadata2.format;
+    srvDesc2.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    srvDesc2.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
+    srvDesc2.Texture2D.MipLevels = UINT(metadata2.mipLevels);
+
+
+    // SRVを作成するDescriptorHeapの場所を決める
+    D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU = GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 1);
+    D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 1);
+
+    D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU2 = GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 2);
+    D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU2 = GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 2);
+
+    // SRVの生成
+    device->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU);
+    device->CreateShaderResourceView(textureResource2, &srvDesc2, textureSrvHandleCPU2);
+
 }
 
 

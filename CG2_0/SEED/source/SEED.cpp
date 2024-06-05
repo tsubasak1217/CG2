@@ -64,22 +64,6 @@ void SEED::Run(HINSTANCE hInstance, int nCmdShow, const char* windowTitle, int c
 
     Initialize(&seed);
 
-    Triangle triangle = Triangle(
-        { 0.0f, 0.5f, 0.0f },
-        { 0.5f, -0.5f, 0.0f },
-        { -0.5f, -0.5f, 0.0f }
-    );
-
-
-    Triangle2D tri2D = Triangle2D(
-        { kWindowCenter.x, 0.0f },
-        { kWindowSize.x, kWindowSize.y },
-        { 0.0f, kWindowSize.y }
-    );
-
-    triangle.color = 0xffffffff;
-    tri2D.color = 0xffffffff;
-
     while(msg_.message != WM_QUIT){
         BeginFrame();
 

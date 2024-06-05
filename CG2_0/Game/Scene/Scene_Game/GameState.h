@@ -36,21 +36,7 @@ public:
     void Draw()override;
 
 private:
-    Triangle triangle_[2];
-    float rotateRate_;
 
-    std::vector<Particle>tri2D_;
-    Vector3 vertices_[4];
-
-    const uint32_t colors[5] = {
-        0xffff00ff,
-        0x00ffffff,
-        0xff00ffff,
-        0xa0ff33ff,
-        0xff33cfff
-    };
-
-    int frameCount = 0;
 };
 
 class GameState_Effect : public GameState_Base{
