@@ -5,14 +5,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="ヘッダー ファイル">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="リソース ファイル">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="resources">
       <UniqueIdentifier>{f0d5f36b-c9e2-4434-bca4-8189c4f6846d}</UniqueIdentifier>
     </Filter>
@@ -39,9 +31,6 @@
     </Filter>
     <Filter Include="SEED\lib\math\myFunc">
       <UniqueIdentifier>{96a31085-481c-4209-99c1-44c680f16de7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="SEED\lib\structs">
-      <UniqueIdentifier>{dfb0181f-50e4-40ce-89a8-2dc99677b813}</UniqueIdentifier>
     </Filter>
     <Filter Include="SEED\lib\includes">
       <UniqueIdentifier>{d6a1d27f-323b-4a84-80a7-1ce73f7769a6}</UniqueIdentifier>
@@ -84,6 +73,12 @@
     </Filter>
     <Filter Include="Game\Scene\Scene_Game">
       <UniqueIdentifier>{95bc44e9-1aea-4395-90b7-0f6f20f6d620}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SEED\lib\tensor\structs">
+      <UniqueIdentifier>{dfb0181f-50e4-40ce-89a8-2dc99677b813}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\shaders">
+      <UniqueIdentifier>{cc2e6001-6b19-45c9-8e03-f5b57bb4c219}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -186,19 +181,19 @@
       <Filter>SEED\lib\shapes</Filter>
     </ClInclude>
     <ClInclude Include="SEED\lib\structs\DirectionalLight.h">
-      <Filter>SEED\lib\structs</Filter>
+      <Filter>SEED\lib\tensor\structs</Filter>
     </ClInclude>
     <ClInclude Include="SEED\lib\structs\Material.h">
-      <Filter>SEED\lib\structs</Filter>
+      <Filter>SEED\lib\tensor\structs</Filter>
     </ClInclude>
     <ClInclude Include="SEED\lib\structs\modelData.h">
-      <Filter>SEED\lib\structs</Filter>
+      <Filter>SEED\lib\tensor\structs</Filter>
     </ClInclude>
     <ClInclude Include="SEED\lib\structs\Transform.h">
-      <Filter>SEED\lib\structs</Filter>
+      <Filter>SEED\lib\tensor\structs</Filter>
     </ClInclude>
     <ClInclude Include="SEED\lib\structs\VertexData.h">
-      <Filter>SEED\lib\structs</Filter>
+      <Filter>SEED\lib\tensor\structs</Filter>
     </ClInclude>
     <ClInclude Include="SEED\lib\tensor\Matrix2x2.h">
       <Filter>SEED\lib\tensor</Filter>
@@ -292,15 +287,21 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Object3d.VS.hlsl" />
-    <FxCompile Include="Object3d.PS.hlsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Object3D.hlsli" />
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="SEED\external\imgui\LICENSE.txt">
       <Filter>SEED\external\imgui</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\shaders\Object3D.hlsli">
+      <Filter>resources\shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="resources\shaders\Object3d.PS.hlsl">
+      <Filter>resources\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\shaders\Object3d.VS.hlsl">
+      <Filter>resources\shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
