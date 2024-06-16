@@ -1,5 +1,6 @@
 #pragma once
-#include "modelData.h"
+#include "ModelData.h"
+#include "VertexData.h"
 #include <string>
 #include <format>
 #include <cassert>
@@ -44,7 +45,7 @@ ID3D12DescriptorHeap* CreateDescriptorHeap(
 );
 
 // テクスチャを読み込む関数
-DirectX::ScratchImage LoadTexture(const std::string& filePath);
+DirectX::ScratchImage LoadTextureImage(const std::string& filePath);
 
 // Resource作成関数
 ID3D12Resource* CreateBufferResource(ID3D12Device* device, size_t sizeInBytes);

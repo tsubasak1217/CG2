@@ -3,6 +3,7 @@
 #include <vector>
 #include "Vector4.h"
 #include "VertexData.h"
+#include "Model.h"
 #include "Material.h"
 #include "Transform.h"
 
@@ -13,6 +14,12 @@ struct ID3D12Resource;
 struct TriangleData{
     std::vector<VertexData>vertices;
     std::vector<Material>colorf;
+    std::vector<TransformMatrix>transform;
+};
+
+struct Models{
+    std::vector<ModelData>modelData;
+    std::vector<Material>material;
     std::vector<TransformMatrix>transform;
 };
 
@@ -36,6 +43,13 @@ public:// 頂点情報の追加に関わる関数
         bool useTexture, bool view3D
     );
 
+    void AddModel(Model model,uint32_t GH);
+
+private:
+
+    void SetTriangle();
+    void SetModel();
+
 private:// 外部参照のためのポインタ変数
 
     DxManager* pDxManager_;
@@ -51,12 +65,17 @@ private:// 現在の描画数や頂点数などを格納する変数
 private:// 実際に頂点情報や色などの情報が入っている変数
 
     TriangleData triangles_;
+    TriangleData modelPolygons_;
 
 private:// Resourceを格納する変数
 
-    ID3D12Resource* vertexResource_;
-    ID3D12Resource* materialResource_;
-    ID3D12Resource* wvpResource_;
+    ID3D12Resource* vertexResource_ = nullptr;
+    ID3D12Resource* materialResource_ = nullptr;
+    ID3D12Resource* wvpResource_ = nullptr;
+
+    ID3D12Resource* vertexResource_model_ = nullptr;
+    ID3D12Resource* materialResource_model_ = nullptr;
+    ID3D12Resource* wvpResource_model_ = nullptr;
 
 private:
 

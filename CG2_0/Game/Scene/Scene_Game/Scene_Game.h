@@ -5,7 +5,7 @@
 
 class Scene_Game : public Scene_Base{
 public:
-    Scene_Game(SceneManager* pSceneManager, SEED* pSEED);
+    Scene_Game(SceneManager* pSceneManager);
     ~Scene_Game()override;
     void Initialize()override;
     void Finalize()override;

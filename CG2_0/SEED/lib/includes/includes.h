@@ -3,5 +3,4 @@
 #include "Transform.h"
 #include "DirectionalLight.h"
 #include "VertexData.h"
-#include "modelData.h"
-
+#include "Model.h"

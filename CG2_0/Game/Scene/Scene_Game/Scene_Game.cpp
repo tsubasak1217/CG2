@@ -1,7 +1,6 @@
 #include "Scene_Game.h"
 
-Scene_Game::Scene_Game(SceneManager* pSceneManager,SEED* pSEED){
-    pSEED_ = pSEED;
+Scene_Game::Scene_Game(SceneManager* pSceneManager){
     pSceneManager_ = pSceneManager;
     gameState_ = std::make_unique<GameState_Test>("Test",this);
 };

@@ -1,4 +1,5 @@
 #pragma once
+#include "SEED.h"
 #include "Scene_Base.h"
 #include "Scene_Game.h"
 #include <memory>
@@ -6,15 +7,16 @@ class SEED;
 
 class SceneManager{
 public:
-    SceneManager(SEED* pSEED);
+    SceneManager();
     ~SceneManager();
-    void Update();
-    void Draw();
+    static void Initialize();
+    static void Update();
+    static void Draw();
 
 public:
-    void ChangeScene(Scene_Base* newScene);
+    static void ChangeScene(Scene_Base* newScene);
 
 private:
-    std::unique_ptr<Scene_Base> pScene_;
-    SEED* pSEED_;
+    static std::unique_ptr<SceneManager> pSceneManager_;
+    static std::unique_ptr<Scene_Base> pScene_;
 };

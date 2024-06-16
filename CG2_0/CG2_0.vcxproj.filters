@@ -74,11 +74,11 @@
     <Filter Include="Game\Scene\Scene_Game">
       <UniqueIdentifier>{95bc44e9-1aea-4395-90b7-0f6f20f6d620}</UniqueIdentifier>
     </Filter>
-    <Filter Include="SEED\lib\tensor\structs">
-      <UniqueIdentifier>{dfb0181f-50e4-40ce-89a8-2dc99677b813}</UniqueIdentifier>
-    </Filter>
     <Filter Include="resources\shaders">
       <UniqueIdentifier>{cc2e6001-6b19-45c9-8e03-f5b57bb4c219}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SEED\lib\structs">
+      <UniqueIdentifier>{dfb0181f-50e4-40ce-89a8-2dc99677b813}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -154,6 +154,9 @@
     <ClCompile Include="SEED\lib\math\myFunc\ShapeMath.cpp">
       <Filter>SEED\lib\math\myFunc</Filter>
     </ClCompile>
+    <ClCompile Include="SEED\lib\structs\Model.cpp">
+      <Filter>SEED\lib\structs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SEED\lib\includes\include_matrixes.h">
@@ -181,19 +184,19 @@
       <Filter>SEED\lib\shapes</Filter>
     </ClInclude>
     <ClInclude Include="SEED\lib\structs\DirectionalLight.h">
-      <Filter>SEED\lib\tensor\structs</Filter>
+      <Filter>SEED\lib\structs</Filter>
     </ClInclude>
     <ClInclude Include="SEED\lib\structs\Material.h">
-      <Filter>SEED\lib\tensor\structs</Filter>
+      <Filter>SEED\lib\structs</Filter>
     </ClInclude>
-    <ClInclude Include="SEED\lib\structs\modelData.h">
-      <Filter>SEED\lib\tensor\structs</Filter>
+    <ClInclude Include="SEED\lib\structs\Model.h">
+      <Filter>SEED\lib\structs</Filter>
     </ClInclude>
     <ClInclude Include="SEED\lib\structs\Transform.h">
-      <Filter>SEED\lib\tensor\structs</Filter>
+      <Filter>SEED\lib\structs</Filter>
     </ClInclude>
     <ClInclude Include="SEED\lib\structs\VertexData.h">
-      <Filter>SEED\lib\tensor\structs</Filter>
+      <Filter>SEED\lib\structs</Filter>
     </ClInclude>
     <ClInclude Include="SEED\lib\tensor\Matrix2x2.h">
       <Filter>SEED\lib\tensor</Filter>
@@ -284,6 +287,9 @@
     </ClInclude>
     <ClInclude Include="SEED\lib\math\myFunc\ShapeMath.h">
       <Filter>SEED\lib\math\myFunc</Filter>
+    </ClInclude>
+    <ClInclude Include="SEED\lib\structs\ModelData.h">
+      <Filter>SEED\lib\structs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

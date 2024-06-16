@@ -4,24 +4,36 @@
 #include "WindowManager.h"
 #include "Triangle.h"
 #include "Camera.h"
-
-class SceneManager;
+#include "PolygonManager.h"
 
 class SEED{
 
 public:// 基本関数
     SEED();
-    SEED(HINSTANCE hInstance, int nCmdShow,const char* windowTitle,int clientWidth,int clientHeight);
+    SEED(HINSTANCE hInstance, int nCmdShow, const char* windowTitle, int clientWidth, int clientHeight);
     ~SEED();
-    static void Initialize(SEED* pSEED);
+    static void Initialize(HINSTANCE hInstance, int nCmdShow, const char* windowTitle, int clientWidth, int clientHeight);
     static void Finalize();
-    static void Run(HINSTANCE hInstance, int nCmdShow, const char* windowTitle, int clientWidth, int clientHeight);
 
-private:// 基本関数以外ででかめの関数
+public:// 基本関数以外ででかめの関数
     static void BeginFrame();
     static void EndFrame();
 
+public:
+    /////////////////////////////////////////////////////////////////////////////////////
+    /*                             テクスチャを読み込む関数                                */
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    // 返り値はグラフハンドル
+    uint32_t LoadTexture(const std::string& filePath)const;
+
+
 public:// このエンジンが用意する描画関数
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    /*                                三角形を描く関数                                    */
+    /////////////////////////////////////////////////////////////////////////////////////
+
     static void DrawTriangle(const Vector3& v1, const Vector3& v2, const Vector3& v3, const Vector4& color);
     static void DrawTriangle(const Vector4& v1, const Vector4& v2, const Vector4& v3, const Vector4& color);
     static void DrawTriangle(
@@ -59,11 +71,17 @@ public:// このエンジンが用意する描画関数
     static void DrawTriangleTex2D(const Triangle2D& triangle, const Vector4& color);
     static void DrawTriangleTex2D(const Triangle2D& triangle);
 
+    /////////////////////////////////////////////////////////////////////////////////////
+    /*                                モデルの描画登録                                    */
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    static void DrawModel(const Model& model, uint32_t textureGH);
+
+
 private:// マネージャたち
     static std::unique_ptr<WindowManager> windowManager_;
     static std::unique_ptr<DxManager> dxManager_;
     static std::unique_ptr<ImGuiManager> imguiManager_;
-    static std::unique_ptr<SceneManager> sceneManager_;
 
 public:// ウインドウに関する変数
     static HWND hwnd;
@@ -75,7 +93,12 @@ public:// ウインドウに関する変数
     static int kClientWidth_;
     static int kClientHeight_;
 
+public:
+    static SEED* pSEED_;
+    static PolygonManager* pPolygonManager_;
+
 public: // アクセッサ
+    static void SetPolygonManagerPtr(PolygonManager* ptr){ pPolygonManager_ = ptr; }
     static DxManager* GetDxManager(){ return dxManager_.get(); }
     static Camera* GetCamera(){ return dxManager_->GetCamera(); }
 };

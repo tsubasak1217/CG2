@@ -111,6 +111,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="SEED\lib\math\myFunc\MyMath.cpp" />
     <ClCompile Include="SEED\lib\math\myFunc\ShapeMath.cpp" />
     <ClCompile Include="SEED\lib\shapes\sphere.cpp" />
+    <ClCompile Include="SEED\lib\structs\Model.cpp" />
     <ClCompile Include="SEED\source\Manager\DxManager\Camera.cpp" />
     <ClCompile Include="SEED\source\Manager\DxManager\DxManager.cpp" />
     <ClCompile Include="SEED\source\Manager\DxManager\PolygonManager.cpp" />
@@ -147,7 +148,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="SEED\lib\shapes\Triangle.h" />
     <ClInclude Include="SEED\lib\structs\DirectionalLight.h" />
     <ClInclude Include="SEED\lib\structs\Material.h" />
-    <ClInclude Include="SEED\lib\structs\modelData.h" />
+    <ClInclude Include="SEED\lib\structs\Model.h" />
+    <ClInclude Include="SEED\lib\structs\ModelData.h" />
     <ClInclude Include="SEED\lib\structs\Transform.h" />
     <ClInclude Include="SEED\lib\structs\VertexData.h" />
     <ClInclude Include="SEED\lib\tensor\Matrix2x2.h" />

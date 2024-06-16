@@ -76,11 +76,11 @@ Vector4 FloatColor(uint32_t color)
 
 // DrawTriangleが呼び出されるごとに 三角形の情報を積み上げていく
 void PolygonManager::AddTriangle(
-    const Vector4& v1, const Vector4& v2, const Vector4& v3, 
+    const Vector4& v1, const Vector4& v2, const Vector4& v3,
     const Matrix4x4& worldMat, const Vector4& color,
     bool useTexture, bool view3D
 ){
-
+    useTexture;
     assert(triangleIndexCount_ < kMaxTriangleCount_);
 
     Vector3 normalVec =
@@ -91,16 +91,16 @@ void PolygonManager::AddTriangle(
         ));
 
     Matrix4x4 wvp = Multiply(
-        worldMat, 
-        view3D?
-        pDxManager_->GetCamera()->viewProjectionMat_ : 
+        worldMat,
+        view3D ?
+        pDxManager_->GetCamera()->viewProjectionMat_ :
         pDxManager_->GetCamera()->viewProjectionMat2D_
     );
 
     // vertexResource
-    triangles_.vertices.push_back(VertexData(v1, color, Vector2(0.5f, 0.0f), normalVec, wvp, worldMat,useTexture));
-    triangles_.vertices.push_back(VertexData(v2, color, Vector2(1.0f, 1.0f), normalVec, wvp, worldMat,useTexture));
-    triangles_.vertices.push_back(VertexData(v3, color, Vector2(0.0f, 1.0f), normalVec, wvp, worldMat,useTexture));
+    triangles_.vertices.push_back(VertexData(v1, Vector2(0.5f, 0.0f), normalVec, color));
+    triangles_.vertices.push_back(VertexData(v2, Vector2(1.0f, 1.0f), normalVec, color));
+    triangles_.vertices.push_back(VertexData(v3, Vector2(0.0f, 1.0f), normalVec, color));
 
     // materialResource
     triangles_.colorf.push_back(Material());
@@ -116,9 +116,37 @@ void PolygonManager::AddTriangle(
     triangleIndexCount_++;
 }
 
-/*---------------- フレームの終わりに積み上げられた情報をまとめてコマンドに積んで描画する関数 -------------------*/
+void PolygonManager::AddModel(Model model, uint32_t GH)
+{
+    model;
+    GH;
+    size_t modelSize = model.GetModelData().vertices.size();
 
-void PolygonManager::DrawPolygonAll()
+    Matrix4x4 wvp = Multiply(
+        model.GetWorldMat(),
+        pDxManager_->GetCamera()->viewProjectionMat_
+    );
+
+    for(uint32_t i = 0; i < modelSize; i++){
+        // vertexResource
+        modelPolygons_.vertices.push_back(model.GetModelData().vertices[i]);
+    }
+
+
+
+    // materialResource
+    modelPolygons_.colorf.push_back(Material());
+    modelPolygons_.colorf.back().color_ = color;
+    modelPolygons_.colorf.back().enableLighting_ = true;
+    modelPolygons_.colorf.back().uvTransform_ = IdentityMat4();
+
+    // wvpResource
+    triangles_.transform.push_back(TransformMatrix());
+    triangles_.transform.back().world_ = worldMat;
+    triangles_.transform.back().WVP_ = wvp;
+}
+
+void PolygonManager::SetTriangle()
 {
     /*-------------------三角形描画コマンド積む---------------------*/
 
@@ -174,5 +202,19 @@ void PolygonManager::DrawPolygonAll()
 
     // 描画! (DrawCall/ ドローコール)。 3頂点で1つのインスタンス。 インスタンスについては今後
     pDxManager_->commandList->DrawInstanced(3 * triangleIndexCount_, 1, 0, 0);
+}
+
+void PolygonManager::SetModel()
+{
+}
+
+/*---------------- フレームの終わりに積み上げられた情報をまとめてコマンドに積んで描画する関数 -------------------*/
+
+void PolygonManager::DrawPolygonAll()
+{
+    // 三角形
+    SetTriangle();
+
+    // モデル
 
 }

@@ -92,55 +92,29 @@ void PSOManager::Create()
     CPUからVertexShaderに渡すデータがどのようなものなのか指定するもの
            VertexShaderInputにあるメンバ変数の数だけ設定する
     */
-    D3D12_INPUT_ELEMENT_DESC inputElementDescs[13]{};
+    D3D12_INPUT_ELEMENT_DESC inputElementDescs[4]{};
 
     // 頂点座標
     inputElementDescs[0].SemanticName = "POSITION";
     inputElementDescs[0].SemanticIndex = 0;
     inputElementDescs[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
     inputElementDescs[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-    // 色
-    inputElementDescs[1].SemanticName = "COLOR";
-    inputElementDescs[1].SemanticIndex = 0;
-    inputElementDescs[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-    inputElementDescs[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
     // テクスチャ座標
-    inputElementDescs[2].SemanticName = "TEXCOORD";
-    inputElementDescs[2].SemanticIndex = 0;
-    inputElementDescs[2].Format = DXGI_FORMAT_R32G32_FLOAT;
-    inputElementDescs[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+    inputElementDescs[1].SemanticName = "TEXCOORD";
+    inputElementDescs[1].SemanticIndex = 0;
+    inputElementDescs[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+    inputElementDescs[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
     // 法線ベクトル
-    inputElementDescs[3].SemanticName = "NORMAL";
+    inputElementDescs[2].SemanticName = "NORMAL";
+    inputElementDescs[2].SemanticIndex = 0;
+    inputElementDescs[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+    inputElementDescs[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+    // 色
+    inputElementDescs[3].SemanticName = "COLOR";
     inputElementDescs[3].SemanticIndex = 0;
-    inputElementDescs[3].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+    inputElementDescs[3].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
     inputElementDescs[3].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-    // VP
-    inputElementDescs[4].SemanticName = "WVP";
-    inputElementDescs[4].SemanticIndex = 0;
-    inputElementDescs[4].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-    inputElementDescs[4].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-    inputElementDescs[5] = inputElementDescs[4];
-    inputElementDescs[5].SemanticIndex = 1;
-    inputElementDescs[6] = inputElementDescs[4];
-    inputElementDescs[6].SemanticIndex = 2;
-    inputElementDescs[7] = inputElementDescs[4];
-    inputElementDescs[7].SemanticIndex = 3;
-    // WORLD
-    inputElementDescs[8].SemanticName = "WORLD";
-    inputElementDescs[8].SemanticIndex = 0;
-    inputElementDescs[8].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-    inputElementDescs[8].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-    inputElementDescs[9] = inputElementDescs[8];
-    inputElementDescs[9].SemanticIndex = 1;
-    inputElementDescs[10] = inputElementDescs[8];
-    inputElementDescs[10].SemanticIndex = 2;
-    inputElementDescs[11] = inputElementDescs[8];
-    inputElementDescs[11].SemanticIndex = 3;
-    // テクスチャを使うかどうか
-    inputElementDescs[12].SemanticName = "USE_TEXTURE";
-    inputElementDescs[12].SemanticIndex = 0;
-    inputElementDescs[12].Format = DXGI_FORMAT_R32_SINT;
-    inputElementDescs[12].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+
 
     // 上で作成したデータ群をひとつの変数に入れる
     D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};

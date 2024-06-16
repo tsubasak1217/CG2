@@ -147,7 +147,7 @@ ID3D12DescriptorHeap* CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTO
 
 //------------------------------テクスチャを読み込む関数---------------------------------------//
 
-DirectX::ScratchImage LoadTexture(const std::string& filePath) {
+DirectX::ScratchImage LoadTextureImage(const std::string& filePath) {
 
     DirectX::ScratchImage image{};
     std::wstring filePathW = ConvertString(filePath);// wstring型に変換
@@ -382,10 +382,26 @@ ModelData LoadObjFile(const std::string& directoryPath, const std::string& filen
         } else if(identifer == "f"){// 面
 
             for(int32_t faceVertex = 0; faceVertex < 3; faceVertex++){
+                
+                std::string vertexDefinition;
+                s >> vertexDefinition;
+                std::istringstream v(vertexDefinition);
+                uint32_t elementIndices[3];
 
+                for(int32_t element = 0; element < 3; element++){
+                    std::string index;
+                    std::getline(v, index, '/');
+                    elementIndices[element] = std::stoi(index);
+                }
+
+                Vector4 position = positions[elementIndices[0] - 1];
+                Vector2 texcoord = texcoords[elementIndices[1] - 1];
+                Vector3 normal = normals[elementIndices[2] - 1];
+                VertexData vertex = { position,texcoord,normal,Vector4(1.0f,1.0f,1.0f,1.0f)};
+                modelData.vertices.push_back(vertex);
             }
         }
     }
 
-    return ModelData();
+    return modelData;
 }

@@ -49,8 +49,8 @@ private:// 内部の細かい関数
     // PSO
     void InitPSO();
 
-    // Textureの初期化関数
-    void InitTextures();
+    // Textureの解放関数
+    void ReleaseTextures();
 
     // preDraw,postDrawに関わる関数
     void TransitionResourceState(uint32_t state);
@@ -59,6 +59,10 @@ private:// 内部の細かい関数
     // GPUとCPUの同期に関わる関数
     void CreateFence();
     void WaitForGPU();
+
+public:
+    // テクスチャを読み込む関数
+    uint32_t CreateTexture(std::string filePath);
 
 public:// PolygonManagerに描画を頼む関数
 
@@ -81,7 +85,11 @@ private:// オブジェクト
 
     Camera* camera_;
 
-public:
+private:// カウント
+
+    uint32_t textureCount_ = 0;
+
+public:// DirectX
     
     // いろんなとこで実行結果を格納してくれる変数
     HRESULT hr;
@@ -158,10 +166,8 @@ public:
 
     /*----------------------------- TextureResourceの作成,転送 -----------------------------*/
 
-    ID3D12Resource* textureResource = nullptr;
-    ID3D12Resource* intermediateResource = nullptr;
-    ID3D12Resource* textureResource2 = nullptr;
-    ID3D12Resource* intermediateResource2 = nullptr;
+    std::vector<std::unique_ptr<ID3D12Resource>> textureResource;
+    std::vector<std::unique_ptr<ID3D12Resource>> intermediateResource;
 
     /*------------------------- DepthStencilTextureResourceの作成 -------------------------*/
 
@@ -179,4 +185,5 @@ public:
     public:// アクセッサ
 
     Camera* GetCamera()const{ return camera_; }
+    void SetCamera(Camera* camera){ camera_ = camera; }
 };

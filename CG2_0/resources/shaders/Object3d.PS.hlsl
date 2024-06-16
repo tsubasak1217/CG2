@@ -9,8 +9,8 @@ struct Material
 
 struct DirectionalLight
 {
-    float4 color_;
-    float3 direction_;
+    float4 color;
+    float3 direction;
     float intensity;
 };
 
@@ -33,28 +33,15 @@ PixelShaderOutput main(VertexShaderOutput input)
     
     if (gMaterial.enebleLighting != 0)
     {
-        float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction_);
+        float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction);
         float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
+
+        output.color = input.color * textureColor * gDirectionalLight.color * cos * gDirectionalLight.intensity;
         
-        if (input.useTexture == true)
-        {
-            output.color = input.color * textureColor * gDirectionalLight.color_ * cos * gDirectionalLight.intensity;
-        }
-        else
-        {   
-            output.color = input.color * gDirectionalLight.color_ * cos * gDirectionalLight.intensity;
-        }
     }
     else
     {
-        if (input.useTexture == true)
-        {
-            output.color = input.color * textureColor;
-        }
-        else
-        {
-            output.color = input.color;
-        }
+        output.color = input.color * textureColor;
     }
     
     return output;
