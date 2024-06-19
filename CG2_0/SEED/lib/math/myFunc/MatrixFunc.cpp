@@ -299,6 +299,12 @@ Vector3 TransformToVec3(const Vector2& vec)
     return Vector3(vec.x, vec.y,1.0f);
 }
 
+Vector3 TransformToVec3(const Vector4& vec)
+{
+    assert(vec.w != 0.0f);
+    return Vector3(vec.z/vec.w,vec.y/vec.w,vec.z/vec.w);
+}
+
 Vector3 Expand0ToVec3(const Vector2& vec)
 {
     return Vector3(vec.x,vec.y,0.0f);

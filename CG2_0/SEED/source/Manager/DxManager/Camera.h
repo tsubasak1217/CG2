@@ -21,6 +21,8 @@ struct Camera{
     Matrix4x4 projectionMat2D_;
     Matrix4x4 viewProjectionMat_;
     Matrix4x4 viewProjectionMat2D_;
+
+    Vector3 normal_;
 };
 
 enum PROJECTIONMODE{

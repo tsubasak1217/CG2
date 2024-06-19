@@ -1,8 +1,10 @@
 #include "Camera.h"
 #include "MatrixFunc.h"
+#include "MyMath.h"
 
 Camera::Camera()
 {
+    normal_ = { 0.0f,0.0f,1.0f };
 }
 
 Camera::~Camera()
@@ -16,6 +18,11 @@ void Camera::Update()
         transform_.scale_,
         transform_.rotate_,
         transform_.translate_
+    );
+
+    // カメラの法線を計算
+    normal_ = MyMath::Normalize(
+        Multiply(normal_, RotateMatrix(transform_.rotate_))
     );
 
     // カメラの逆行列

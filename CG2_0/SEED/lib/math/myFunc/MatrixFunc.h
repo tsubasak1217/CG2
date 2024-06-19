@@ -45,6 +45,7 @@ Vector3 TransformDescartes(const Vector3& vector, const Matrix4x4& matrix);
 
 // Vec3に変換する関数
 Vector3 TransformToVec3(const Vector2& vec);
+Vector3 TransformToVec3(const Vector4& vec);
 Vector3 Expand0ToVec3(const Vector2& vec);
 Vector3 Expand1ToVec3(const Vector2& vec);
 // Vec4に変換する関数

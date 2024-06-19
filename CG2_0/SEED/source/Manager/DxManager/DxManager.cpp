@@ -254,7 +254,7 @@ void DxManager::Initialize(SEED* pSEED)
     camera_->transform_.scale_ = { 1.0f,1.0f,1.0f }; // scale
     camera_->transform_.rotate_ = { 0.0f,0.0f,0.0f }; // rotate
     camera_->transform_.translate_ = { 0.0f,0.0f,-10.0f }; // translate
-    camera_->projectionMode_ = ORTHO;
+    camera_->projectionMode_ = PERSPECTIVE;
     camera_->clipRange_ = kWindowSize;
     camera_->znear_ = 0.1f;
     camera_->zfar_ = 100.0f;
@@ -474,6 +474,9 @@ void DxManager::CreateCommanders()
     hr = device->CreateCommandList(
         0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator, nullptr, IID_PPV_ARGS(&commandList)
     );
+    
+
+
     // コマンドリストの生成がうまくいかなかったので起動できない
     assert(SUCCEEDED(hr));
 }
