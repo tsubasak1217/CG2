@@ -50,6 +50,7 @@ void PolygonManager::Reset()
     triangleIndexCount_ = 0;
 }
 
+
 /*---------------------------------------------------------------------------------------------------------------*/
 /*                                                                                                               */
 /*                                               描画に関わる関数                                                   */
@@ -72,13 +73,14 @@ Vector4 FloatColor(uint32_t color)
     return colorf;
 }
 
+
 /*----------------------------------- 三角形の情報を追加する関数 ---------------------------------------*/
 
 // DrawTriangleが呼び出されるごとに 三角形の情報を積み上げていく
 void PolygonManager::AddTriangle(
     const Vector4& v1, const Vector4& v2, const Vector4& v3,
     const Matrix4x4& worldMat, const Vector4& color,
-    bool useTexture, bool view3D
+    bool useTexture, bool view3D,uint32_t GH
 ){
     useTexture;
     assert(triangleIndexCount_ < kMaxTriangleCount_);
@@ -113,6 +115,9 @@ void PolygonManager::AddTriangle(
     triangles_.transform.back().world_ = worldMat;
     triangles_.transform.back().WVP_ = wvp;
 
+    // GH
+    triangles_.GH.push_back(GH);
+
     triangleIndexCount_++;
 }
 
@@ -129,21 +134,22 @@ void PolygonManager::AddModel(Model model, uint32_t GH)
 
     for(uint32_t i = 0; i < modelSize; i++){
         // vertexResource
-        modelPolygons_.vertices.push_back(model.GetModelData().vertices[i]);
+        modelPolygons_.modelData.push_back(model.GetModelData());
     }
 
-
-
     // materialResource
-    modelPolygons_.colorf.push_back(Material());
-    modelPolygons_.colorf.back().color_ = color;
-    modelPolygons_.colorf.back().enableLighting_ = true;
-    modelPolygons_.colorf.back().uvTransform_ = IdentityMat4();
+    modelPolygons_.material.push_back(Material());
+    modelPolygons_.material.back().color_ = {1.0f,1.0f,1.0f,1.0f};
+    modelPolygons_.material.back().enableLighting_ = true;
+    modelPolygons_.material.back().uvTransform_ = IdentityMat4();
 
     // wvpResource
-    triangles_.transform.push_back(TransformMatrix());
-    triangles_.transform.back().world_ = worldMat;
-    triangles_.transform.back().WVP_ = wvp;
+    modelPolygons_.transform.push_back(TransformMatrix());
+    modelPolygons_.transform.back().world_ = model.GetWorldMat();
+    modelPolygons_.transform.back().WVP_ = wvp;
+
+    // GraphHandle
+    modelPolygons_.GH.push_back(GH);
 }
 
 void PolygonManager::SetTriangle()
@@ -216,5 +222,5 @@ void PolygonManager::DrawPolygonAll()
     SetTriangle();
 
     // モデル
-
+    SetModel();
 }

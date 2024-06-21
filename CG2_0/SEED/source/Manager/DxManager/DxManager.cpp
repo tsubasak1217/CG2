@@ -17,6 +17,9 @@ void DxManager::Initialize(SEED* pSEED)
     polygonManager_ = new PolygonManager(this);
     pSEED_->SetPolygonManagerPtr(polygonManager_);
     //
+    textureResource.clear();
+    intermediateResource.clear();
+    //
     camera_ = new Camera();
 
     /*===========================================================================================*/
@@ -130,6 +133,8 @@ void DxManager::Initialize(SEED* pSEED)
 
     /*----------------------------- Textureの初期化に関わる部分 -----------------------------*/
 
+    // white1x1だけ読み込んでおく
+    CreateTexture("resources/textures/white1x1.png");
 
     /*------------------------- DepthStencilTextureResourceの作成 -------------------------*/
 
@@ -561,12 +566,10 @@ uint32_t DxManager::CreateTexture(std::string filePath)
     DirectX::ScratchImage mipImages = LoadTextureImage(filePath);
     // 作成
     const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-    textureResource.push_back(std::make_unique<ID3D12Resource>(CreateTextureResource(device, metadata)));
+    textureResource.push_back(CreateTextureResource(device, metadata));
     // 転送
     intermediateResource.push_back(
-        std::make_unique<ID3D12Resource>(
-            UploadTextureData(textureResource.back().get(), mipImages, device, commandList)
-        )
+        UploadTextureData(textureResource.back(), mipImages, device, commandList)
     );
 
     /*-------------------------------- Texture用SRVの作成 ----------------------------------*/
@@ -583,7 +586,7 @@ uint32_t DxManager::CreateTexture(std::string filePath)
     D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 1 + textureCount_);
 
     // SRVの生成
-    device->CreateShaderResourceView(textureResource.back().get(), &srvDesc, textureSrvHandleCPU);
+    device->CreateShaderResourceView(textureResource.back(), &srvDesc, textureSrvHandleCPU);
 
     // グラフハンドルもついでに返す
     return textureCount_++;
@@ -593,8 +596,8 @@ uint32_t DxManager::CreateTexture(std::string filePath)
 void DxManager::ReleaseTextures()
 {
     for(int32_t i = 0; i < textureResource.size(); i++){
-        textureResource[i].reset();
-        intermediateResource[i].reset();
+        textureResource[i]->Release();
+        intermediateResource[i]->Release();
     }
 }
 
@@ -721,9 +724,9 @@ void DxManager::WaitForGPU()
 void DxManager::DrawTriangle(
     const Vector4& v1, const Vector4& v2, const Vector4& v3,
     const Matrix4x4& worldMat, const Vector4& color,
-    bool useTexture, bool view3D
+    bool useTexture, bool view3D, uint32_t GH
 ){
-    polygonManager_->AddTriangle(v1, v2, v3, worldMat, color, useTexture, view3D);
+    polygonManager_->AddTriangle(v1, v2, v3, worldMat, color, useTexture, view3D,GH);
 }
 
 void DxManager::Finalize()

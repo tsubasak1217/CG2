@@ -116,14 +116,14 @@ uint32_t SEED::LoadTexture(const std::string& filePath) const
 
 void SEED::DrawTriangle(const Vector4& v1, const Vector4& v2, const Vector4& v3, const Vector4& color)
 {
-    pSEED_->dxManager_->DrawTriangle(v1, v2, v3, IdentityMat4(), color, false, true);
+    pSEED_->dxManager_->DrawTriangle(v1, v2, v3, IdentityMat4(), color, false, true,0);
 }
 
 void SEED::DrawTriangle(const Vector3& v1, const Vector3& v2, const Vector3& v3, const Vector4& color)
 {
     pSEED_->dxManager_->DrawTriangle(
         TransformToVec4(v1), TransformToVec4(v2), TransformToVec4(v3), IdentityMat4(),
-        color, false, true
+        color, false, true,0
     );
 }
 
@@ -133,7 +133,7 @@ void SEED::DrawTriangle(
     const Vector4& color
 ){
     Matrix4x4 worldMat = AffineMatrix(scale, rotate, translate);
-    pSEED_->dxManager_->DrawTriangle(v1, v2, v3, worldMat, color, false, true);
+    pSEED_->dxManager_->DrawTriangle(v1, v2, v3, worldMat, color, false, true,0);
 }
 
 void SEED::DrawTriangle(
@@ -144,7 +144,7 @@ void SEED::DrawTriangle(
     Matrix4x4 worldMat = AffineMatrix(scale, rotate, translate);
     pSEED_->dxManager_->DrawTriangle(
         TransformToVec4(v1), TransformToVec4(v2), TransformToVec4(v3),
-        worldMat, color, false, true
+        worldMat, color, false, true,0
     );
 }
 
@@ -155,7 +155,7 @@ void SEED::DrawTriangle(const Triangle& triangle, const Vector4& color)
         TransformToVec4(triangle.localVertex[0]),
         TransformToVec4(triangle.localVertex[1]),
         TransformToVec4(triangle.localVertex[2]),
-        worldMat, color, false, true
+        worldMat, color, false, true,0
     );
 }
 
@@ -166,65 +166,65 @@ void SEED::DrawTriangle(const Triangle& triangle)
         TransformToVec4(triangle.localVertex[0]),
         TransformToVec4(triangle.localVertex[1]),
         TransformToVec4(triangle.localVertex[2]),
-        worldMat, triangle.colorf, false, true
+        worldMat, triangle.colorf, false, true,0
     );
 }
 
 /*----------------------------------Tex------------------------------------*/
 
-void SEED::DrawTriangleTex(const Vector4& v1, const Vector4& v2, const Vector4& v3, const Vector4& color)
+void SEED::DrawTriangleTex(const Vector4& v1, const Vector4& v2, const Vector4& v3, const Vector4& color, uint32_t GH)
 {
-    pSEED_->dxManager_->DrawTriangle(v1, v2, v3, IdentityMat4(), color, true, true);
+    pSEED_->dxManager_->DrawTriangle(v1, v2, v3, IdentityMat4(), color, true, true,GH);
 }
 
-void SEED::DrawTriangleTex(const Vector3& v1, const Vector3& v2, const Vector3& v3, const Vector4& color)
+void SEED::DrawTriangleTex(const Vector3& v1, const Vector3& v2, const Vector3& v3, const Vector4& color, uint32_t GH)
 {
     pSEED_->dxManager_->DrawTriangle(
         TransformToVec4(v1), TransformToVec4(v2), TransformToVec4(v3), IdentityMat4(),
-        color, true, true
+        color, true, true,GH
     );
 }
 
 void SEED::DrawTriangleTex(
     const Vector4& v1, const Vector4& v2, const Vector4& v3,
     const Vector3& scale, const Vector3& rotate, const Vector3& translate,
-    const Vector4& color
+    const Vector4& color, uint32_t GH
 ){
     Matrix4x4 worldMat = AffineMatrix(scale, rotate, translate);
-    pSEED_->dxManager_->DrawTriangle(v1, v2, v3, worldMat, color, true, true);
+    pSEED_->dxManager_->DrawTriangle(v1, v2, v3, worldMat, color, true, true,GH);
 }
 
 void SEED::DrawTriangleTex(
     const Vector3& v1, const Vector3& v2, const Vector3& v3,
     const Vector3& scale, const Vector3& rotate, const Vector3& translate,
-    const Vector4& color
+    const Vector4& color, uint32_t GH
 ){
     Matrix4x4 worldMat = AffineMatrix(scale, rotate, translate);
     pSEED_->dxManager_->DrawTriangle(
         TransformToVec4(v1), TransformToVec4(v2), TransformToVec4(v3),
-        worldMat, color, true, true
+        worldMat, color, true, true,GH
     );
 }
 
-void SEED::DrawTriangleTex(const Triangle& triangle, const Vector4& color)
+void SEED::DrawTriangleTex(const Triangle& triangle, const Vector4& color, uint32_t GH)
 {
     Matrix4x4 worldMat = AffineMatrix(triangle.scale, triangle.rotate, triangle.translate);
     pSEED_->dxManager_->DrawTriangle(
         TransformToVec4(triangle.localVertex[0]),
         TransformToVec4(triangle.localVertex[1]),
         TransformToVec4(triangle.localVertex[2]),
-        worldMat, color, true, true
+        worldMat, color, true, true,GH
     );
 }
 
-void SEED::DrawTriangleTex(const Triangle& triangle)
+void SEED::DrawTriangleTex(const Triangle& triangle, uint32_t GH)
 {
     Matrix4x4 worldMat = AffineMatrix(triangle.scale, triangle.rotate, triangle.translate);
     pSEED_->dxManager_->DrawTriangle(
         TransformToVec4(triangle.localVertex[0]),
         TransformToVec4(triangle.localVertex[1]),
         TransformToVec4(triangle.localVertex[2]),
-        worldMat, triangle.colorf, true, true
+        worldMat, triangle.colorf, true, true,GH
     );
 }
 
@@ -236,7 +236,7 @@ void SEED::DrawTriangle2D(const Vector2& v1, const Vector2& v2, const Vector2& v
         TransformToVec4(v1),
         TransformToVec4(v2),
         TransformToVec4(v3),
-        IdentityMat4(), color, false, false
+        IdentityMat4(), color, false, false,0
     );
 }
 
@@ -247,7 +247,7 @@ void SEED::DrawTriangle2D(const Triangle2D& triangle, const Vector4& color)
         TransformToVec4(triangle.localVertex[0]),
         TransformToVec4(triangle.localVertex[1]),
         TransformToVec4(triangle.localVertex[2]),
-        worldMat, color, false, false
+        worldMat, color, false, false,0
     );
 }
 
@@ -258,41 +258,41 @@ void SEED::DrawTriangle2D(const Triangle2D& triangle)
         TransformToVec4(triangle.localVertex[0]),
         TransformToVec4(triangle.localVertex[1]),
         TransformToVec4(triangle.localVertex[2]),
-        worldMat, triangle.colorf, false, false
+        worldMat, triangle.colorf, false, false,0
     );
 }
 
 /*----------------------------------Tex------------------------------------*/
 
-void SEED::DrawTriangleTex2D(const Vector2& v1, const Vector2& v2, const Vector2& v3, const Vector4& color)
+void SEED::DrawTriangleTex2D(const Vector2& v1, const Vector2& v2, const Vector2& v3, const Vector4& color, uint32_t GH)
 {
     pSEED_->dxManager_->DrawTriangle(
         TransformToVec4(v1),
         TransformToVec4(v2),
         TransformToVec4(v3),
-        IdentityMat4(), color, true, false
+        IdentityMat4(), color, true, false,GH
     );
 }
 
-void SEED::DrawTriangleTex2D(const Triangle2D& triangle, const Vector4& color)
+void SEED::DrawTriangleTex2D(const Triangle2D& triangle, const Vector4& color, uint32_t GH)
 {
     Matrix4x4 worldMat = AffineMatrix({ triangle.scale.x,triangle.scale.y,1.0f }, { 0.0f, 0.0f, triangle.rotate }, { triangle.translate.x,triangle.translate.y,0.0f });
     pSEED_->dxManager_->DrawTriangle(
         TransformToVec4(triangle.localVertex[0]),
         TransformToVec4(triangle.localVertex[1]),
         TransformToVec4(triangle.localVertex[2]),
-        worldMat, color, true, false
+        worldMat, color, true, false,GH
     );
 }
 
-void SEED::DrawTriangleTex2D(const Triangle2D& triangle)
+void SEED::DrawTriangleTex2D(const Triangle2D& triangle, uint32_t GH)
 {
     Matrix4x4 worldMat = AffineMatrix({ triangle.scale.x,triangle.scale.y,1.0f }, { 0.0f, 0.0f, triangle.rotate }, { triangle.translate.x,triangle.translate.y,0.0f });
     pSEED_->dxManager_->DrawTriangle(
         TransformToVec4(triangle.localVertex[0]),
         TransformToVec4(triangle.localVertex[1]),
         TransformToVec4(triangle.localVertex[2]),
-        worldMat, triangle.colorf, true, false
+        worldMat, triangle.colorf, true, false,GH
     );
 }
 

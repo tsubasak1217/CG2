@@ -69,7 +69,7 @@ public:// PolygonManagerに描画を頼む関数
     void DrawTriangle(
         const Vector4& v1, const Vector4& v2, const Vector4& v3,
         const Matrix4x4& worldMat, const Vector4& color,
-        bool useTexture,bool view3D
+        bool useTexture,bool view3D, uint32_t GH
     );
 
 private:// 外部参照のためのポインタ
@@ -166,8 +166,8 @@ public:// DirectX
 
     /*----------------------------- TextureResourceの作成,転送 -----------------------------*/
 
-    std::vector<std::unique_ptr<ID3D12Resource>> textureResource;
-    std::vector<std::unique_ptr<ID3D12Resource>> intermediateResource;
+    std::vector<ID3D12Resource*> textureResource;
+    std::vector<ID3D12Resource*> intermediateResource;
 
     /*------------------------- DepthStencilTextureResourceの作成 -------------------------*/
 

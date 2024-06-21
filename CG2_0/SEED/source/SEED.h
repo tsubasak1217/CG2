@@ -48,34 +48,34 @@ public:// このエンジンが用意する描画関数
     );
     static void DrawTriangle(const Triangle& triangle, const Vector4& color);
     static void DrawTriangle(const Triangle& triangle);
-    static void DrawTriangleTex(const Vector3& v1, const Vector3& v2, const Vector3& v3, const Vector4& color);
-    static void DrawTriangleTex(const Vector4& v1, const Vector4& v2, const Vector4& v3, const Vector4& color);
+    static void DrawTriangleTex(const Vector3& v1, const Vector3& v2, const Vector3& v3, const Vector4& color, uint32_t GH = 0);
+    static void DrawTriangleTex(const Vector4& v1, const Vector4& v2, const Vector4& v3, const Vector4& color, uint32_t GH = 0);
     static void DrawTriangleTex(
         const Vector4& v1, const Vector4& v2, const Vector4& v3,
         const Vector3& scale, const Vector3& rotate, const Vector3& translate,
-        const Vector4& color
+        const Vector4& color, uint32_t GH = 0
     );
     static void DrawTriangleTex(
         const Vector3& v1, const Vector3& v2, const Vector3& v3,
         const Vector3& scale, const Vector3& rotate, const Vector3& translate,
-        const Vector4& color
+        const Vector4& color, uint32_t GH = 0
     );
-    static void DrawTriangleTex(const Triangle& triangle, const Vector4& color);
-    static void DrawTriangleTex(const Triangle& triangle);
+    static void DrawTriangleTex(const Triangle& triangle, const Vector4& color, uint32_t GH = 0);
+    static void DrawTriangleTex(const Triangle& triangle,uint32_t GH = 0);
 
     // 2D-----------------------------------
     static void DrawTriangle2D(const Vector2& v1, const Vector2& v2, const Vector2& v3, const Vector4& color);
     static void DrawTriangle2D(const Triangle2D& triangle, const Vector4& color);
     static void DrawTriangle2D(const Triangle2D& triangle);
-    static void DrawTriangleTex2D(const Vector2& v1, const Vector2& v2, const Vector2& v3, const Vector4& color);
-    static void DrawTriangleTex2D(const Triangle2D& triangle, const Vector4& color);
-    static void DrawTriangleTex2D(const Triangle2D& triangle);
+    static void DrawTriangleTex2D(const Vector2& v1, const Vector2& v2, const Vector2& v3, const Vector4& color, uint32_t GH = 0);
+    static void DrawTriangleTex2D(const Triangle2D& triangle, const Vector4& color, uint32_t GH = 0);
+    static void DrawTriangleTex2D(const Triangle2D& triangle, uint32_t GH = 0);
 
     /////////////////////////////////////////////////////////////////////////////////////
     /*                                モデルの描画登録                                    */
     /////////////////////////////////////////////////////////////////////////////////////
 
-    static void DrawModel(const Model& model, uint32_t textureGH);
+    static void DrawModel(const Model& model, uint32_t textureGH = 0);
 
 
 private:// マネージャたち
