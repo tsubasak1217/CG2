@@ -157,12 +157,97 @@ void PolygonManager::SetTriangle()
     /*-------------------三角形描画コマンド積む---------------------*/
 
     // 三角形用のVertexBufferViewの設定
+    //VBV_TriangleVertex_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
+    //VBV_TriangleVertex_.SizeInBytes = (sizeof(VertexData) * 3) * triangleIndexCount_;
+    //VBV_TriangleVertex_.StrideInBytes = sizeof(VertexData);
+
+
+    //// 書き込み
+    //VertexData* vertexData;
+    //Material* materialData;
+    //TransformMatrix* transformData;
+
+    //vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+    //materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
+    //wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformData));
+
+    //std::memcpy(vertexData, triangles_.vertices.data(), (sizeof(VertexData) * 3) * triangleIndexCount_);
+    //std::memcpy(materialData, triangles_.colorf.data(), sizeof(Material) * triangleIndexCount_);
+    //std::memcpy(transformData, triangles_.transform.data(), sizeof(TransformMatrix) * triangleIndexCount_);
+
+    //D3D12_RANGE writeRange[3] = {
+    //    {0,(sizeof(VertexData) * 3) * triangleIndexCount_},
+    //    {0,sizeof(Material) * triangleIndexCount_},
+    //    {0,sizeof(TransformMatrix) * triangleIndexCount_}
+    //};
+
+    //vertexResource_->Unmap(0, &writeRange[0]);
+    //materialResource_->Unmap(0, &writeRange[1]);
+    //wvpResource_->Unmap(0, &writeRange[2]);
+
+    //// シザー矩形とviewport
+    //pDxManager_->commandList->RSSetViewports(1, &pDxManager_->viewport); // Viewport
+    //pDxManager_->commandList->RSSetScissorRects(1, &pDxManager_->scissorRect); // Scissor
+
+    //// RootSignatureを設定。 PSOに設定しているけど別途設定が必要
+    //pDxManager_->commandList->SetGraphicsRootSignature(pDxManager_->rootSignature.Get());
+    //pDxManager_->commandList->SetPipelineState(pDxManager_->graphicsPipelineState.Get()); // PSO
+
+    //pDxManager_->commandList->IASetVertexBuffers(0, 1, &VBV_TriangleVertex_); // VBV
+
+    //// 形状を設定。 PSOに設定しているものとはまた別。 同じものを設定すると考えておけば良い
+    //pDxManager_->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    //D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = 
+    //    GetGPUDescriptorHandle(
+    //        pDxManager_->srvDescriptorHeap.Get(),
+    //        pDxManager_->descriptorSizeSRV,
+    //        textureNum_
+    //    );
+    //pDxManager_->commandList->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
+
+    //// Resourceを設定
+    //pDxManager_->commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
+    //pDxManager_->commandList->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
+    //pDxManager_->commandList->SetGraphicsRootConstantBufferView(3, pDxManager_->lightingResource->GetGPUVirtualAddress());
+
+    //// 描画! (DrawCall/ ドローコール)。 3頂点で1つのインスタンス。 インスタンスについては今後
+    //pDxManager_->commandList->DrawInstanced(3 * triangleIndexCount_, 1, 0, 0);
+
+        /*-------------------三角形描画コマンド積む---------------------*/
+
     VBV_TriangleVertex_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
     VBV_TriangleVertex_.SizeInBytes = (sizeof(VertexData) * 3) * triangleIndexCount_;
     VBV_TriangleVertex_.StrideInBytes = sizeof(VertexData);
 
+    /*-------------------共通の設定---------------------*/
+    // シザー矩形とviewport
+    pDxManager_->commandList->RSSetViewports(1, &pDxManager_->viewport); // Viewport
+    pDxManager_->commandList->RSSetScissorRects(1, &pDxManager_->scissorRect); // Scissor
 
-    // 書き込み
+    // RootSignatureを設定。 PSOに設定しているけど別途設定が必要
+    pDxManager_->commandList->SetGraphicsRootSignature(pDxManager_->rootSignature.Get());
+    pDxManager_->commandList->SetPipelineState(pDxManager_->graphicsPipelineState.Get()); // PSO
+
+    pDxManager_->commandList->IASetVertexBuffers(0, 1, &VBV_TriangleVertex_); // VBV
+
+    // 形状を設定。 PSOに設定しているものとはまた別。 同じものを設定すると考えておけば良い
+    pDxManager_->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = GetGPUDescriptorHandle(
+        pDxManager_->srvDescriptorHeap.Get(),
+        pDxManager_->descriptorSizeSRV, 
+        textureNum_
+    );
+    pDxManager_->commandList->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
+
+    // Resourceを設定
+    pDxManager_->commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
+    pDxManager_->commandList->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
+    pDxManager_->commandList->SetGraphicsRootConstantBufferView(3, pDxManager_->lightingResource->GetGPUVirtualAddress());
+
+    /*-------------------書き込み---------------------*/
+
     VertexData* vertexData;
     Material* materialData;
     TransformMatrix* transformData;
@@ -185,34 +270,62 @@ void PolygonManager::SetTriangle()
     materialResource_->Unmap(0, &writeRange[1]);
     wvpResource_->Unmap(0, &writeRange[2]);
 
-    // シザー矩形とviewport
-    pDxManager_->commandList->RSSetViewports(1, &pDxManager_->viewport); // Viewport
-    pDxManager_->commandList->RSSetScissorRects(1, &pDxManager_->scissorRect); // Scissor
 
-    // RootSignatureを設定。 PSOに設定しているけど別途設定が必要
-    pDxManager_->commandList->SetGraphicsRootSignature(pDxManager_->rootSignature.Get());
-    pDxManager_->commandList->SetPipelineState(pDxManager_->graphicsPipelineState.Get()); // PSO
 
-    pDxManager_->commandList->IASetVertexBuffers(0, 1, &VBV_TriangleVertex_); // VBV
+    /*-------------------ひとつずつドロー---------------------*/
+    for(uint32_t i = 0; i < triangleIndexCount_; i++){
 
-    // 形状を設定。 PSOに設定しているものとはまた別。 同じものを設定すると考えておけば良い
-    pDxManager_->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        // シェーディングレベルの初期値
+        int32_t lowShadingPoint = 0;
 
-    D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = 
-        GetGPUDescriptorHandle(
-            pDxManager_->srvDescriptorHeap.Get(),
-            pDxManager_->descriptorSizeSRV,
-            textureNum_
+        // カメラとの距離に応じてポイントを加算
+        float distance = MyMath::Length(
+            TransformToVec3(triangles_.vertices[i * 3].position_) -
+            pDxManager_->GetCamera()->transform_.translate_
         );
-    pDxManager_->commandList->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
 
-    // Resourceを設定
-    pDxManager_->commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
-    pDxManager_->commandList->SetGraphicsRootConstantBufferView(1, wvpResource_->GetGPUVirtualAddress());
-    pDxManager_->commandList->SetGraphicsRootConstantBufferView(3, pDxManager_->lightingResource->GetGPUVirtualAddress());
+        float depthRate = distance / pDxManager_->GetCamera()->zfar_;
 
-    // 描画! (DrawCall/ ドローコール)。 3頂点で1つのインスタンス。 インスタンスについては今後
-    pDxManager_->commandList->DrawInstanced(3 * triangleIndexCount_, 1, 0, 0);
+        if(depthRate > 0.4f){
+            lowShadingPoint += 4;
+        } else if(depthRate > 0.2f){
+            lowShadingPoint += 2;
+        }
+
+        // カメラに対する向きに応じてポイントを加算
+        float dot = MyMath::Dot(triangles_.vertices[i * 3].normal_, pDxManager_->GetCamera()->normal_);
+        if(dot >= 0.0f){
+            lowShadingPoint += 4;
+        } else if(dot <= -0.7f){
+
+        } else if(dot <= std::cos(3.14f * 0.6)){
+            lowShadingPoint += 2;
+        } else if(dot <= std::cos(3.14f * 0.5f)){
+            lowShadingPoint += 4;
+        }
+
+        // ポイントに応じてシェーディングレートを決定
+        if(lowShadingPoint >= 4){
+            pDxManager_->commandList->RSSetShadingRate(D3D12_SHADING_RATE_4X4, nullptr);
+
+        } else if(lowShadingPoint >= 2){
+            pDxManager_->commandList->RSSetShadingRate(D3D12_SHADING_RATE_2X2, nullptr);
+
+        } else if(lowShadingPoint >= 0){
+            pDxManager_->commandList->RSSetShadingRate(D3D12_SHADING_RATE_1X1, nullptr);
+        }
+
+        // 描画! (DrawCall/ ドローコール)。 3頂点で1つのインスタンス。
+        pDxManager_->commandList->DrawInstanced(
+            3,
+            1,
+            3 * i,
+            i
+        );
+    }
+
+    // シェーディングレートをもとに戻す
+    pDxManager_->commandList->RSSetShadingRate(D3D12_SHADING_RATE_1X1, nullptr);
 }
 
 void PolygonManager::SetModel()

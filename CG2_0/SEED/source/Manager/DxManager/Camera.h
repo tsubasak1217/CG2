@@ -15,6 +15,8 @@ struct Camera{
     float znear_;
     float zfar_;
 
+    Vector3 normal_;
+
     Matrix4x4 worldMat_;
     Matrix4x4 viewMat_;
     Matrix4x4 projectionMat_;

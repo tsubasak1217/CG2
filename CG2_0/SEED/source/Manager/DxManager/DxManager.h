@@ -114,7 +114,7 @@ public:// DirectX
     ComPtr<ID3D12InfoQueue> infoQueue = nullptr;
     ComPtr<ID3D12CommandQueue> commandQueue = nullptr;
     ComPtr<ID3D12CommandAllocator> commandAllocator = nullptr;// コマンドアロケータを格納する変数
-    ComPtr<ID3D12GraphicsCommandList> commandList = nullptr;// コマンドリストを格納する変数
+    ComPtr<ID3D12GraphicsCommandList5> commandList = nullptr;// コマンドリストを格納する変数
 
     // SwapChain、ダブルバッファリングに必要な変数
     DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};

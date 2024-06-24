@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "MatrixFunc.h"
+#include "MyMath.h"
 
 Camera::Camera()
 {
@@ -33,6 +34,10 @@ void Camera::Update()
         0.0f, clipRange_.y,
         zfar_, znear_
     );
+
+    // カメラ法線
+    normal_ = { 0.0f,0.0f,1.0f };
+    normal_ = MyMath::Normalize(Multiply(normal_, worldMat_));
 
     // ViewProjectionMatrixの計算
     viewProjectionMat_ = Multiply(viewMat_, projectionMat_);
