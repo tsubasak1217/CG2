@@ -254,7 +254,7 @@ void PolygonManager::SetTriangle()
     vertexResource_->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
     materialResource_->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
     wvpResource_->Map(0, nullptr, reinterpret_cast<void**>(&transformData));
-
+    
     std::memcpy(vertexData, triangles_.vertices.data(), (sizeof(VertexData) * 3) * triangleIndexCount_);
     std::memcpy(materialData, triangles_.colorf.data(), sizeof(Material) * triangleIndexCount_);
     std::memcpy(transformData, triangles_.transform.data(), sizeof(TransformMatrix) * triangleIndexCount_);

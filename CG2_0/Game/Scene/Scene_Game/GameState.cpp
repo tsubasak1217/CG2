@@ -43,6 +43,8 @@ void GameState_Test::Draw()
         SEED::DrawTriangleTex(tri[i], GH[i]);
         tri[i].rotate.y += 0.01f;
     }
+
+    SEED::DrawTriangle2D(Vector2(400.0f,400.0f), Vector2(430.0f,400.0f), Vector2(415.0f,430.0f), {1.0f,1.0f,1.0f,1.0f});
 }
 
 /*==================================================================================================*/
