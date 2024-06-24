@@ -145,11 +145,31 @@ ID3D12DescriptorHeap* CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTO
     return descriptorHeap;
 }
 
+void CreateDescriptorHeap(ID3D12Device* device, ID3D12DescriptorHeap* heap, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible) {
+
+    // ディスクリプタヒープとディスクリプターを格納する変数
+    D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc{};
+
+    descriptorHeapDesc.Type = heapType; // ヒープタイプ設定
+    descriptorHeapDesc.NumDescriptors = numDescriptors; // ディスクリプターの数を設定
+    descriptorHeapDesc.Flags = shaderVisible ?// visibleかどうか
+        D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+
+    // ディスクリプタヒープを作成
+    HRESULT hr;
+    hr = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&heap));
+
+    // ディスクリプタヒープが作れなかったので起動できない
+    assert(SUCCEEDED(hr));
+}
+
 //------------------------------テクスチャを読み込む関数---------------------------------------//
 
 DirectX::ScratchImage LoadTextureImage(const std::string& filePath) {
 
     DirectX::ScratchImage image{};
+    DirectX::ScratchImage mipImages{};
+
     std::wstring filePathW = ConvertString(filePath);// wstring型に変換
     // ファイルを読み込む
     HRESULT hr = DirectX::LoadFromWICFile(
@@ -161,16 +181,19 @@ DirectX::ScratchImage LoadTextureImage(const std::string& filePath) {
     assert(SUCCEEDED(hr));
 
     // ミップマップの作成
-    DirectX::ScratchImage mipImages{};
-    // 作成
-    hr = DirectX::GenerateMipMaps(
-        image.GetImages(),
-        image.GetImageCount(),
-        image.GetMetadata(),
-        DirectX::TEX_FILTER_SRGB,
-        0,
-        mipImages
-    );
+    if(image.GetMetadata().width > 1 && image.GetMetadata().height > 1) {
+        hr = DirectX::GenerateMipMaps(
+            image.GetImages(),
+            image.GetImageCount(),
+            image.GetMetadata(),
+            DirectX::TEX_FILTER_SRGB,
+            0,
+            mipImages
+        );
+    } else{// サイズが1x1のときはここ
+        return image;
+    }
+
     assert(SUCCEEDED(hr));
 
     return mipImages;

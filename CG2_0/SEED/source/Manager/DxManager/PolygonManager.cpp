@@ -23,23 +23,23 @@ PolygonManager::PolygonManager(DxManager* pDxManager)
 }
 
 PolygonManager::~PolygonManager(){
-    Finalize();
+    //Finalize();
 }
 
 void PolygonManager::InitResources()
 {
     vertexResource_ =
-        CreateBufferResource(pDxManager_->device, (sizeof(VertexData) * 3) * kMaxTriangleCount_);
+        CreateBufferResource(pDxManager_->device.Get(), (sizeof(VertexData) * 3) * kMaxTriangleCount_);
     materialResource_ =
-        CreateBufferResource(pDxManager_->device, sizeof(Material) * kMaxTriangleCount_);
+        CreateBufferResource(pDxManager_->device.Get(), sizeof(Material) * kMaxTriangleCount_);
     wvpResource_ =
-        CreateBufferResource(pDxManager_->device, sizeof(TransformMatrix) * kMaxTriangleCount_);
+        CreateBufferResource(pDxManager_->device.Get(), sizeof(TransformMatrix) * kMaxTriangleCount_);
 }
 
 void PolygonManager::Finalize(){
-    vertexResource_->Release();
-    materialResource_->Release();
-    wvpResource_->Release();
+    //vertexResource_->Release();
+    //materialResource_->Release();
+    //wvpResource_->Release();
 }
 
 void PolygonManager::Reset()
@@ -190,15 +190,20 @@ void PolygonManager::SetTriangle()
     pDxManager_->commandList->RSSetScissorRects(1, &pDxManager_->scissorRect); // Scissor
 
     // RootSignatureを設定。 PSOに設定しているけど別途設定が必要
-    pDxManager_->commandList->SetGraphicsRootSignature(pDxManager_->rootSignature);
-    pDxManager_->commandList->SetPipelineState(pDxManager_->graphicsPipelineState); // PSO
+    pDxManager_->commandList->SetGraphicsRootSignature(pDxManager_->rootSignature.Get());
+    pDxManager_->commandList->SetPipelineState(pDxManager_->graphicsPipelineState.Get()); // PSO
 
     pDxManager_->commandList->IASetVertexBuffers(0, 1, &VBV_TriangleVertex_); // VBV
 
     // 形状を設定。 PSOに設定しているものとはまた別。 同じものを設定すると考えておけば良い
     pDxManager_->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = GetGPUDescriptorHandle(pDxManager_->srvDescriptorHeap, pDxManager_->descriptorSizeSRV, textureNum_);
+    D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = 
+        GetGPUDescriptorHandle(
+            pDxManager_->srvDescriptorHeap.Get(),
+            pDxManager_->descriptorSizeSRV,
+            textureNum_
+        );
     pDxManager_->commandList->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
 
     // Resourceを設定

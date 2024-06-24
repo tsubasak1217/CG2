@@ -6,6 +6,8 @@
 #include "Model.h"
 #include "Material.h"
 #include "Transform.h"
+#include <wrl/client.h>
+using Microsoft::WRL::ComPtr;
 
 class DxManager;
 struct D3D12_VERTEX_BUFFER_VIEW;
@@ -73,13 +75,13 @@ private:// 実際に頂点情報や色などの情報が入っている変数
 
 private:// Resourceを格納する変数
 
-    ID3D12Resource* vertexResource_ = nullptr;
-    ID3D12Resource* materialResource_ = nullptr;
-    ID3D12Resource* wvpResource_ = nullptr;
+    ComPtr<ID3D12Resource> vertexResource_ = nullptr;
+    ComPtr<ID3D12Resource> materialResource_ = nullptr;
+    ComPtr<ID3D12Resource> wvpResource_ = nullptr;
 
-    ID3D12Resource* vertexResource_model_ = nullptr;
-    ID3D12Resource* materialResource_model_ = nullptr;
-    ID3D12Resource* wvpResource_model_ = nullptr;
+    ComPtr<ID3D12Resource> vertexResource_model_ = nullptr;
+    ComPtr<ID3D12Resource> materialResource_model_ = nullptr;
+    ComPtr<ID3D12Resource> wvpResource_model_ = nullptr;
 
 private:
 

@@ -20,7 +20,7 @@ std::string SEED::windowTitle_ = "";
 int SEED::kClientWidth_ = 0;
 int SEED::kClientHeight_ = 0;
 
-SEED* SEED::pSEED_ = nullptr;
+std::unique_ptr <SEED> SEED::pSEED_ = nullptr;
 PolygonManager* SEED::pPolygonManager_ = nullptr;
 
 /*---------------------------------コンストラクタ、デストラクタ------------------------------------*/
@@ -39,7 +39,7 @@ SEED::SEED(HINSTANCE hInstance, int nCmdShow, const char* windowTitle, int clien
     dxManager_ = std::make_unique<DxManager>();
     imguiManager_ = std::make_unique<ImGuiManager>();
 
-    pSEED_ = this;
+    pSEED_.reset(this);
 }
 
 SEED::~SEED(){}
@@ -48,9 +48,9 @@ SEED::~SEED(){}
 
 void SEED::Initialize(HINSTANCE hInstance, int nCmdShow, const char* windowTitle, int clientWidth, int clientHeight){
     SEED seed(hInstance, nCmdShow, windowTitle, clientWidth, clientHeight);
-    pSEED_->windowManager_->Initialize(pSEED_);
-    pSEED_->dxManager_->Initialize(pSEED_);
-    pSEED_->imguiManager_->Initialize(pSEED_);
+    pSEED_->windowManager_->Initialize(pSEED_.get());
+    pSEED_->dxManager_->Initialize(pSEED_.get());
+    pSEED_->imguiManager_->Initialize(pSEED_.get());
 }
 
 void SEED::Finalize()

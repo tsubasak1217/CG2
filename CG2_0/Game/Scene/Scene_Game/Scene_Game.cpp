@@ -7,7 +7,7 @@ Scene_Game::Scene_Game(SceneManager* pSceneManager){
 
 Scene_Game::~Scene_Game()
 {
-    ChangeState(new GameState_Test("Test", this));
+    //ChangeState(new GameState_Test("Test", this));
 }
 
 void Scene_Game::Initialize()

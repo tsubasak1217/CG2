@@ -16,10 +16,10 @@ void ImGuiManager::Initialize(SEED* pSEED)
     ImGui::StyleColorsDark();
     ImGui_ImplWin32_Init(pSEED_->hwnd);
     ImGui_ImplDX12_Init(
-        pDxManager_->device,
+        pDxManager_->device.Get(),
         pDxManager_->swapChainDesc.BufferCount,
         pDxManager_->rtvDesc.Format,
-        pDxManager_->srvDescriptorHeap,
+        pDxManager_->srvDescriptorHeap.Get(),
         pDxManager_->srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
         pDxManager_->srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart()
     );
@@ -40,7 +40,7 @@ void ImGuiManager::Draw()
 {
     //pDxManager_->commandList->SetDescriptorHeaps(1, &(pDxManager_->srvDescriptorHeap));
     // ImGuiの描画
-    ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), pDxManager_->commandList);
+    ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), pDxManager_->commandList.Get());
 }
 
 void ImGuiManager::Begin()

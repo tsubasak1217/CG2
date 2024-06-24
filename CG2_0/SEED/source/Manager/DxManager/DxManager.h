@@ -11,6 +11,9 @@
 #include "PolygonManager.h"
 #include "Camera.h"
 
+#include <wrl/client.h>
+using Microsoft::WRL::ComPtr;
+
 //
 #include "imgui.h"
 #include "imgui_impl_dx12.h"
@@ -20,8 +23,10 @@ class SEED;
 
 class DxManager{
 public:// 根幹をなす大枠の関数
+    ~DxManager(){};
     void Initialize(SEED* pSEED);
     void Finalize();
+    void CheckRelease();
 
     void PreDraw();
     void DrawPolygonAll();
@@ -95,26 +100,26 @@ public:// DirectX
     HRESULT hr;
 
     // CPU-GPUの同期のための変数
-    ID3D12Fence* fence = nullptr;
+    ComPtr<ID3D12Fence> fence = nullptr;
     HANDLE fenceEvent;
     uint64_t fenceValue;
 
     // DirectX すべてのはじまり編
-    ID3D12Debug1* debugController = nullptr;
-    IDXGIFactory7* dxgiFactory = nullptr;
-    IDXGIAdapter4* useAdapter = nullptr;// アダプタを格納する変数
-    ID3D12Device* device = nullptr;// 生成したデバイスを格納する変数
+    ComPtr<ID3D12Debug1> debugController = nullptr;
+    ComPtr<IDXGIFactory7> dxgiFactory = nullptr;
+    ComPtr<IDXGIAdapter4> useAdapter = nullptr;// アダプタを格納する変数
+    ComPtr<ID3D12Device> device = nullptr;// 生成したデバイスを格納する変数
 
     // commandList類
-    ID3D12InfoQueue* infoQueue = nullptr;
-    ID3D12CommandQueue* commandQueue = nullptr;
-    ID3D12CommandAllocator* commandAllocator = nullptr;// コマンドアロケータを格納する変数
-    ID3D12GraphicsCommandList* commandList = nullptr;// コマンドリストを格納する変数
+    ComPtr<ID3D12InfoQueue> infoQueue = nullptr;
+    ComPtr<ID3D12CommandQueue> commandQueue = nullptr;
+    ComPtr<ID3D12CommandAllocator> commandAllocator = nullptr;// コマンドアロケータを格納する変数
+    ComPtr<ID3D12GraphicsCommandList> commandList = nullptr;// コマンドリストを格納する変数
 
     // SwapChain、ダブルバッファリングに必要な変数
     DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
-    IDXGISwapChain4* swapChain = nullptr;
-    ID3D12Resource* swapChainResources[2] = { nullptr };
+    ComPtr<IDXGISwapChain4> swapChain = nullptr;
+    ComPtr<ID3D12Resource> swapChainResources[2] = { nullptr };
     uint32_t backBufferIndex;
     D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2]{};
     D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
@@ -127,55 +132,55 @@ public:// DirectX
     uint32_t descriptorSizeDSV;
 
     // ディスクリプタヒープ類
-    ID3D12DescriptorHeap* rtvDescriptorHeap = nullptr;
-    ID3D12DescriptorHeap* srvDescriptorHeap = nullptr;
-    ID3D12DescriptorHeap* dsvDescriptorHeap = nullptr;
+    ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap = nullptr;
+    ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap = nullptr;
+    ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap = nullptr;
 
     // dxcCompiler(HLSLをコンパイルするのに必要なもの)
-    IDxcUtils* dxcUtils = nullptr;
-    IDxcCompiler3* dxcCompiler = nullptr;
-    IDxcIncludeHandler* includeHandler = nullptr;
+    ComPtr<IDxcUtils> dxcUtils = nullptr;
+    ComPtr<IDxcCompiler3> dxcCompiler = nullptr;
+    ComPtr<IDxcIncludeHandler> includeHandler = nullptr;
 
     // VertexShader
-    IDxcBlob* vertexShaderBlob = nullptr;
+    ComPtr<IDxcBlob> vertexShaderBlob = nullptr;
     // PixelShader
-    IDxcBlob* pixelShaderBlob = nullptr;
+    ComPtr<IDxcBlob> pixelShaderBlob = nullptr;
 
     // PSO
-    ID3D12PipelineState* graphicsPipelineState = nullptr;
-    ID3D12RootSignature* rootSignature = nullptr;
+    ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
+    ComPtr<ID3D12RootSignature> rootSignature = nullptr;
 
     /*------------------------------ VertexResourceの作成 -------------------------------*/
 
-    ID3D12Resource* vertexResource = nullptr;
-    ID3D12Resource* indexResource = nullptr;
-    ID3D12Resource* vertexResourceSprite = nullptr;
-    ID3D12Resource* indexResourceSprite = nullptr;
+    ComPtr<ID3D12Resource> vertexResource = nullptr;
+    ComPtr<ID3D12Resource> indexResource = nullptr;
+    ComPtr<ID3D12Resource> vertexResourceSprite = nullptr;
+    ComPtr<ID3D12Resource> indexResourceSprite = nullptr;
 
     /*---------------------- TransformationMatrix用Resourceの作成 -----------------------*/
 
-    ID3D12Resource* wvpResource = nullptr;
+    ComPtr<ID3D12Resource> wvpResource = nullptr;
     /*-----スプライト用-----*/
-    ID3D12Resource* wvpResourceSprite = nullptr;
+    ComPtr<ID3D12Resource> wvpResourceSprite = nullptr;
 
     /*------------------------------ MaterialResourceの作成 -------------------------------*/
 
-    ID3D12Resource* materialResource = nullptr;
-    ID3D12Resource* materialResourceSprite = nullptr;
+    ComPtr<ID3D12Resource> materialResource = nullptr;
+    ComPtr<ID3D12Resource> materialResourceSprite = nullptr;
     
 
     /*----------------------------- TextureResourceの作成,転送 -----------------------------*/
 
-    std::vector<ID3D12Resource*> textureResource;
-    std::vector<ID3D12Resource*> intermediateResource;
+    std::vector<ComPtr<ID3D12Resource>> textureResource;
+    std::vector<ComPtr<ID3D12Resource>> intermediateResource;
 
     /*------------------------- DepthStencilTextureResourceの作成 -------------------------*/
 
-    ID3D12Resource* depthStencilResource = nullptr;
+    ComPtr<ID3D12Resource> depthStencilResource = nullptr;
 
     /*----------------------------------LightingのResource---------------------------------*/
 
-    ID3D12Resource* lightingResource = nullptr;
+    ComPtr<ID3D12Resource> lightingResource = nullptr;
     DirectionalLight* directionalLight = nullptr;
 
     /*-------------------------scissor矩形とviewport-------------------------*/

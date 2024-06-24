@@ -27,6 +27,10 @@ void GameState_Test::Update()
 
 void GameState_Test::Draw()
 {
+    Triangle tri;
+    tri = MakeEqualTriangle(1.0f,0xffffffff);
+
+    SEED::DrawTriangle(tri);
 }
 
 /*==================================================================================================*/

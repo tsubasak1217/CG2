@@ -81,7 +81,7 @@ void PSOManager::Create()
     // RootSignatureの作成
     hr = pDxManager_->device->CreateRootSignature(
         0, signatureBlob->GetBufferPointer(),
-        signatureBlob->GetBufferSize(), IID_PPV_ARGS(&pDxManager_->rootSignature)
+        signatureBlob->GetBufferSize(), IID_PPV_ARGS(pDxManager_->rootSignature.GetAddressOf())
     );
     assert(SUCCEEDED(hr));
 
@@ -144,7 +144,7 @@ void PSOManager::Create()
 
     // RootSignature
     D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
-    graphicsPipelineStateDesc.pRootSignature = pDxManager_->rootSignature;
+    graphicsPipelineStateDesc.pRootSignature = pDxManager_->rootSignature.Get();
     graphicsPipelineStateDesc.InputLayout = inputLayoutDesc; // InputLayout
     graphicsPipelineStateDesc.VS = { pDxManager_->vertexShaderBlob->GetBufferPointer(),
     pDxManager_->vertexShaderBlob->GetBufferSize() }; // VertexShader
@@ -163,7 +163,7 @@ void PSOManager::Create()
     graphicsPipelineStateDesc.SampleDesc.Count = 1;
     graphicsPipelineStateDesc.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
     // 実際に生成
-    hr = pDxManager_->device->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&pDxManager_->graphicsPipelineState));
+    hr = pDxManager_->device->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(pDxManager_->graphicsPipelineState.GetAddressOf()));
 
 
     // 解放

@@ -17,8 +17,8 @@ void DxManager::Initialize(SEED* pSEED)
     polygonManager_ = new PolygonManager(this);
     pSEED_->SetPolygonManagerPtr(polygonManager_);
     //
-    textureResource.clear();
-    intermediateResource.clear();
+    //textureResource.clear();
+    //intermediateResource.clear();
     //
     camera_ = new Camera();
 
@@ -135,18 +135,19 @@ void DxManager::Initialize(SEED* pSEED)
 
     // white1x1だけ読み込んでおく
     CreateTexture("resources/textures/white1x1.png");
+    CreateTexture("resources/textures/uvChecker.png");
 
     /*------------------------- DepthStencilTextureResourceの作成 -------------------------*/
 
     depthStencilResource = CreateDepthStencilTextureResource(
-        device,
+        device.Get(),
         pSEED_->kClientWidth_,
         pSEED_->kClientHeight_
     );
 
     /*----------------------------------LightingのResource---------------------------------*/
 
-    lightingResource = CreateBufferResource(device, sizeof(DirectionalLight));
+    lightingResource = CreateBufferResource(device.Get(), sizeof(DirectionalLight));
     lightingResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLight));
 
     directionalLight->color_ = MyMath::FloatColor(0xffffffff);
@@ -158,7 +159,7 @@ void DxManager::Initialize(SEED* pSEED)
 
     // DSV用のヒ－プはヒープタイプが違うので別途作る
     dsvDescriptorHeap = CreateDescriptorHeap(
-        device, D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false
+        device.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false
     );
 
     // DSVの設定
@@ -168,7 +169,7 @@ void DxManager::Initialize(SEED* pSEED)
 
     // DSVHeapの先頭にDSVを作る
     device->CreateDepthStencilView(
-        depthStencilResource,
+        depthStencilResource.Get(),
         &dsvDesc,
         dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart()
     );
@@ -229,7 +230,8 @@ void DxManager::PreDraw()
         imGuiがフレーム単位でHeapの中身を操作するため
         SRVのHeapは毎フレームセットし直す
     */
-    commandList->SetDescriptorHeaps(1, &srvDescriptorHeap);
+    ID3D12DescriptorHeap* ppHeaps[] = { srvDescriptorHeap.Get() };
+    commandList->SetDescriptorHeaps(1, ppHeaps);
 
     //ImGui::Begin("Camera");
     //ImGui::DragFloat3("translate", &camera_->transform_.translate_.x, 0.05f);
@@ -255,7 +257,7 @@ void DxManager::PostDraw()
     assert(SUCCEEDED(hr));
 
     // GPUにコマンドリストの実行を行わせる
-    ID3D12CommandList* commandLists[] = { commandList };
+    ID3D12CommandList* commandLists[] = { commandList.Get() };
     commandQueue->ExecuteCommandLists(1, commandLists);
 
     // GPUとOSに画面の交換を行うよう通知する
@@ -273,7 +275,7 @@ void DxManager::PostDraw()
     // リセットして次のフレーム用のコマンドリストを準備
     hr = commandAllocator->Reset();
     assert(SUCCEEDED(hr));
-    hr = commandList->Reset(commandAllocator, nullptr);
+    hr = commandList->Reset(commandAllocator.Get(), nullptr);
     assert(SUCCEEDED(hr));
 }
 
@@ -290,8 +292,7 @@ void DxManager::CreateDebugLayer()
 void DxManager::CreateDevice()
 {
     /*------------------------------- DXGIFactoryの生成 --------------------------------*/
-
-    hr = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory));
+    hr = CreateDXGIFactory(IID_PPV_ARGS(dxgiFactory.GetAddressOf()));
     // 作成失敗していたらアサート
     assert(SUCCEEDED(hr));
 
@@ -303,7 +304,7 @@ void DxManager::CreateDevice()
         dxgiFactory->EnumAdapterByGpuPreference(
             UINT(i),
             DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
-            IID_PPV_ARGS(&useAdapter)
+            IID_PPV_ARGS(useAdapter.GetAddressOf())
         ) != DXGI_ERROR_NOT_FOUND;
         ++i
         ) {
@@ -343,7 +344,7 @@ void DxManager::CreateDevice()
     for(size_t i = 0; i < _countof(featureLevels); ++i) {
 
         // 先ほど決定したアダプタを使用してデバイスを生成
-        hr = D3D12CreateDevice(useAdapter, featureLevels[i], IID_PPV_ARGS(&device));
+        hr = D3D12CreateDevice(useAdapter.Get(), featureLevels[i], IID_PPV_ARGS(device.GetAddressOf()));
 
         // 生成に成功したらログを出力してループを終了
         if(SUCCEEDED(hr)) {
@@ -401,7 +402,7 @@ void DxManager::CreateCommanders()
     D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
 
     // コマンドキューを生成する
-    hr = device->CreateCommandQueue(&commandQueueDesc, IID_PPV_ARGS(&commandQueue));
+    hr = device->CreateCommandQueue(&commandQueueDesc, IID_PPV_ARGS(commandQueue.GetAddressOf()));
 
     // コマンドキューの生成がうまくいかなかったので起動できない
     assert(SUCCEEDED(hr));
@@ -410,13 +411,13 @@ void DxManager::CreateCommanders()
     /*------------------------------- コマンドリストの生成 --------------------------------*/
 
     // コマンドアロケータを生成する
-    hr = device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator));
+    hr = device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(commandAllocator.GetAddressOf()));
     // コマンドアロケータの生成がうまくいかなかったので起動できない
     assert(SUCCEEDED(hr));
 
     // コマンドリストを生成する
     hr = device->CreateCommandList(
-        0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator, nullptr, IID_PPV_ARGS(&commandList)
+        0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator.Get(), nullptr, IID_PPV_ARGS(commandList.GetAddressOf())
     );
     // コマンドリストの生成がうまくいかなかったので起動できない
     assert(SUCCEEDED(hr));
@@ -437,11 +438,11 @@ void DxManager::CreateSwapChain()
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; // モニタに写したら中身を破棄
     // コマンドキュー、ウィンドウハンドル、設定を渡して生成する
     hr = dxgiFactory->CreateSwapChainForHwnd(
-        commandQueue,
+        commandQueue.Get(),
         pSEED_->hwnd,
         &swapChainDesc,
         nullptr, nullptr,
-        reinterpret_cast<IDXGISwapChain1**>(&swapChain)
+        reinterpret_cast<IDXGISwapChain1**>(swapChain.GetAddressOf())
     );
 
     // 生成失敗したらアサート
@@ -462,20 +463,21 @@ void DxManager::GetSwapChainResources()
 void DxManager::CreateAllDescriptorHeap()
 {
     // RTVのディスクリプタヒープを作成
-    rtvDescriptorHeap = CreateDescriptorHeap(
-        device,
+    rtvDescriptorHeap.Attach(CreateDescriptorHeap(
+        device.Get(),
         D3D12_DESCRIPTOR_HEAP_TYPE_RTV,//レンダーターゲットビュー用に設定
         2,// ダブルバッファ用に2つ。 多くても別に構わない
         false
-    );
+    ));
+
 
     // SRVのディスクリプタヒープを作成
-    srvDescriptorHeap = CreateDescriptorHeap(
-        device,
+    srvDescriptorHeap.Attach(CreateDescriptorHeap(
+        device.Get(),
         D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,// SRV用に設定
         128,// ディスクリプタ数
         true
-    );
+    ));
 }
 
 void DxManager::CheckDescriptorSize()
@@ -501,15 +503,15 @@ void DxManager::CreateRTV()
     rtvHandles[1].ptr = rtvHandles[0].ptr + descriptorSizeRTV;
 
     // 取得したアドレスにRTVを2つ作る
-    device->CreateRenderTargetView(swapChainResources[0], &rtvDesc, rtvHandles[0]);
-    device->CreateRenderTargetView(swapChainResources[1], &rtvDesc, rtvHandles[1]);
+    device->CreateRenderTargetView(swapChainResources[0].Get(), &rtvDesc, rtvHandles[0]);
+    device->CreateRenderTargetView(swapChainResources[1].Get(), &rtvDesc, rtvHandles[1]);
 }
 
 void DxManager::CreateFence()
 {
     //初期値でFenceを作る
     fenceValue = 0;
-    hr = device->CreateFence(fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+    hr = device->CreateFence(fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(fence.GetAddressOf()));
     assert(SUCCEEDED(hr));
 
     // FenceのSignalを待つためのイベントを作成する
@@ -520,13 +522,13 @@ void DxManager::CreateFence()
 void DxManager::InitDxCompiler()
 {
     // インスタンスの作成
-    hr = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
+    hr = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(dxcUtils.GetAddressOf()));
     assert(SUCCEEDED(hr));
-    hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
+    hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(dxcCompiler.GetAddressOf()));
     assert(SUCCEEDED(hr));
 
     // 現時点でincludeはしないが、 includeに対応するための設定を行っておく
-    hr = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
+    hr = dxcUtils->CreateDefaultIncludeHandler(includeHandler.GetAddressOf());
     assert(SUCCEEDED(hr));
 }
 
@@ -536,9 +538,9 @@ void DxManager::CompileShaders()
     vertexShaderBlob = CompileShader(
         L"resources/shaders/Object3d.VS.hlsl",
         L"vs_6_0",
-        dxcUtils,
-        dxcCompiler,
-        includeHandler
+        dxcUtils.Get(),
+        dxcCompiler.Get(),
+        includeHandler.Get()
     );
     assert(vertexShaderBlob != nullptr);
 
@@ -546,9 +548,9 @@ void DxManager::CompileShaders()
     pixelShaderBlob = CompileShader(
         L"resources/shaders/Object3d.PS.hlsl",
         L"ps_6_0",
-        dxcUtils,
-        dxcCompiler,
-        includeHandler
+        dxcUtils.Get(),
+        dxcCompiler.Get(),
+        includeHandler.Get()
     );
     assert(pixelShaderBlob != nullptr);
 }
@@ -566,10 +568,10 @@ uint32_t DxManager::CreateTexture(std::string filePath)
     DirectX::ScratchImage mipImages = LoadTextureImage(filePath);
     // 作成
     const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-    textureResource.push_back(CreateTextureResource(device, metadata));
+    textureResource.push_back(CreateTextureResource(device.Get(), metadata));
     // 転送
     intermediateResource.push_back(
-        UploadTextureData(textureResource.back(), mipImages, device, commandList)
+        UploadTextureData(textureResource.back().Get(), mipImages, device.Get(), commandList.Get())
     );
 
     /*-------------------------------- Texture用SRVの作成 ----------------------------------*/
@@ -582,11 +584,11 @@ uint32_t DxManager::CreateTexture(std::string filePath)
     srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
 
     // SRVを作成するDescriptorHeapの場所を決める
-    D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU = GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 1 + textureCount_);
-    D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 1 + textureCount_);
+    D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU = GetCPUDescriptorHandle(srvDescriptorHeap.Get(), descriptorSizeSRV, 1 + textureCount_);
+    D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = GetGPUDescriptorHandle(srvDescriptorHeap.Get(), descriptorSizeSRV, 1 + textureCount_);
 
     // SRVの生成
-    device->CreateShaderResourceView(textureResource.back(), &srvDesc, textureSrvHandleCPU);
+    device->CreateShaderResourceView(textureResource.back().Get(), &srvDesc, textureSrvHandleCPU);
 
     // グラフハンドルもついでに返す
     return textureCount_++;
@@ -595,10 +597,14 @@ uint32_t DxManager::CreateTexture(std::string filePath)
 
 void DxManager::ReleaseTextures()
 {
-    for(int32_t i = 0; i < textureResource.size(); i++){
-        textureResource[i]->Release();
-        intermediateResource[i]->Release();
-    }
+    //for(int32_t i = 0; i < textureResource.size(); i++){
+    //    textureResource[i]->Release();
+    //    intermediateResource[i]->Release();
+    //    textureResource[i] = nullptr;
+    //    intermediateResource[i] = nullptr;
+    //}
+    //textureResource.clear();
+    //intermediateResource.clear();
 }
 
 
@@ -663,7 +669,7 @@ void DxManager::TransitionResourceState(uint32_t state)
         // None LTB
         barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
         // バリアを張る対象のリソース。 現在のバックバッファに対して行う
-        barrier.Transition.pResource = swapChainResources[backBufferIndex];
+        barrier.Transition.pResource = swapChainResources[backBufferIndex].Get();
         // 遷移前 (現在) のResourceState
         barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
         // 遷移後のResourceState
@@ -708,7 +714,7 @@ void DxManager::WaitForGPU()
     // Fenceの値を更新
     fenceValue++;
     // GPUがここまでたどり着いたときに、 Fenceの値を指定した値に代入するようにSignalを送る
-    commandQueue->Signal(fence, fenceValue);
+    commandQueue->Signal(fence.Get(), fenceValue);
 
     // Fenceの値が指定したSignal値にたどり着いているか確認する
     // GetCompletedValueの初期値はFence作成時に渡した初期値
@@ -726,7 +732,7 @@ void DxManager::DrawTriangle(
     const Matrix4x4& worldMat, const Vector4& color,
     bool useTexture, bool view3D, uint32_t GH
 ){
-    polygonManager_->AddTriangle(v1, v2, v3, worldMat, color, useTexture, view3D,GH);
+    polygonManager_->AddTriangle(v1, v2, v3, worldMat, color, useTexture, view3D, GH);
 }
 
 void DxManager::Finalize()
@@ -738,41 +744,43 @@ void DxManager::Finalize()
     // オブジェクト類の解放
     CloseHandle(fenceEvent);
     //delete vertexData;
-    depthStencilResource->Release();
-    ReleaseTextures();
-    dsvDescriptorHeap->Release();
-    lightingResource->Release();
-    //materialResource->Release();
-    //materialResourceSprite->Release();
-    //wvpResource->Release();
-    //wvpResourceSprite->Release();
-    //vertexResource->Release();
-    //vertexResourceSprite->Release();
-    //indexResourceSprite->Release();
-    //indexResource->Release();
-    graphicsPipelineState->Release();
-    //signatureBlob->Release();
-    //if(errorBlob) {
-    //    errorBlob->Release();
-    //}
-    rootSignature->Release();
-    pixelShaderBlob->Release();
-    vertexShaderBlob->Release();
-    includeHandler->Release();
-    dxcCompiler->Release();
-    dxcUtils->Release();
-    fence->Release();
-    srvDescriptorHeap->Release();
-    rtvDescriptorHeap->Release();
-    swapChainResources[0]->Release();
-    swapChainResources[1]->Release();
-    swapChain->Release();
-    commandList->Release();
-    commandAllocator->Release();
-    commandQueue->Release();
-    device->Release();
-    useAdapter->Release();
-    dxgiFactory->Release();
+    //depthStencilResource->Release();
+    //ReleaseTextures();
+    //dsvDescriptorHeap->Release();
+    //lightingResource->Release();
+    ////materialResource->Release();
+    ////materialResourceSprite->Release();
+    ////wvpResource->Release();
+    ////wvpResourceSprite->Release();
+    ////vertexResource->Release();
+    ////vertexResourceSprite->Release();
+    ////indexResourceSprite->Release();
+    ////indexResource->Release();
+    //graphicsPipelineState->Release();
+    ////signatureBlob->Release();
+    ////if(errorBlob) {
+    ////    errorBlob->Release();
+    ////}
+    //rootSignature->Release();
+    //pixelShaderBlob->Release();
+    //vertexShaderBlob->Release();
+    //includeHandler->Release();
+    //dxcCompiler->Release();
+    //dxcUtils->Release();
+    //fence->Release();
+    //srvDescriptorHeap->Release();
+    //rtvDescriptorHeap->Release();
+    //swapChainResources[0]->Release();
+    //swapChainResources[1]->Release();
+    //swapChain->Release();
+    //commandList->Release();
+    //commandAllocator->Release();
+    //commandQueue->Release();
+    //device->Release();
+    //useAdapter->Release();
+    //dxgiFactory->Release();
+
+    polygonManager_->Finalize();
 
     delete psoManager_;
     psoManager_ = nullptr;
@@ -785,17 +793,18 @@ void DxManager::Finalize()
     debugController->Release();
 #endif
     CloseWindow(pSEED_->hwnd);
+    // COMの終了
+    CoUninitialize();
+}
 
-
+void DxManager::CheckRelease()
+{
     // 解放漏れがないかチェック
-    IDXGIDebug1* debug;
+   /* IDXGIDebug1* debug;
     if(SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
         debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
         debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
         debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
         debug->Release();
-    }
-
-    // COMの終了
-    CoUninitialize();
+    }*/
 }

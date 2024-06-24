@@ -41,7 +41,18 @@ IDxcBlob* CompileShader(
 
 // DescriptorHeap作成関数
 ID3D12DescriptorHeap* CreateDescriptorHeap(
-    ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible
+    ID3D12Device* device,
+    D3D12_DESCRIPTOR_HEAP_TYPE heapType, 
+    UINT numDescriptors, 
+    bool shaderVisible
+);
+
+void CreateDescriptorHeap(
+    ID3D12Device* device,
+    ID3D12DescriptorHeap* heap,
+    D3D12_DESCRIPTOR_HEAP_TYPE heapType, 
+    UINT numDescriptors,
+    bool shaderVisible
 );
 
 // テクスチャを読み込む関数

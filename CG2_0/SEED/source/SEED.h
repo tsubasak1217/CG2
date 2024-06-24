@@ -94,7 +94,7 @@ public:// ウインドウに関する変数
     static int kClientHeight_;
 
 public:
-    static SEED* pSEED_;
+    static std::unique_ptr <SEED> pSEED_;
     static PolygonManager* pPolygonManager_;
 
 public: // アクセッサ
