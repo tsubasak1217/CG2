@@ -85,10 +85,16 @@ void PolygonManager::AddTriangle(
     useTexture;
     assert(triangleIndexCount_ < kMaxTriangleCount_);
 
+    Vector3 transformed[3];
+
+    transformed[0] = Multiply(TransformToVec3(v1), worldMat);
+    transformed[1] = Multiply(TransformToVec3(v2), worldMat);
+    transformed[2] = Multiply(TransformToVec3(v3), worldMat);
+
     Vector3 normalVec =
         MyMath::Normalize(MyMath::Cross(
-            Vector3(v2.x, v2.y, v2.z) - Vector3(v1.x, v1.y, v1.z),
-            Vector3(v3.x, v3.y, v3.z) - Vector3(v2.x, v2.y, v2.z),
+            Vector3(transformed[1].x, transformed[1].y, transformed[1].z) - Vector3(transformed[0].x, transformed[0].y, transformed[0].z),
+            Vector3(transformed[2].x, transformed[2].y, transformed[2].z) - Vector3(transformed[1].x, transformed[1].y, transformed[1].z),
             view3D ? kWorld : kScreen
         ));
 
@@ -214,7 +220,7 @@ void PolygonManager::SetTriangle()
     //// 描画! (DrawCall/ ドローコール)。 3頂点で1つのインスタンス。 インスタンスについては今後
     //pDxManager_->commandList->DrawInstanced(3 * triangleIndexCount_, 1, 0, 0);
 
-        /*-------------------三角形描画コマンド積む---------------------*/
+    /*-------------------三角形描画コマンド積む---------------------*/
 
     VBV_TriangleVertex_.BufferLocation = vertexResource_->GetGPUVirtualAddress();
     VBV_TriangleVertex_.SizeInBytes = (sizeof(VertexData) * 3) * triangleIndexCount_;
@@ -233,13 +239,6 @@ void PolygonManager::SetTriangle()
 
     // 形状を設定。 PSOに設定しているものとはまた別。 同じものを設定すると考えておけば良い
     pDxManager_->commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-    D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = GetGPUDescriptorHandle(
-        pDxManager_->srvDescriptorHeap.Get(),
-        pDxManager_->descriptorSizeSRV, 
-        textureNum_
-    );
-    pDxManager_->commandList->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
 
     // Resourceを設定
     pDxManager_->commandList->SetGraphicsRootConstantBufferView(0, materialResource_->GetGPUVirtualAddress());
@@ -274,6 +273,15 @@ void PolygonManager::SetTriangle()
 
     /*-------------------ひとつずつドロー---------------------*/
     for(uint32_t i = 0; i < triangleIndexCount_; i++){
+
+        // テクスチャの設定
+        D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = GetGPUDescriptorHandle(
+            pDxManager_->srvDescriptorHeap.Get(),
+            pDxManager_->descriptorSizeSRV,
+            1 + triangles_.GH[i]// 0番目はimguiなので1から
+        );
+
+        pDxManager_->commandList->SetGraphicsRootDescriptorTable(2, textureSrvHandleGPU);
 
         // シェーディングレベルの初期値
         int32_t lowShadingPoint = 0;

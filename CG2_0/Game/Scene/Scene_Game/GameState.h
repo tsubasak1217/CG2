@@ -36,7 +36,9 @@ public:
     void Draw()override;
 
 private:
-
+    Triangle tri[3];
+    std::vector<uint32_t>GH;
+    int num = 0;
 };
 
 class GameState_Effect : public GameState_Base{

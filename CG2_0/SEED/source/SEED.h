@@ -25,7 +25,7 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////
 
     // 返り値はグラフハンドル
-    uint32_t LoadTexture(const std::string& filePath)const;
+    static uint32_t LoadTexture(const std::string& filePath);
 
 
 public:// このエンジンが用意する描画関数

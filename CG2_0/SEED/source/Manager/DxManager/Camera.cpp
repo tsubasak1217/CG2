@@ -37,7 +37,7 @@ void Camera::Update()
 
     // カメラ法線
     normal_ = { 0.0f,0.0f,1.0f };
-    normal_ = MyMath::Normalize(Multiply(normal_, worldMat_));
+    normal_ = MyMath::Normalize(Multiply(normal_, RotateMatrix(transform_.rotate_)));
 
     // ViewProjectionMatrixの計算
     viewProjectionMat_ = Multiply(viewMat_, projectionMat_);

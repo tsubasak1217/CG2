@@ -103,7 +103,7 @@ void SEED::EndFrame()
 /*                             テクスチャを読み込む関数                                */
 /////////////////////////////////////////////////////////////////////////////////////
 
-uint32_t SEED::LoadTexture(const std::string& filePath) const
+uint32_t SEED::LoadTexture(const std::string& filePath)
 {
     return pSEED_->dxManager_.get()->CreateTexture(filePath);
 }
