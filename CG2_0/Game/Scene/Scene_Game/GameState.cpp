@@ -14,7 +14,7 @@
 GameState_Test::GameState_Test(const std::string& name, Scene_Game* pScene) : GameState_Base(name, pScene){
     for(int i = 0; i < 3; i++){
         tri[i] = MakeEqualTriangle(1.0f, 0xffffffff);
-        tri[i].translate += Vector3(1.0f, 0.0f, 0.0f) * float(2 - (i + 1));
+        tri[i].translate += Vector3(2.0f, 0.0f, 0.0f) * float(2 - (i + 1));
     }
 
     GH.push_back(SEED::LoadTexture("resources/textures/uvChecker.png"));
