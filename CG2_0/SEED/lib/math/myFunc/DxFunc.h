@@ -1,5 +1,6 @@
 #pragma once
 #include "ModelData.h"
+#include "Material.h"
 #include "VertexData.h"
 #include <string>
 #include <format>
@@ -82,3 +83,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(
 
 // objファイルを読み込む関数
 ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
+MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
+
+// Matrix4x4 を DirectX::XMMATRIX に変換する関数
+DirectX::XMMATRIX ConvertToXMMATRIX(const Matrix4x4& matrix);

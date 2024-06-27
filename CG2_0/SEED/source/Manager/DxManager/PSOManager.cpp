@@ -22,34 +22,40 @@ void PSOManager::Create()
 
     // RootSignatureに関する設定を記述していく
     descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+    /*--------------- ルートパラメーターの設定 ----------------*/
     D3D12_ROOT_PARAMETER rootParameters[4] = {};
 
-    rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;// CommandBufferViewを使用
+    //=============================================================================================//
+    /*---------------------- material ------------------------*/
+    rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;// SRVを使用
     rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
-    rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号0とバインド
+    rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号t0とバインド
 
     /*---------------------- transform ------------------------*/
-    rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;// CommandBufferViewを使用
+    rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;// SRVを使用
     rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // VertexShaderで使う
-    rootParameters[1].Descriptor.ShaderRegister = 0; // レジスタ番号0とバインド
+    rootParameters[1].Descriptor.ShaderRegister = 0; // レジスタ番号t0とバインド
 
-    /*------- DescriptorRange,DescriptorTableの設定 -------*/
+    /*------------------------ texture ------------------------*/
+    //DescriptorRange,DescriptorTableの設定
     D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
-    descriptorRange[0].BaseShaderRegister = 0;// 0から始まる
+    descriptorRange[0].BaseShaderRegister = 1;// t1から始まる
     descriptorRange[0].NumDescriptors = 1;// 数は1つ
     descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;// SRVを使う
-    descriptorRange[0].OffsetInDescriptorsFromTableStart =
-        D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;// offsetを自動計算
+    descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;// offsetを自動計算
 
     rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;// DescriptorTableを使う
     rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
     rootParameters[2].DescriptorTable.pDescriptorRanges = descriptorRange;// Tableの中身の配列を指定
     rootParameters[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);// Tableで利用する数
 
-    /*-------Lighting-------*/
+    /*----------------------Lighting---------------------------*/
     rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;// DescriptorTableを使う
     rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
-    rootParameters[3].Descriptor.ShaderRegister = 1;// レジスタ番号1を使う
+    rootParameters[3].Descriptor.ShaderRegister = 0;// レジスタ番号b0を使う
+
+    //=============================================================================================//
 
     descriptionRootSignature.pParameters = rootParameters; // ルートパラメーターへのポインタ
     descriptionRootSignature.NumParameters = _countof(rootParameters); // パラメーターの配列数
@@ -63,7 +69,7 @@ void PSOManager::Create()
     staticSamplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
     staticSamplers[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;// 比較しない
     staticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX; // ありったけのMipmapを使う
-    staticSamplers[0].ShaderRegister = 0; // レジスタ番号0を使う
+    staticSamplers[0].ShaderRegister = 0; // レジスタ番号s0を使う
     staticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
     descriptionRootSignature.pStaticSamplers = staticSamplers;
     descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);
@@ -110,9 +116,9 @@ void PSOManager::Create()
     inputElementDescs[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
     inputElementDescs[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
     // 色
-    inputElementDescs[3].SemanticName = "COLOR";
+    inputElementDescs[3].SemanticName = "INDEX";
     inputElementDescs[3].SemanticIndex = 0;
-    inputElementDescs[3].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+    inputElementDescs[3].Format = DXGI_FORMAT_R32_UINT;
     inputElementDescs[3].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 
 

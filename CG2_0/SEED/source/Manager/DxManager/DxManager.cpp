@@ -5,7 +5,6 @@
 
 void DxManager::Initialize(SEED* pSEED)
 {
-
     // COMの初期化
     CoInitializeEx(0, COINIT_MULTITHREADED);
 
@@ -16,10 +15,7 @@ void DxManager::Initialize(SEED* pSEED)
     // polygonManagerの作成
     polygonManager_ = new PolygonManager(this);
     pSEED_->SetPolygonManagerPtr(polygonManager_);
-    //
-    //textureResource.clear();
-    //intermediateResource.clear();
-    //
+
     camera_ = new Camera();
 
     /*===========================================================================================*/
@@ -231,20 +227,17 @@ void DxManager::PreDraw()
     */
     ID3D12DescriptorHeap* ppHeaps[] = { srvDescriptorHeap.Get() };
     commandList->SetDescriptorHeaps(1, ppHeaps);
-
-    //ImGui::Begin("Camera");
-    //ImGui::DragFloat3("translate", &camera_->transform_.translate_.x, 0.05f);
-    //ImGui::DragFloat3("rotate", &camera_->transform_.rotate_.x, 3.14f * 0.005f);
-    //ImGui::End();
 }
 
 void DxManager::DrawPolygonAll()
 {
+
     polygonManager_->DrawPolygonAll();
 }
 
 void DxManager::PostDraw()
 {
+
     // 画面に描く処理はすべて終わり、 画面に映すので、状態を遷移
     // 今回はRenderTargetからPresent にする
     TransitionResourceState(D3D12_RESOURCE_STATE_PRESENT);
@@ -594,69 +587,6 @@ uint32_t DxManager::CreateTexture(std::string filePath)
 }
 
 
-void DxManager::ReleaseTextures()
-{
-    //for(int32_t i = 0; i < textureResource.size(); i++){
-    //    textureResource[i]->Release();
-    //    intermediateResource[i]->Release();
-    //    textureResource[i] = nullptr;
-    //    intermediateResource[i] = nullptr;
-    //}
-    //textureResource.clear();
-    //intermediateResource.clear();
-}
-
-
-//void DxManager::InitTextures()
-//{
-//    /*----------------------------- TextureResourceの作成,転送 -----------------------------*/
-//
-//    // 読み込み
-//    DirectX::ScratchImage mipImages = LoadTexture("resources/textures/uvChecker.png");
-//    // 作成
-//    const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-//    textureResource = CreateTextureResource(device, metadata);
-//    // 転送
-//    intermediateResource = UploadTextureData(textureResource, mipImages, device, commandList);
-//
-//    // 読み込み
-//    DirectX::ScratchImage mipImages2 = LoadTexture("resources/textures/monsterBall.png");
-//    // 作成
-//    const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
-//    textureResource2 = CreateTextureResource(device, metadata2);
-//    // 転送
-//    intermediateResource2 = UploadTextureData(textureResource2, mipImages2, device, commandList);
-//
-//    /*-------------------------------- Texture用SRVの作成 ----------------------------------*/
-//
-//    // metaDataをもとにSRVの設定
-//    D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-//    srvDesc.Format = metadata.format;
-//    srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-//    srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
-//    srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
-//
-//    D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2{};
-//    srvDesc2.Format = metadata2.format;
-//    srvDesc2.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-//    srvDesc2.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
-//    srvDesc2.Texture2D.MipLevels = UINT(metadata2.mipLevels);
-//
-//
-//    // SRVを作成するDescriptorHeapの場所を決める
-//    D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU = GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 1);
-//    D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 1);
-//
-//    D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU2 = GetCPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 2);
-//    D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU2 = GetGPUDescriptorHandle(srvDescriptorHeap, descriptorSizeSRV, 2);
-//
-//    // SRVの生成
-//    device->CreateShaderResourceView(textureResource, &srvDesc, textureSrvHandleCPU);
-//    device->CreateShaderResourceView(textureResource2, &srvDesc2, textureSrvHandleCPU2);
-//
-//}
-
-
 void DxManager::TransitionResourceState(uint32_t state)
 {
     switch(state)
@@ -729,9 +659,9 @@ void DxManager::WaitForGPU()
 void DxManager::DrawTriangle(
     const Vector4& v1, const Vector4& v2, const Vector4& v3,
     const Matrix4x4& worldMat, const Vector4& color,
-    bool useTexture, bool view3D, uint32_t GH
+    bool enableLighting,const Matrix4x4& uvTransform,bool view3D, uint32_t GH
 ){
-    polygonManager_->AddTriangle(v1, v2, v3, worldMat, color, useTexture, view3D, GH);
+    polygonManager_->AddTriangle(v1, v2, v3, worldMat, color, enableLighting,uvTransform,view3D, GH);
 }
 
 void DxManager::Finalize()
@@ -740,45 +670,7 @@ void DxManager::Finalize()
     /*                                          後処理                                            */
     /*===========================================================================================*/
 
-    // オブジェクト類の解放
     CloseHandle(fenceEvent);
-    //delete vertexData;
-    //depthStencilResource->Release();
-    //ReleaseTextures();
-    //dsvDescriptorHeap->Release();
-    //lightingResource->Release();
-    ////materialResource->Release();
-    ////materialResourceSprite->Release();
-    ////wvpResource->Release();
-    ////wvpResourceSprite->Release();
-    ////vertexResource->Release();
-    ////vertexResourceSprite->Release();
-    ////indexResourceSprite->Release();
-    ////indexResource->Release();
-    //graphicsPipelineState->Release();
-    ////signatureBlob->Release();
-    ////if(errorBlob) {
-    ////    errorBlob->Release();
-    ////}
-    //rootSignature->Release();
-    //pixelShaderBlob->Release();
-    //vertexShaderBlob->Release();
-    //includeHandler->Release();
-    //dxcCompiler->Release();
-    //dxcUtils->Release();
-    //fence->Release();
-    //srvDescriptorHeap->Release();
-    //rtvDescriptorHeap->Release();
-    //swapChainResources[0]->Release();
-    //swapChainResources[1]->Release();
-    //swapChain->Release();
-    //commandList->Release();
-    //commandAllocator->Release();
-    //commandQueue->Release();
-    //device->Release();
-    //useAdapter->Release();
-    //dxgiFactory->Release();
-
     polygonManager_->Finalize();
 
     delete psoManager_;
@@ -796,14 +688,14 @@ void DxManager::Finalize()
     CoUninitialize();
 }
 
-void DxManager::CheckRelease()
+LeakChecker::~LeakChecker()
 {
     // 解放漏れがないかチェック
-   /* IDXGIDebug1* debug;
+    ComPtr<IDXGIDebug1> debug;
     if(SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
         debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
         debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
         debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
         debug->Release();
-    }*/
+    }
 }

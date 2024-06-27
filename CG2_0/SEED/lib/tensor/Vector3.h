@@ -1,5 +1,7 @@
 #pragma once
 
+struct Vector4;
+
 /// <summary>
 /// 3次元ベクトル
 /// </summary>
@@ -104,4 +106,7 @@ struct Vector3 final {
 		y = y / obj.y;
 		z = z / obj.z;
 	}
+
+
+    Vector4 ToVec4();
 };

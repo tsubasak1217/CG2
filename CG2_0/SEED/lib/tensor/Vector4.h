@@ -1,4 +1,7 @@
 #pragma once
+#include <assert.h>
+
+struct Vector3;
 
 struct Vector4 final {
     float x;
@@ -13,4 +16,10 @@ struct Vector4 final {
         this->z = z;
         this->w = w;
     }
+
+    ///////////////////////////////////////////////////////////////////
+    /*                            Transform                          */
+    ///////////////////////////////////////////////////////////////////
+
+    Vector3 ToVec3();
 };

@@ -1,10 +1,11 @@
 #pragma once
-#include "Vector3.h"
-#include "Vector2.h"
+
+#include "Vector4.h"
 #include <stdint.h>
 #include <cmath>
 #include <numbers>
 #include "MyMath.h"
+#include "MatrixFunc.h"
 
 struct Triangle{
     Vector3 localVertex[3];
@@ -13,6 +14,8 @@ struct Triangle{
     Vector3 translate;
     uint32_t color;
     Vector4 colorf;
+    bool enableLiting_;
+    Matrix4x4 uvTransform_;
 
     Triangle(){};
     Triangle(
@@ -30,6 +33,8 @@ struct Triangle{
         this->translate = translate;
         this->color = color;
         colorf = MyMath::FloatColor(color);
+        enableLiting_ = true;
+        uvTransform_ = IdentityMat4();
     }
 };
 
@@ -40,6 +45,8 @@ struct Triangle2D{
     Vector2 translate;
     uint32_t color;
     Vector4 colorf;
+    bool enableLiting_;
+    Matrix4x4 uvTransform_;
 
     Triangle2D(){};
     Triangle2D(
@@ -57,5 +64,7 @@ struct Triangle2D{
         this->translate = translate;
         this->color = color;
         colorf = MyMath::FloatColor(color);
+        enableLiting_ = false;
+        uvTransform_ = IdentityMat4();
     }
 };

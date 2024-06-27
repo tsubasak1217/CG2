@@ -6,17 +6,27 @@
 class SEED;
 
 class SceneManager{
-public:
+
+private:
     SceneManager();
+public:
     ~SceneManager();
     static void Initialize();
     static void Update();
     static void Draw();
+    static SceneManager* GetInstance();
+
+private:
+    // インスタンス
+    static SceneManager* instance_;
+
+    // コピー禁止
+    SceneManager(const SceneManager& other) = delete;
+    SceneManager& operator=(const SceneManager& other) = delete;
 
 public:
     static void ChangeScene(Scene_Base* newScene);
 
 private:
-    static std::unique_ptr<SceneManager> pSceneManager_;
-    static std::unique_ptr<Scene_Base> pScene_;
+    static Scene_Base* pScene_;
 };

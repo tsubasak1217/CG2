@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include "Triangle.h"
+#include "Model.h"
 
 class Scene_Game;
 class SEED;
@@ -38,6 +39,7 @@ public:
 private:
     Triangle tri[3];
     std::vector<uint32_t>GH;
+    Model model;
     int num = 0;
 };
 

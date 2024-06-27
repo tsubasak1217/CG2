@@ -157,6 +157,15 @@
     <ClCompile Include="SEED\lib\structs\Model.cpp">
       <Filter>SEED\lib\structs</Filter>
     </ClCompile>
+    <ClCompile Include="SEED\lib\tensor\Vector2.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="SEED\lib\tensor\Vector3.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="SEED\lib\tensor\Vector4.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SEED\lib\includes\include_matrixes.h">

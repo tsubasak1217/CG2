@@ -18,6 +18,7 @@ struct TriangleData{
     std::vector<Material>colorf;
     std::vector<TransformMatrix>transform;
     std::vector<uint32_t>GH;
+    std::vector<bool>isView3D;
 };
 
 struct Models{
@@ -46,10 +47,10 @@ public:// 頂点情報の追加に関わる関数
     void AddTriangle(
         const Vector4& v1, const Vector4& v2, const Vector4& v3,
         const Matrix4x4& worldMat, const Vector4& color,
-        bool useTexture, bool view3D, uint32_t GH
+        bool enableLighting, const Matrix4x4& uvTransform, bool view3D, uint32_t GH
     );
 
-    void AddModel(Model model,uint32_t GH);
+    void AddModel(Model model);
 
 private:
 
@@ -60,13 +61,16 @@ private:// 外部参照のためのポインタ変数
 
     DxManager* pDxManager_;
 
-private:// 描画上弦や頂点数などの定数
+private:// 描画上限や頂点数などの定数
 
-    static const int32_t kMaxTriangleCount_ = 32768;
+    static const int32_t kMaxTriangleCount_ = 16384;
+    static const int32_t kMaxModelCount_ = 128;
+    static const int32_t kMaxModelVertexCount = 1024;
 
 private:// 現在の描画数や頂点数などを格納する変数
 
     static uint32_t triangleIndexCount_;
+    static uint32_t modelIndexCount_;
 
 private:// 実際に頂点情報や色などの情報が入っている変数
 

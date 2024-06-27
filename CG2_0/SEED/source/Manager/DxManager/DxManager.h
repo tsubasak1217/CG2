@@ -20,13 +20,15 @@ using Microsoft::WRL::ComPtr;
 #include "imgui_impl_win32.h"
 
 class SEED;
+struct LeakChecker{
+    ~LeakChecker();
+};
 
 class DxManager{
 public:// 根幹をなす大枠の関数
     ~DxManager(){};
     void Initialize(SEED* pSEED);
     void Finalize();
-    void CheckRelease();
 
     void PreDraw();
     void DrawPolygonAll();
@@ -54,9 +56,6 @@ private:// 内部の細かい関数
     // PSO
     void InitPSO();
 
-    // Textureの解放関数
-    void ReleaseTextures();
-
     // preDraw,postDrawに関わる関数
     void TransitionResourceState(uint32_t state);
     void ClearViewSettings();
@@ -74,7 +73,7 @@ public:// PolygonManagerに描画を頼む関数
     void DrawTriangle(
         const Vector4& v1, const Vector4& v2, const Vector4& v3,
         const Matrix4x4& worldMat, const Vector4& color,
-        bool useTexture,bool view3D, uint32_t GH
+        bool enableLighting, const Matrix4x4& uvTransform,bool view3D, uint32_t GH
     );
 
 private:// 外部参照のためのポインタ
@@ -169,7 +168,7 @@ public:// DirectX
     ComPtr<ID3D12Resource> materialResourceSprite = nullptr;
     
 
-    /*----------------------------- TextureResourceの作成,転送 -----------------------------*/
+    /*---------------------------------- TextureResource ----------------------------------*/
 
     std::vector<ComPtr<ID3D12Resource>> textureResource;
     std::vector<ComPtr<ID3D12Resource>> intermediateResource;

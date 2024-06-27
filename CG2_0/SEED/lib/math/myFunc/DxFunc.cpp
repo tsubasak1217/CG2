@@ -16,12 +16,12 @@ void Log(const std::wstring& message) {
 
 // 文字列を変換する関数--------------------------------------------------------------------------------------
 std::wstring ConvertString(const std::string& str) {
-    if (str.empty()) {
+    if(str.empty()) {
         return std::wstring();
     }
 
     auto sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, reinterpret_cast<const char*>(&str[0]), static_cast<int>(str.size()), NULL, 0);
-    if (sizeNeeded == 0) {
+    if(sizeNeeded == 0) {
         return std::wstring();
     }
     std::wstring result(sizeNeeded, 0);
@@ -30,12 +30,12 @@ std::wstring ConvertString(const std::string& str) {
 }
 
 std::string ConvertString(const std::wstring& str) {
-    if (str.empty()) {
+    if(str.empty()) {
         return std::string();
     }
 
     auto sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, str.data(), static_cast<int>(str.size()), NULL, 0, NULL, NULL);
-    if (sizeNeeded == 0) {
+    if(sizeNeeded == 0) {
         return std::string();
     }
     std::string result(sizeNeeded, 0);
@@ -98,7 +98,7 @@ IDxcBlob* CompileShader(
     // 警告・エラーが出てたらログに出して止める
     IDxcBlobUtf8* shaderError = nullptr;
     shaderResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError), nullptr);
-    if (shaderError != nullptr && shaderError->GetStringLength() != 0) {
+    if(shaderError != nullptr && shaderError->GetStringLength() != 0) {
         Log(shaderError->GetStringPointer());
         // 警告・エラーダメゼッタイ
         assert(false);
@@ -278,7 +278,7 @@ ID3D12Resource* CreateTextureResource(ID3D12Device* device, const DirectX::TexMe
 
 // 深度ステンシルのリソースを作成する関数
 ID3D12Resource* CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height) {
-   
+
     D3D12_RESOURCE_DESC resourceDesc{};
     resourceDesc.Width = width;// テクスチャの幅
     resourceDesc.Height = height;// テクスチャの高さ
@@ -326,7 +326,7 @@ ID3D12Resource* UploadTextureData(
     uint64_t intermediateSize = GetRequiredIntermediateSize(texture, 0, UINT(subresources.size()));
     ID3D12Resource* intermediateResource = CreateBufferResource(device, intermediateSize);
     UpdateSubresources(commandList, texture, intermediateResource, 0, 0, UINT(subresources.size()), subresources.data());
-    
+
     //
     D3D12_RESOURCE_BARRIER barrier{};
     barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -404,8 +404,10 @@ ModelData LoadObjFile(const std::string& directoryPath, const std::string& filen
 
         } else if(identifer == "f"){// 面
 
+            VertexData vertices[3];
+
             for(int32_t faceVertex = 0; faceVertex < 3; faceVertex++){
-                
+
                 std::string vertexDefinition;
                 s >> vertexDefinition;
                 std::istringstream v(vertexDefinition);
@@ -420,11 +422,71 @@ ModelData LoadObjFile(const std::string& directoryPath, const std::string& filen
                 Vector4 position = positions[elementIndices[0] - 1];
                 Vector2 texcoord = texcoords[elementIndices[1] - 1];
                 Vector3 normal = normals[elementIndices[2] - 1];
-                VertexData vertex = { position,texcoord,normal,Vector4(1.0f,1.0f,1.0f,1.0f)};
-                modelData.vertices.push_back(vertex);
+
+                // 左手座標系に変換
+                position.x *= -1.0f;
+                normal.x *= -1.0f;
+                texcoord.y = 1.0f - texcoord.y;
+
+                vertices[faceVertex] = { position,texcoord,normal };
             }
+
+            // 反対周りに格納
+            modelData.vertices.push_back(vertices[2]);
+            modelData.vertices.push_back(vertices[1]);
+            modelData.vertices.push_back(vertices[0]);
+
+        } else if(identifer == "mtllib"){// mtlファイルの場所
+
+            std::string materialFilename;
+            // ファイル名を格納
+            s >> materialFilename;
+
+            // mtlファイルを読み込む
+            modelData.materialData = LoadMaterialTemplateFile(directoryPath, materialFilename);
         }
     }
 
     return modelData;
+}
+
+MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename)
+{
+
+    // ファイルを開く
+    std::ifstream file(directoryPath + "/" + filename);
+    assert(file.is_open());// 失敗したらアサート
+
+    MaterialData materialData;
+    std::string line;
+
+    while(std::getline(file, line)){
+
+        // まずobjファイルの行の先頭の識別子を読む
+        std::string identifer;
+        std::istringstream s(line);
+        s >> identifer;
+
+        if(identifer == "map_Kd"){// ファイル名
+
+            std::string textureFilename;
+            // ファイル名を格納
+            s >> textureFilename;
+
+            materialData.textureFilePath_ = directoryPath + "/" + textureFilename;
+        }
+    }
+
+    return materialData;
+}
+
+// Matrix4x4 を DirectX::XMMATRIX に変換する関数
+DirectX::XMMATRIX ConvertToXMMATRIX(const Matrix4x4& matrix)
+{
+    return DirectX::XMMATRIX(
+        matrix.m[0][0], matrix.m[0][1], matrix.m[0][2], matrix.m[0][3],
+        matrix.m[1][0], matrix.m[1][1], matrix.m[1][2], matrix.m[1][3],
+        matrix.m[2][0], matrix.m[2][1], matrix.m[2][2], matrix.m[2][3],
+        matrix.m[3][0], matrix.m[3][1], matrix.m[3][2], matrix.m[3][3]
+    );
 }
