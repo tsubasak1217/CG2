@@ -76,21 +76,29 @@ private:// マネージャたち
     DxManager* dxManager_ = nullptr;
     ImGuiManager* imguiManager_ = nullptr;
 
-public:// ウインドウに関する変数
-    HWND hwnd;
-    HINSTANCE hInstance_;
-    int nCmdShow_;
-    MSG msg_;
+private:// ウインドウに関する変数--------------------------
+    static HWND hwnd;
+    static HINSTANCE hInstance_;
+    static int nCmdShow_;
+    static MSG msg_;
 
-    std::string windowTitle_;
+public:
     int kClientWidth_;
     int kClientHeight_;
+    std::string windowTitle_;
 
 private:
     PolygonManager* pPolygonManager_;
 
-public: // アクセッサ
+public: // アクセッサ-----------------------------------
+
     static void SetPolygonManagerPtr(PolygonManager* ptr){ instance_->pPolygonManager_ = ptr; }
     static DxManager* GetDxManager(){ return instance_->dxManager_; }
     static Camera* GetCamera(){ return instance_->dxManager_->GetCamera(); }
+
+    static HWND GetHWND(){ return hwnd; }
+    static void SetWindowHandle(HWND handle){ hwnd = handle; }
+    static int GetCmdShow(){ return nCmdShow_; }
+    static HINSTANCE GetHINSTANCE(){ return hInstance_; }
+    static UINT ProcessMessage(){ return msg_.message; }
 };

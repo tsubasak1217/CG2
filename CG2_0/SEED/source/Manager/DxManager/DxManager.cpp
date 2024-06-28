@@ -431,7 +431,7 @@ void DxManager::CreateSwapChain()
     // コマンドキュー、ウィンドウハンドル、設定を渡して生成する
     hr = dxgiFactory->CreateSwapChainForHwnd(
         commandQueue.Get(),
-        pSEED_->hwnd,
+        SEED::GetHWND(),
         &swapChainDesc,
         nullptr, nullptr,
         reinterpret_cast<IDXGISwapChain1**>(swapChain.GetAddressOf())
@@ -683,7 +683,7 @@ void DxManager::Finalize()
 #ifdef _DEBUG
     debugController->Release();
 #endif
-    CloseWindow(pSEED_->hwnd);
+    CloseWindow(SEED::GetHWND());
     // COMの終了
     CoUninitialize();
 }

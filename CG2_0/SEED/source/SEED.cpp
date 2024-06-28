@@ -12,10 +12,10 @@
 //DxManager* SEED::dxManager_ = nullptr;
 //ImGuiManager* SEED::imguiManager_ = nullptr;
 //
-//HWND SEED::hwnd = nullptr;
-//HINSTANCE SEED::hInstance_ = nullptr;
-//int SEED::nCmdShow_ = 0;
-//MSG SEED::msg_ = {};
+HWND SEED::hwnd = nullptr;
+HINSTANCE SEED::hInstance_ = nullptr;
+int SEED::nCmdShow_ = 0;
+MSG SEED::msg_ = {};
 //std::string SEED::windowTitle_ = "";
 //int SEED::kClientWidth_ = 0;
 //int SEED::kClientHeight_ = 0;

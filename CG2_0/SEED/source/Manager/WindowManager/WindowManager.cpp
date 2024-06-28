@@ -32,7 +32,7 @@ void WindowManager::Initialize(SEED* pSEED)
 
     // ウインドウクラスの中身を記述
     wc.lpfnWndProc = WindowProc;
-    wc.hInstance = pSEED_->hInstance_;
+    wc.hInstance = SEED::GetHINSTANCE();
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.lpszClassName = szAppName;
 
@@ -40,7 +40,7 @@ void WindowManager::Initialize(SEED* pSEED)
 
     /*-------------------------------- ウィンドウの生成 ---------------------------------*/
 
-    pSEED_->hwnd = CreateWindow(
+     SEED::SetWindowHandle(CreateWindow(
         szAppName,
         ConvertString(pSEED_->windowTitle_).c_str(),
         WS_OVERLAPPEDWINDOW,
@@ -54,16 +54,16 @@ void WindowManager::Initialize(SEED* pSEED)
         nullptr,
         wc.hInstance,
         nullptr
-    );
+    ));
 
-    if(!pSEED_->hwnd) { return; }
+    if(!SEED::GetHWND()) { return; }
 
 
     // ウインドウの表示
-    ShowWindow(pSEED_->hwnd, pSEED_->nCmdShow_);
+    ShowWindow(SEED::GetHWND(), SEED::GetCmdShow());
 
     // ウインドウの更新
-    UpdateWindow(pSEED_->hwnd);
+    UpdateWindow(SEED::GetHWND());
 }
 
 void WindowManager::Finalize()

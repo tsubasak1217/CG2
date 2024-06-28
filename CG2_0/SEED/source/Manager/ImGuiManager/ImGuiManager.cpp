@@ -14,7 +14,7 @@ void ImGuiManager::Initialize(SEED* pSEED)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
-    ImGui_ImplWin32_Init(pSEED_->hwnd);
+    ImGui_ImplWin32_Init(SEED::GetHWND());
     ImGui_ImplDX12_Init(
         pDxManager_->device.Get(),
         pDxManager_->swapChainDesc.BufferCount,

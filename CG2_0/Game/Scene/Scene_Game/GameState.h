@@ -25,8 +25,8 @@ public:
 
 protected:
     std::string name_;
-    Scene_Game* pScene_;
-    SEED* pSEED_;
+    Scene_Game* pScene_ = nullptr;
+    SEED* pSEED_ = nullptr;
 };
 
 class GameState_Test : public GameState_Base{
