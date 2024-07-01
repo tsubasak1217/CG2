@@ -8,5 +8,3 @@ static const uint32_t kWindowSizeX = 1280;
 static const uint32_t kWindowSizeY = 720;
 static const Vector2 kWindowSize = { float(kWindowSizeX),float(kWindowSizeY) };
 static const Vector2 kWindowCenter = kWindowSize * 0.5f;
-
-static uint32_t windowBackColor = 0x3f7f7fff;

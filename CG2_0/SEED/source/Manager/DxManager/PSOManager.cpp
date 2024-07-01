@@ -37,7 +37,7 @@ void PSOManager::Create()
     rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // VertexShaderで使う
     rootParameters[1].Descriptor.ShaderRegister = 0; // レジスタ番号t0とバインド
 
-    /*------------------------ texture ------------------------*/
+    /*------------------------ texture -----------------------*/
     //DescriptorRange,DescriptorTableの設定
     D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
     descriptorRange[0].BaseShaderRegister = 1;// t1から始まる
@@ -63,7 +63,7 @@ void PSOManager::Create()
     /*------------ Samplerの設定 ------------*/
 
     D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
-    staticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR; // バイリニアフィルタ
+    staticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR; // トリリニアフィルタ
     staticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;// 0~1の範囲外をリピート
     staticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
     staticSamplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
@@ -73,6 +73,21 @@ void PSOManager::Create()
     staticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
     descriptionRootSignature.pStaticSamplers = staticSamplers;
     descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);
+
+    // 異方性フィルタリングの設定
+    //D3D12_STATIC_SAMPLER_DESC anisotropicSamplerDesc[1] = {};
+    //anisotropicSamplerDesc[0].Filter = D3D12_FILTER_ANISOTROPIC;
+    //anisotropicSamplerDesc[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+    //anisotropicSamplerDesc[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+    //anisotropicSamplerDesc[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+    //anisotropicSamplerDesc[0].MipLODBias = 0.0f;
+    //anisotropicSamplerDesc[0].MaxAnisotropy = 16;
+    //anisotropicSamplerDesc[0].ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+    //anisotropicSamplerDesc[0].BorderColor = D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE;
+    //anisotropicSamplerDesc[0].MinLOD = 0.0f;
+    //anisotropicSamplerDesc[0].MaxLOD = D3D12_FLOAT32_MAX;
+    //descriptionRootSignature.pStaticSamplers = anisotropicSamplerDesc;
+    //descriptionRootSignature.NumStaticSamplers = _countof(anisotropicSamplerDesc);
 
     /*--------------------------------------*/
 
@@ -133,11 +148,27 @@ void PSOManager::Create()
     // すべての色を書き込むよう設定
     blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 
+    // ブレンドステートの設定
+    //blendDesc.AlphaToCoverageEnable = FALSE;
+    //blendDesc.IndependentBlendEnable = FALSE;
+    //blendDesc.RenderTarget[0].BlendEnable = FALSE;
+    //blendDesc.RenderTarget[0].LogicOpEnable = FALSE;
+    //blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_ONE;
+    //blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_ZERO;
+    //blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_MAX;
+    //blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+    //blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+    //blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+    //blendDesc.RenderTarget[0].LogicOp = D3D12_LOGIC_OP_NOOP;
+    //blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+
     /*--------------------------------- RasterizerStateの設定 ----------------------------------*/
 
     D3D12_RASTERIZER_DESC rasterizerDesc{};
     rasterizerDesc.CullMode = D3D12_CULL_MODE_BACK;// 裏面を表示しない
     rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;// 三角形の中を塗りつぶす
+    rasterizerDesc.MultisampleEnable = FALSE; // アンチエイリアシング無効化
+    rasterizerDesc.AntialiasedLineEnable = FALSE; // ラインアンチエイリアシング無効化
 
     /*--------------------------- DepthStencilStateの作成 ---------------------------*/
 

@@ -38,7 +38,6 @@ void ImGuiManager::Finalize()
 
 void ImGuiManager::Draw()
 {
-    //pDxManager_->commandList->SetDescriptorHeaps(1, &(pDxManager_->srvDescriptorHeap));
     // ImGuiの描画
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), pDxManager_->commandList.Get());
 }
@@ -58,6 +57,8 @@ void ImGuiManager::End()
 #ifdef _DEBUG
     // 描画前準備
     ImGui::Render();
+
+    // 描画
     Draw();
 #endif
 }

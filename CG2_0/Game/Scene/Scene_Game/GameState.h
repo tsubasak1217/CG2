@@ -37,10 +37,13 @@ public:
     void Draw()override;
 
 private:
-    Triangle tri[3];
+    Triangle tri[8];
     std::vector<uint32_t>GH;
     Model model;
-    int num = 0;
+    float h = 0.0f;
+
+    float resolutionRate_ = 1.0f;
+    float preRate_ = resolutionRate_;
 };
 
 class GameState_Effect : public GameState_Base{

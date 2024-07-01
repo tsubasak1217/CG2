@@ -8,25 +8,14 @@
 
 /*----------------------------------- static変数の初期化----------------------------------------*/
 
-//WindowManager* SEED::windowManager_ = nullptr;
-//DxManager* SEED::dxManager_ = nullptr;
-//ImGuiManager* SEED::imguiManager_ = nullptr;
-//
 HWND SEED::hwnd = nullptr;
 HINSTANCE SEED::hInstance_ = nullptr;
 int SEED::nCmdShow_ = 0;
 MSG SEED::msg_ = {};
-//std::string SEED::windowTitle_ = "";
-//int SEED::kClientWidth_ = 0;
-//int SEED::kClientHeight_ = 0;
-//
-//PolygonManager* SEED::pPolygonManager_ = nullptr;
-
 SEED* SEED::instance_ = nullptr;
 
 /*---------------------------------コンストラクタ、デストラクタ------------------------------------*/
 
-SEED::SEED(){}
 SEED::~SEED(){
     delete imguiManager_;
     imguiManager_ = nullptr;
@@ -60,6 +49,8 @@ void SEED::Initialize(HINSTANCE hInstance, int nCmdShow, const char* windowTitle
     instance_->windowManager_->Initialize(instance_);
     instance_->dxManager_->Initialize(instance_);
     instance_->imguiManager_->Initialize(instance_);
+
+    instance_->windowBackColor_ = 0xffffffff;
 }
 
 void SEED::Finalize()
@@ -111,6 +102,11 @@ void SEED::EndFrame()
 uint32_t SEED::LoadTexture(const std::string& filePath)
 {
     return instance_->dxManager_->CreateTexture(filePath);
+}
+
+void SEED::ChangeResolutionRate(float resolutionRate)
+{
+    instance_->dxManager_->ChangeResolutionRate(resolutionRate);
 }
 
 /*--------------------------------------------------------------------------------------------------*/

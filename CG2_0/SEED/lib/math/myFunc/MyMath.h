@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <vector>
 #include <string>
+#include <numeric>
+#include <algorithm>
 
 class MyMath{
 public:
@@ -105,6 +107,11 @@ public:
 
     // カラーコードからVector4に変換する関数 (0~1に収められる)
     static Vector4 FloatColor(uint32_t color);
+    // Vector4からカラーコードに変換する関数
+    static uint32_t IntColor(const Vector4& color);
+
+    // HSVをRGBに変換する関数
+    static uint32_t HSV_to_RGB(float h, float s, float v,float alpha);
 };
 
 enum VIEWMODE {

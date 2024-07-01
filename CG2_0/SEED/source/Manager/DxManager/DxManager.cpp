@@ -55,7 +55,7 @@ void DxManager::Initialize(SEED* pSEED)
     /*--------------------- スワップチェーンの作成 --------------------------*/
 
     // SwapChain ~ 画面を複数用意し、表示されていない画面で描画を同時進行で行う
-    CreateSwapChain();
+    CreateSwapChain(resolutionRate_);
 
     /*--------------- SwapChain から Resourceを引っ張ってくる ---------------*/
 
@@ -171,22 +171,7 @@ void DxManager::Initialize(SEED* pSEED)
 
     /*--------------------------------- VewportとScissor ---------------------------------*/
 
-    // ビューポート
-    // クライアント領域のサイズと一緒にして画面全体に表示
-    viewport.Width = (float)pSEED_->kClientWidth_;
-    viewport.Height = (float)pSEED_->kClientHeight_;
-    viewport.TopLeftX = 0;
-    viewport.TopLeftY = 0;
-    viewport.MinDepth = 0.0f;
-    viewport.MaxDepth = 1.0f;
-
-    // シザー矩形
-    // 基本的にビューポートと同じ矩形が構成されるようにする
-    scissorRect.left = 0;
-    scissorRect.top = 0;
-    scissorRect.right = pSEED_->kClientWidth_;
-    scissorRect.bottom = pSEED_->kClientHeight_;
-
+    SettingViewportAndScissor(resolutionRate_);
 
     // ------------------------------------------------------------------------------------
 
@@ -205,71 +190,9 @@ void DxManager::Initialize(SEED* pSEED)
 }
 
 
-void DxManager::PreDraw()
-{
-    /*------- これから書き込むバックバッファのインデックスを取得--------*/
-
-    backBufferIndex = swapChain->GetCurrentBackBufferIndex();
-
-    /*--------------- TransitionBarrierを張る処理----------------*/
-
-    // RTVを実行するために表示されていない後ろの画面(バックバッファ)の状態を描画状態に遷移させる
-    TransitionResourceState(D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-    /*----------画面、深度情報のクリア、DSVとRTVの結び直し-----------*/
-
-    ClearViewSettings();
-
-    /*----------------- SRVのヒープの再セット --------------------*/
-    /*
-        imGuiがフレーム単位でHeapの中身を操作するため
-        SRVのHeapは毎フレームセットし直す
-    */
-    ID3D12DescriptorHeap* ppHeaps[] = { srvDescriptorHeap.Get() };
-    commandList->SetDescriptorHeaps(1, ppHeaps);
-}
-
-void DxManager::DrawPolygonAll()
-{
-
-    polygonManager_->DrawPolygonAll();
-}
-
-void DxManager::PostDraw()
-{
-
-    // 画面に描く処理はすべて終わり、 画面に映すので、状態を遷移
-    // 今回はRenderTargetからPresent にする
-    TransitionResourceState(D3D12_RESOURCE_STATE_PRESENT);
-
-    /*----------------------------------------------------------*/
-
-    // コマンドリストの内容を確定させる。 すべてのコマンドを積んでからCloseすること
-    hr = commandList->Close();// コマンドリストの実行前に閉じる
-    assert(SUCCEEDED(hr));
-
-    // GPUにコマンドリストの実行を行わせる
-    ID3D12CommandList* commandLists[] = { commandList.Get() };
-    commandQueue->ExecuteCommandLists(1, commandLists);
-
-    // GPUとOSに画面の交換を行うよう通知する
-    swapChain->Present(1, 0);
-
-    /*---------------------- CPUとGPUの同期 ----------------------*/
-
-    WaitForGPU();// CPUはGPUの処理が追いつくまでここで待機！
-
-    /*----------------- PolygonManagerのリセット -----------------*/
-
-    polygonManager_->Reset();
-
-    /*------------------- commandListのリセット ------------------*/
-    // リセットして次のフレーム用のコマンドリストを準備
-    hr = commandAllocator->Reset();
-    assert(SUCCEEDED(hr));
-    hr = commandList->Reset(commandAllocator.Get(), nullptr);
-    assert(SUCCEEDED(hr));
-}
+/*===========================================================================================*/
+/*                                      初期設定を行う関数                                      */
+/*===========================================================================================*/
 
 void DxManager::CreateDebugLayer()
 {
@@ -415,12 +338,11 @@ void DxManager::CreateCommanders()
     assert(SUCCEEDED(hr));
 }
 
-void DxManager::CreateSwapChain()
+void DxManager::CreateSwapChain(float resolutionRate)
 {
-    // 画面の幅。 ウィンドウのクライアント領域を同じものにしておく
-    swapChainDesc.Width = pSEED_->kClientWidth_;
-    // 画面の高さ。 ウィンドウのクライアント領域を同じものにしておく
-    swapChainDesc.Height = pSEED_->kClientHeight_;
+    // 画面の縦横幅
+    swapChainDesc.Width = int(float(pSEED_->kClientWidth_) * resolutionRate);
+    swapChainDesc.Height = int(float(pSEED_->kClientHeight_) * resolutionRate);
     // 色の形式
     swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     // マルチサンプルしない
@@ -444,7 +366,7 @@ void DxManager::CreateSwapChain()
 void DxManager::GetSwapChainResources()
 {
     // SwapChain から Resourceを引っ張ってくる
-// うまく取得できなければ起動できない
+    // うまく取得できなければ起動できない
     hr = swapChain->GetBuffer(0, IID_PPV_ARGS(&swapChainResources[0]));
     assert(SUCCEEDED(hr));
     hr = swapChain->GetBuffer(1, IID_PPV_ARGS(&swapChainResources[1]));
@@ -552,38 +474,25 @@ void DxManager::InitPSO()
     psoManager_->Create();
 }
 
-uint32_t DxManager::CreateTexture(std::string filePath)
+void DxManager::SettingViewportAndScissor(float resolutionRate)
 {
-    /*----------------------------- TextureResourceの作成,転送 -----------------------------*/
+    resolutionRate;
 
-    // 読み込み
-    DirectX::ScratchImage mipImages = LoadTextureImage(filePath);
-    // 作成
-    const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-    textureResource.push_back(CreateTextureResource(device.Get(), metadata));
-    // 転送
-    intermediateResource.push_back(
-        UploadTextureData(textureResource.back().Get(), mipImages, device.Get(), commandList.Get())
-    );
+    // ビューポート
+    // クライアント領域のサイズと一緒にして画面全体に表示
+    viewport.Width = float(pSEED_->kClientWidth_) * resolutionRate;
+    viewport.Height = float(pSEED_->kClientHeight_) * resolutionRate;
+    viewport.TopLeftX = 0;
+    viewport.TopLeftY = 0;
+    viewport.MinDepth = 0.0f;
+    viewport.MaxDepth = 1.0f;
 
-    /*-------------------------------- Texture用SRVの作成 ----------------------------------*/
-
-    // metaDataをもとにSRVの設定
-    D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-    srvDesc.Format = metadata.format;
-    srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-    srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
-    srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
-
-    // SRVを作成するDescriptorHeapの場所を決める
-    D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU = GetCPUDescriptorHandle(srvDescriptorHeap.Get(), descriptorSizeSRV, 1 + textureCount_);
-    D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU = GetGPUDescriptorHandle(srvDescriptorHeap.Get(), descriptorSizeSRV, 1 + textureCount_);
-
-    // SRVの生成
-    device->CreateShaderResourceView(textureResource.back().Get(), &srvDesc, textureSrvHandleCPU);
-
-    // グラフハンドルもついでに返す
-    return textureCount_++;
+    // シザー矩形
+    // 基本的にビューポートと同じ矩形が構成されるようにする
+    scissorRect.left = 0;
+    scissorRect.top = 0;
+    scissorRect.right = int(float(pSEED_->kClientWidth_) * resolutionRate);
+    scissorRect.bottom = int(float(pSEED_->kClientHeight_) * resolutionRate);
 }
 
 
@@ -625,7 +534,7 @@ void DxManager::TransitionResourceState(uint32_t state)
 void DxManager::ClearViewSettings()
 {
     // 指定した色で画面全体をクリアする
-    clearColor = MyMath::FloatColor(windowBackColor);
+    clearColor = MyMath::FloatColor(SEED::GetWindowColor());
     commandList->ClearRenderTargetView(rtvHandles[backBufferIndex], &clearColor.x, 0, nullptr);
 
     // 描画先のRTV,DSVを設定する
@@ -656,6 +565,10 @@ void DxManager::WaitForGPU()
     }
 }
 
+/*===========================================================================================*/
+/*                                          描画関数                                          */
+/*===========================================================================================*/
+
 void DxManager::DrawTriangle(
     const Vector4& v1, const Vector4& v2, const Vector4& v3,
     const Matrix4x4& worldMat, const Vector4& color,
@@ -664,12 +577,164 @@ void DxManager::DrawTriangle(
     polygonManager_->AddTriangle(v1, v2, v3, worldMat, color, enableLighting,uvTransform,view3D, GH);
 }
 
+
+void DxManager::PreDraw()
+{
+    /*------- これから書き込むバックバッファのインデックスを取得--------*/
+
+    backBufferIndex = swapChain->GetCurrentBackBufferIndex();
+
+    /*--------------- TransitionBarrierを張る処理----------------*/
+
+    // RTVを実行するために表示されていない後ろの画面(バックバッファ)の状態を描画状態に遷移させる
+    TransitionResourceState(D3D12_RESOURCE_STATE_RENDER_TARGET);
+
+    /*----------画面、深度情報のクリア、DSVとRTVの結び直し-----------*/
+
+    ClearViewSettings();
+
+    /*----------------- SRVのヒープの再セット --------------------*/
+    /*
+        imGuiがフレーム単位でHeapの中身を操作するため
+        SRVのHeapは毎フレームセットし直す
+    */
+    ID3D12DescriptorHeap* ppHeaps[] = { srvDescriptorHeap.Get() };
+    commandList->SetDescriptorHeaps(1, ppHeaps);
+}
+
+void DxManager::DrawPolygonAll()
+{
+
+    polygonManager_->DrawPolygonAll();
+}
+
+void DxManager::PostDraw()
+{
+    // 画面に描く処理はすべて終わり、 画面に映すので、状態を遷移
+    // 今回はRenderTargetからPresent にする
+    TransitionResourceState(D3D12_RESOURCE_STATE_PRESENT);
+
+    /*----------------------------------------------------------*/
+
+    // コマンドリストの内容を確定させる。 すべてのコマンドを積んでからCloseすること
+    hr = commandList->Close();// コマンドリストの実行前に閉じる
+    assert(SUCCEEDED(hr));
+
+    // GPUにコマンドリストの実行を行わせる
+    ID3D12CommandList* commandLists[] = { commandList.Get() };
+    commandQueue->ExecuteCommandLists(1, commandLists);
+
+    // GPUとOSに画面の交換を行うよう通知する
+    swapChain->Present(1, 0);
+
+    /*---------------------- CPUとGPUの同期 ----------------------*/
+
+    WaitForGPU();// CPUはGPUの処理が追いつくまでここで待機！
+
+    /*----------------- PolygonManagerのリセット -----------------*/
+
+    polygonManager_->Reset();
+
+    /*-------------　解像度の変更命令があればここで実行-　-------------*/
+
+    if(changeResolutionOrder){
+        ReCreateRTVSettings();
+    }
+
+    /*------------------- commandListのリセット ------------------*/
+    // リセットして次のフレーム用のコマンドリストを準備
+    hr = commandAllocator->Reset();
+    assert(SUCCEEDED(hr));
+    hr = commandList->Reset(commandAllocator.Get(), nullptr);
+    assert(SUCCEEDED(hr));
+}
+
+/*===========================================================================================*/
+/*                                  外部から実行される関数                                       */
+/*===========================================================================================*/
+
+//////////////////////////////////////////////////////////////
+//           テクスチャを作成してグラフハンドルを返す関数          //
+//////////////////////////////////////////////////////////////
+
+uint32_t DxManager::CreateTexture(std::string filePath)
+{
+    /*----------------------------- TextureResourceの作成,転送 -----------------------------*/
+
+    // 読み込み
+    DirectX::ScratchImage mipImages = LoadTextureImage(filePath);
+    // 作成
+    const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
+    textureResource.push_back(CreateTextureResource(device.Get(), metadata));
+    // 転送
+    intermediateResource.push_back(
+        UploadTextureData(textureResource.back().Get(), mipImages, device.Get(), commandList.Get())
+    );
+
+    /*-------------------------------- Texture用SRVの作成 ----------------------------------*/
+
+    // metaDataをもとにSRVの設定
+    D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+    srvDesc.Format = metadata.format;
+    srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
+    srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
+
+    // SRVを作成するDescriptorHeapの場所を決める
+    D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU =
+        GetCPUDescriptorHandle(srvDescriptorHeap.Get(), descriptorSizeSRV, 1 + textureCount_);
+    D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU =
+        GetGPUDescriptorHandle(srvDescriptorHeap.Get(), descriptorSizeSRV, 1 + textureCount_);
+
+    // SRVの生成
+    device->CreateShaderResourceView(textureResource.back().Get(), &srvDesc, textureSrvHandleCPU);
+
+    // グラフハンドルもついでに返す
+    return textureCount_++;
+}
+
+
+//////////////////////////////////////////////////////////////
+//           解像度を変更してRTVやScissorを設定し直す関数        ///
+//////////////////////////////////////////////////////////////
+
+void DxManager::ChangeResolutionRate(float resolutionRate)
+{
+    resolutionRate_ = std::clamp(resolutionRate, 0.0f, 1.0f);
+    changeResolutionOrder = true;
+}
+
+void DxManager::ReCreateRTVSettings()
+{
+    for(int i = 0; i < 2; i++){// resourceを解放
+        swapChainResources[i].Reset();
+    }
+
+    hr = swapChain->ResizeBuffers(// リサイズ
+        0,
+        int(float(pSEED_->kClientWidth_) * resolutionRate_),
+        int(float(pSEED_->kClientHeight_) * resolutionRate_),
+        DXGI_FORMAT_UNKNOWN,
+        0
+    );
+
+    assert(SUCCEEDED(hr));
+
+    GetSwapChainResources();// resourceを再作成
+    CreateRTV();// resourceをもとにRTVを再作成
+    SettingViewportAndScissor(resolutionRate_);// scissorなどを再設定
+
+    // 命令フラグを下げる
+    changeResolutionOrder = false;
+}
+
+
+/*===========================================================================================*/
+/*                                          後処理                                            */
+/*===========================================================================================*/
+
 void DxManager::Finalize()
 {
-    /*===========================================================================================*/
-    /*                                          後処理                                            */
-    /*===========================================================================================*/
-
     CloseHandle(fenceEvent);
     polygonManager_->Finalize();
 

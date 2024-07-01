@@ -4,7 +4,7 @@
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 {
-    SEED::Initialize(hInstance, nCmdShow, "CG2", 1280, 720);
+    SEED::Initialize(hInstance, nCmdShow, "CG2", 640, 360);
     SceneManager::Initialize();
 
     while(SEED::ProcessMessage() != WM_QUIT){

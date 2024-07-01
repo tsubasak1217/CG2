@@ -25,16 +25,13 @@ struct LeakChecker{
 };
 
 class DxManager{
-public:// 根幹をなす大枠の関数
+
+public:/*========================== 根幹をなす大枠の関数 ==========================*/
     ~DxManager(){};
     void Initialize(SEED* pSEED);
     void Finalize();
 
-    void PreDraw();
-    void DrawPolygonAll();
-    void PostDraw();
-
-private:// 内部の細かい関数
+private:/*===================== 内部の細かい初期設定を行う関数 ======================*/
 
     void CreateDebugLayer();
     void CreateDevice();
@@ -43,7 +40,7 @@ private:// 内部の細かい関数
     void CreateCommanders();
 
     // SwapChain,ダブルバッファリングに関わる関数
-    void CreateSwapChain();
+    void CreateSwapChain(float resolutionRate);
     void GetSwapChainResources();
     void CreateAllDescriptorHeap();
     void CheckDescriptorSize();
@@ -56,6 +53,9 @@ private:// 内部の細かい関数
     // PSO
     void InitPSO();
 
+    // viewportとscissorの設定関数
+    void SettingViewportAndScissor(float resolutionRate);
+
     // preDraw,postDrawに関わる関数
     void TransitionResourceState(uint32_t state);
     void ClearViewSettings();
@@ -64,37 +64,52 @@ private:// 内部の細かい関数
     void CreateFence();
     void WaitForGPU();
 
-public:
-    // テクスチャを読み込む関数
-    uint32_t CreateTexture(std::string filePath);
+public:/*============================ 描画に関わる関数 ============================*/
 
-public:// PolygonManagerに描画を頼む関数
+    void PreDraw();
+    void DrawPolygonAll();
+    void PostDraw();
 
     void DrawTriangle(
         const Vector4& v1, const Vector4& v2, const Vector4& v3,
         const Matrix4x4& worldMat, const Vector4& color,
-        bool enableLighting, const Matrix4x4& uvTransform,bool view3D, uint32_t GH
+        bool enableLighting, const Matrix4x4& uvTransform, bool view3D, uint32_t GH
     );
 
-private:// 外部参照のためのポインタ
+public:/*==================== アクセッサ以外で外部から呼び出す関数 ====================*/
+
+    // テクスチャを読み込む関数
+    uint32_t CreateTexture(std::string filePath);
+
+    // 解像度を変更してRTVやScissorを設定し直す関数
+    void ChangeResolutionRate(float resolutionRate);
+    void ReCreateRTVSettings();
+
+private:/*========================= 外部参照のためのポインタ ========================*/
 
     SEED* pSEED_ = nullptr;
-   
-private:// マネージャ変数
+
+private:/*============================ マネージャー変数 ============================*/
 
     PSOManager* psoManager_ = nullptr;// PSOを作成するクラス
     PolygonManager* polygonManager_ = nullptr;
 
-private:// オブジェクト
+private:/*============================== オブジェクト =============================*/
 
     Camera* camera_;
 
-private:// カウント
+private:/*============================ 各種カウント変数 ============================*/
 
     uint32_t textureCount_ = 0;
 
-public:// DirectX
-    
+private:/*============================ パラメーター変数 ============================*/
+
+    float resolutionRate_ = 1.0f;
+    bool changeResolutionOrder = false;
+
+
+public:/*======================== DirectXの設定に必要な変数 ========================*/
+
     // いろんなとこで実行結果を格納してくれる変数
     HRESULT hr;
 
@@ -149,45 +164,41 @@ public:// DirectX
     ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
     ComPtr<ID3D12RootSignature> rootSignature = nullptr;
 
-    /*------------------------------ VertexResourceの作成 -------------------------------*/
-
+    // VertexResourceの作成
     ComPtr<ID3D12Resource> vertexResource = nullptr;
     ComPtr<ID3D12Resource> indexResource = nullptr;
     ComPtr<ID3D12Resource> vertexResourceSprite = nullptr;
     ComPtr<ID3D12Resource> indexResourceSprite = nullptr;
 
-    /*---------------------- TransformationMatrix用Resourceの作成 -----------------------*/
-
+    // TransformationMatrix用Resourceの作成
     ComPtr<ID3D12Resource> wvpResource = nullptr;
-    /*-----スプライト用-----*/
+
+    // スプライト用
     ComPtr<ID3D12Resource> wvpResourceSprite = nullptr;
 
-    /*------------------------------ MaterialResourceの作成 -------------------------------*/
-
+    // MaterialResourceの作成
     ComPtr<ID3D12Resource> materialResource = nullptr;
     ComPtr<ID3D12Resource> materialResourceSprite = nullptr;
-    
 
-    /*---------------------------------- TextureResource ----------------------------------*/
-
+    // TextureResource
     std::vector<ComPtr<ID3D12Resource>> textureResource;
     std::vector<ComPtr<ID3D12Resource>> intermediateResource;
 
-    /*------------------------- DepthStencilTextureResourceの作成 -------------------------*/
-
+    // DepthStencilTextureResourceの作成
     ComPtr<ID3D12Resource> depthStencilResource = nullptr;
 
-    /*----------------------------------LightingのResource---------------------------------*/
-
+    // LightingのResource
     ComPtr<ID3D12Resource> lightingResource = nullptr;
     DirectionalLight* directionalLight = nullptr;
 
-    /*-------------------------scissor矩形とviewport-------------------------*/
+    // scissor矩形とviewport
     D3D12_VIEWPORT viewport{};
     D3D12_RECT scissorRect{};
 
-    public:// アクセッサ
+
+public:/*============================ アクセッサ関数 ============================*/
 
     Camera* GetCamera()const{ return camera_; }
     void SetCamera(Camera* camera){ camera_ = camera; }
+    void SetChangeResolutionFlag(bool flag){ changeResolutionOrder = flag; }
 };

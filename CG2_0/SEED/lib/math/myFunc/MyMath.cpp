@@ -137,7 +137,7 @@ float MyMath::Cross(const Vector2& originPos, const Vector2& endPos, const Vecto
 Vector2 MyMath::ProjectVec(const Vector2& pos1, const Vector2& pos2, const Vector2& targetPos)
 {
     Vector2 vec = pos2 - pos1;
-    return vec * DotNormal(pos1,pos2,targetPos);
+    return vec * DotNormal(pos1, pos2, targetPos);
 }
 
 Vector3 MyMath::ProjectVec(const Vector3& pos1, const Vector3& pos2, const Vector3& targetPos)
@@ -226,4 +226,45 @@ Vector4 MyMath::FloatColor(uint32_t color)
     };
 
     return colorf;
+}
+
+uint32_t MyMath::IntColor(const Vector4& color)
+{
+    uint32_t red = std::clamp(int(color.x * 255.0f), 0, 255) << 24;
+    uint32_t green = std::clamp(int(color.y * 255.0f), 0, 255) << 16;
+    uint32_t blue = std::clamp(int(color.z * 255.0f), 0, 255) << 8;
+    uint32_t alpha = std::clamp(int(color.w * 255.0f), 0, 255);
+
+    return red + green + blue + alpha;
+}
+
+uint32_t MyMath::HSV_to_RGB(float h, float s, float v, float alpha)
+{
+
+    // 彩度が0なので明度のみを反映
+    if(s == 0.0) {
+        return IntColor(Vector4(v, v, v, alpha));
+    }
+
+    h *= 6.0;
+    int i = int(h);
+    float f = h - i;
+
+    float p = v * (1.0f - s);
+    float q = v * (1.0f - s * f);
+    float t = v * (1.0f - s * (1.0f - f));
+
+    if(i % 6 == 0) {
+        return  IntColor(Vector4(v, t, p,alpha));
+    } else if(i % 6 == 1) {
+        return  IntColor(Vector4(q, v, p,alpha));
+    } else if(i % 6 == 2) {
+        return  IntColor(Vector4(p, v, t,alpha));
+    } else if(i % 6 == 3) {
+        return  IntColor(Vector4(p, q, v,alpha));
+    } else if(i % 6 == 4) {
+        return  IntColor(Vector4(t, p, v,alpha));
+    } else {
+        return  IntColor(Vector4(v, p, q,alpha));
+    }
 }
